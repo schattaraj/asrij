@@ -477,6 +477,32 @@ footer {
   gap: 10px;
 }
 
+footer ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+footer ul li {
+  margin-bottom: 12px;
+}
+
+footer ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+footer ul li a:hover {
+  text-decoration: underline;
+  color: #fff;
+}
+
+footer ul.links li i {
+  font-size: 14px;
+  margin-right: 8px;
+}
+
 footer .social a {
   color: white;
   margin: 0 10px;

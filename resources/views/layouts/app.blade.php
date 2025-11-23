@@ -134,9 +134,39 @@
                 <a href="#" class="text-white fs-4 social-link"><i class="fab fa-instagram"></i></a>
             </div> --}}
             <div class="row">
+                <div class="col-md-5">
+                    <div class="logo mb-3"><img src="{{ asset('assets/img/logo2.png') }}" alt=""></div>
+                    <p>
+                        Safe and voluntary blood donation.
+                        Connecting donors with patients in need.
+                        Committed to saving lives every day.
+                    </p>
+                </div>
+                <div class="col-md-3">
+                    <ul class="links">
+                        <li><i class="fa-solid fa-angles-right"></i> <a href="{{ route('home') }}">Home</a></li>
+                        <li><i class="fa-solid fa-angles-right"></i> <a href="#">About Us</a></li>
+                        <li><i class="fa-solid fa-angles-right"></i> <a href="#">Contact Us</a></li>
+                        <li><i class="fa-solid fa-angles-right"></i> <a href="#">Register</a></li>
+                        <li><i class="fa-solid fa-angles-right"></i> <a href="#">Login</a></li>
+                    </ul>
+                </div>
                 <div class="col-md-4">
-                    <div class="logo"><img src="{{ asset('assets/img/logo2.png') }}" alt=""></div>
-                    <p>Towards the end of the 19th century, with the advent of the New Liberalism and the innovative</p>
+                    <ul>
+                        <li>
+                            <i class="fa-solid fa-envelope"></i> <a href="mailto:contact@asrij.com">contact@asrij.com</a>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-phone"></i> <a href="tel:911234567890">+911234567890</a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-white fs-4 social-link"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="text-white fs-4 social-link"><i class="fab fa-instagram"></i></a>
+                        </li>
+                        <li>
+                            <img src="/" alt="">
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -147,7 +177,7 @@
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@srexi/purecounterjs/dist/purecounter_vanilla.js"></script>
-    <script src={{asset('js/custom.js')}}></script>
+    <script src="{{asset('js/custom.js')}}"></script>
     @yield('scripts')
 </body>
 
