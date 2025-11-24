@@ -152,7 +152,11 @@ header .logo {
 }
 
 header .logo img {
-  width: 182px;
+  // width: 182px;
+  width: 220px;
+  @media (max-width:575px) {
+    width: 200px;
+  }
 }
 
 nav ul {
@@ -391,6 +395,9 @@ header nav.navbar .navbar-nav li a.active {
   background: #ffeaea;
   padding: 60px 8%;
   // text-align: center;
+  @media (max-width:575.99px) {
+    padding:40px 0;
+  }
 }
 
 // .accident-support form {
@@ -1298,12 +1305,25 @@ nav ul li a.active {
 .footer {
   background-color: var(--secondary-color);
   color: #fff;
+  p {
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.3px;
+  }
+  @media (max-width:1024.99px) {
+    .logo{
+      img{
+      max-width: 100%;
+      width: 180px;
+      }
+    }
+  }
+  @media (max-width:575.99px) {
+    p{
+      margin-bottom: 16px;
+    }
+  }
 }
 
-.footer p {
-  margin-bottom: 0.5rem;
-  letter-spacing: 0.3px;
-}
 
 .social-link {
   transition: all 0.3s ease;
@@ -1468,6 +1488,11 @@ body.design2 {
           margin-left: 12px;
         }
       }
+      @media (max-width:767.99px) {
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0px;
+      }  
     }
     .right{
       background-color: var(--primary-color);
@@ -1509,6 +1534,15 @@ body.design2 {
           font-size: 22px;
         }
       }
+    @media (max-width:767.99px) {
+          border-top-right-radius: 0;
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 8px;
+    }
+    @media (max-width:575.99px) {
+      border-bottom-left-radius: 0px;
+      border-bottom-right-radius: 0px;
+    }  
     }
   }
   .map{

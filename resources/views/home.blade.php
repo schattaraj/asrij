@@ -579,7 +579,7 @@
             </div>
         </div>
     </section>
-    <div class="contact-us my-5">
+    <div class="contact-us my-sm-5">
         <div class="container">
             <div class="row contact-form">
                 <div class="col-md-8 left" data-aos="fade-right">

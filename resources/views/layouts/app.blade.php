@@ -75,7 +75,7 @@
         <nav class="navbar navbar-expand-lg navbar-light">
             <div class="container">
                 {{-- <a class="navbar-brand" href="#">Navbar</a> --}}
-                <div class="logo"><img src="{{ asset('assets/img/logo2.png') }}" alt=""></div>
+                <div class="logo"><img src="{{ asset('assets/img/logo4.png') }}" alt=""></div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -135,7 +135,7 @@
             </div> --}}
             <div class="row">
                 <div class="col-md-5">
-                    <div class="logo mb-3"><img src="{{ asset('assets/img/logo2.png') }}" alt=""></div>
+                    <div class="logo mb-3"><img src="{{ asset('assets/img/logo4.png') }}" alt=""></div>
                     <p>
                         Safe and voluntary blood donation.
                         Connecting donors with patients in need.
@@ -162,9 +162,6 @@
                         <li>
                             <a href="#" class="text-white fs-4 social-link"><i class="fab fa-facebook-f"></i></a>
                             <a href="#" class="text-white fs-4 social-link"><i class="fab fa-instagram"></i></a>
-                        </li>
-                        <li>
-                            <img src="/" alt="">
                         </li>
                     </ul>
                 </div>
