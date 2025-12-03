@@ -72,7 +72,7 @@
                 </div>
             </div>
         </div>
-        <nav class="navbar navbar-expand-lg navbar-light">
+        <nav class="navbar navbar-light">
             <div class="container">
                 {{-- <a class="navbar-brand" href="#">Navbar</a> --}}
                 <div class="logo"><img src="{{ asset('assets/img/logo4.png') }}" alt=""></div>

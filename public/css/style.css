@@ -579,7 +579,7 @@ footer .social a:hover {
 .tab-btn {
   background: #ffeaea;
   border: none;
-  padding: 10px 20px;
+  padding: 24px 92px;
   border-radius: 25px;
   font-weight: 600;
   cursor: pointer;
@@ -1127,7 +1127,7 @@ nav ul li a.active {
 .tab-btn {
   background: #ffeaea;
   border: none;
-  padding: 10px 80px;
+  padding: 24px 92px;
   border-radius: 25px;
   font-weight: 600;
   cursor: pointer;
@@ -1953,5 +1953,10 @@ body.design2 .carousel .carousel-item img {
   .section-title {
     font-size: 1.5rem;
   }
+}
+
+.form-floating input:required + label::after, .form-floating select:required + label::after {
+  content: " *";
+  color: red;
 }
 /*# sourceMappingURL=style.css.map */
