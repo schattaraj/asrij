@@ -63,7 +63,7 @@
                 </div>
             </div>
         </div>
-        <nav class="navbar navbar-expand-lg navbar-light">
+        <nav class="navbar navbar-light">
             <div class="container">
                 
                 <div class="logo"><img src="https://schattaraj.github.io/asrij/public/assets/img/logo4.png" alt=""></div>
@@ -165,24 +165,57 @@
         <h1 style="font-size: 24px;font-weight:600">Register as a Donor / Receiver</h1>
     
         <div class="registration-tabs">
-          <button class="tab-btn active" data-tab="donor">Donor</button>
+          <button class="tab-btn" data-tab="donor">Donor</button>
           <button class="tab-btn" data-tab="receiver">Receiver</button>
+          <button class="tab-btn" data-tab="receiver">Volunteer</button>
         </div>
     
         <!-- Donor Registration -->
-        <div id="donor" class="tab-content active">
+        <div id="donor" class="tab-content">
           <form class="registration-form">
-            <input type="text" name="name" placeholder="Full Name" required>
-            <select name="blood_group" required>
+            <div class="form-floating">
+            <input type="text" class="form-control" name="name" id="full_name" placeholder="Full Name" required>
+            <label for="full_name">Full Name</label>
+          </div>
+          <div class="form-floating">
+            <select class="form-select" name="blood_group" id="floatingSelect" required>
+              <option value="">Select Option</option>
+              <option>Individual</option>
+              <option>NGO</option>
+              <option>Charity</option>
+            </select>
+            <label for="floatingSelect">Type</label>
+          </div>
+          <div class="form-floating">
+            <select class="form-select" name="blood_group" id="floating_blood_select" required>
               <option value="">Select Blood Group</option>
               <option>A+</option><option>A-</option>
               <option>B+</option><option>B-</option>
               <option>AB+</option><option>AB-</option>
               <option>O+</option><option>O-</option>
             </select>
-            <input type="date" name="last_donation" placeholder="Last Date of Donation" required>
-            <input type="text" name="contact" placeholder="Contact Number" required>
-            <textarea name="address" placeholder="Address with Pin Code" required></textarea>
+            <label for="floating_blood_select">Blood Group</label>
+          </div>
+          <div class="form-floating">
+            <input type="text" class="form-control" placeholder="Year of Birth" id="year_of_birth" name="year_of_birth" required>
+            <label for="year_of_birth">Year of Birth</label>
+          </div>
+          <div class="form-floating">
+            <input type="date" id="date" class="form-control" name="last_donation" placeholder="Last Date of Donation" required>
+            <label for="date">Last date of blood donation</label>
+          </div>
+          <div class="form-floating"> 
+            <input type="text" class="form-control" name="contact" placeholder="Contact Number" required>
+            <label for="">Contact Number</label>
+          </div>
+          <div class="form-floating">   
+            <input type="text" id="pin_code" class="form-control" name="pin_code" placeholder="Pin Code" required>
+            <label for="pin_code">Pin Code</label>
+          </div>
+          <div class="form-floating">   
+            <textarea class="form-control" name="address" placeholder="Address" required style="height: 100px"></textarea>
+            <label for="">Address</label>
+          </div>  
             <button type="submit" class="btn-primary">Submit Registration</button>
           </form>
         </div>
@@ -208,6 +241,15 @@
         <!-- Volunteer Registration -->
         <div id="volunteer" class="tab-content">
           <form class="registration-form">
+            <div class="form-floating">
+              <select class="form-select" name="blood_group" id="floatingSelect" required>
+                <option value="">Select Option</option>
+                <option>Individual</option>
+                <option>NGO</option>
+                <option>Charity</option>
+              </select>
+              <label for="floatingSelect">Type</label>
+            </div>
             <input type="text" name="organization" placeholder="Organization / Trust Name" required>
             <input type="text" name="contact" placeholder="Contact Number" required>
             <input type="email" name="email" placeholder="Email ID" required>
