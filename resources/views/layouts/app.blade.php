@@ -78,7 +78,7 @@
                 {{-- <a class="navbar-brand" href="#">Navbar</a> --}}
                 <div class="logo"><img src="{{ asset('assets/img/logo4.png') }}" alt=""></div>
             <div class="d-flex align-items-center">
-                <a href="#" class="btn btn-primary">Sign In</a>
+                <a href="#" class="btn btn-primary">Login</a>
                 <button class="navbar-toggler" onclick="handleMenu()" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
