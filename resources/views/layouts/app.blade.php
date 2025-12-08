@@ -23,6 +23,7 @@
 </head>
 
 <body class="">
+<div class="body">
     <header>
         {{-- <div class="logo">🩸 BloodConnect</div> --}}
         {{-- <div class="logo"><img src="{{asset('assets/img/logo.png')}}" alt=""></div>
@@ -76,12 +77,15 @@
             <div class="container">
                 {{-- <a class="navbar-brand" href="#">Navbar</a> --}}
                 <div class="logo"><img src="{{ asset('assets/img/logo4.png') }}" alt=""></div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            <div class="d-flex align-items-center">
+                <a href="#" class="btn btn-primary">Sign In</a>
+                <button class="navbar-toggler" onclick="handleMenu()" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                     <span class=""></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                </button>                
+            </div>
+                {{-- <div class="collapse navbar-collapse" id="navbarSupportedContent">
                   <ul class="navbar-nav mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
@@ -98,14 +102,8 @@
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}" href="{{ route('login') }}">Login</a>
                     </li>
-                    {{-- <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('conversation') ? 'active' : '' }}" href="{{ route('conversation') }}">Conversation</a>
-                    </li> --}}
-                </ul>                
-                </div>
+                   </ul>                
+                </div> --}}
             </div>
         </nav>
     </header>
@@ -168,6 +166,23 @@
             </div>
         </div>
     </footer>
+</div>
+<div class="menu">
+    <ul class="navbar-nav mb-2 mb-lg-0">
+        <li class="nav-item">
+            <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}" href="#">About Us</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}" href="#">Contact Us</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request()->routeIs('registration') ? 'active' : '' }}" href="{{ route('registration') }}">Register</a>
+        </li>
+    </ul>    
+</div>       
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
     </script>

@@ -14,6 +14,51 @@ body {
 
 body {
   color: #222;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+body .body {
+  width: 100%;
+  -webkit-transition: all 0.4s;
+  transition: all 0.4s;
+}
+
+body .menu {
+  width: 0;
+  overflow: hidden;
+  -webkit-transition: all 0.4s;
+  transition: all 0.4s;
+}
+
+body .menu ul {
+  padding: 10px 20px;
+}
+
+body .menu ul li a {
+  font-weight: 500;
+  color: var(--primary-color);
+  padding: 10px;
+  text-align: center;
+  font-size: 18px;
+}
+
+body .menu ul li a:hover {
+  color: #091019;
+}
+
+body .menu ul li a.active {
+  text-decoration: none;
+  font-weight: 600;
+}
+
+body.show-menu .body {
+  width: calc(100% - 250px);
+}
+
+body.show-menu .menu {
+  width: 250px;
 }
 
 .btn-primary {
@@ -133,20 +178,25 @@ header nav.navbar .navbar-toggler:focus {
           box-shadow: none;
 }
 
-header nav.navbar .navbar-toggler[aria-expanded="true"] span {
+header nav.navbar .navbar-toggler[aria-expanded="true"], header nav.navbar .navbar-toggler.active span {
   background: transparent;
   border: none;
 }
 
-header nav.navbar .navbar-toggler[aria-expanded="true"] span::before {
+header nav.navbar .navbar-toggler[aria-expanded="true"]::before, header nav.navbar .navbar-toggler.active span::before {
   -webkit-transform: rotate(45deg);
           transform: rotate(45deg);
 }
 
-header nav.navbar .navbar-toggler[aria-expanded="true"] span::after {
+header nav.navbar .navbar-toggler[aria-expanded="true"]::after, header nav.navbar .navbar-toggler.active span::after {
   -webkit-transform: rotate(-45deg);
           transform: rotate(-45deg);
   top: 12px;
+}
+
+header nav.navbar .btn {
+  padding: 8px 20px;
+  margin-right: 20px;
 }
 
 header .logo {
@@ -1111,7 +1161,15 @@ nav ul li a.active {
   margin-bottom: 30px;
 }
 
-.registration-tabs {
+.registration-section #volunteer .fields {
+  display: none;
+}
+
+.registration-section #volunteer .fields.active {
+  display: block;
+}
+
+.registration-section .registration-tabs {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -1172,7 +1230,7 @@ nav ul li a.active {
   color: white;
   border: none;
   padding: 10px;
-  border-radius: 25px;
+  border-radius: 12px;
   cursor: pointer;
   -webkit-transition: 0.3s;
   transition: 0.3s;
@@ -1955,7 +2013,8 @@ body.design2 .carousel .carousel-item img {
   }
 }
 
-.form-floating input:required + label::after, .form-floating select:required + label::after {
+.form-floating input:required + label::after,
+.form-floating select:required + label::after {
   content: " *";
   color: red;
 }

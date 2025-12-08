@@ -51,3 +51,9 @@ document.addEventListener("DOMContentLoaded", function() {
     once: false,
   });
 });
+function handleMenu(){
+  const body = document.querySelector('body');
+  const menuToggle = document.querySelector('.navbar-toggler');
+  body.classList.toggle('show-menu');
+  menuToggle.classList.toggle('active');
+}

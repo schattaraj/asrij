@@ -47,9 +47,7 @@
     <!-- ===== STATS SECTION ===== -->
     <section class="stats">
         <div class="stat-box">
-            <h2 class="count"
-            data-target="2345"
-            >0</h2>
+            <h2 class="count" data-target="2345">0</h2>
             <p>Total Units Donated</p>
         </div>
         <div class="stat-box">
@@ -61,74 +59,91 @@
             <p>Total Receivers</p>
         </div>
         <div class="stat-box">
-          <h2 class="count" data-target="45">0</h2>
+            <h2 class="count" data-target="45">0</h2>
             <p>Total Volunteers</p>
         </div>
     </section>
     <section class="registration-section">
-      <div class="container">
-        <h1 style="font-size: 24px;font-weight:600">Register as a Donor / Receiver</h1>
-    
-        <div class="registration-tabs">
-          <button class="tab-btn" data-tab="donor">Donor</button>
-          <button class="tab-btn" data-tab="receiver">Receiver</button>
-          <button class="tab-btn" data-tab="receiver">Volunteer</button>
-        </div>
-    
-        <!-- Donor Registration -->
-        <div id="donor" class="tab-content">
-          <form class="registration-form">
-            <div class="form-floating">
-            <input type="text" class="form-control" name="name" id="full_name" placeholder="Full Name" required>
-            <label for="full_name">Full Name</label>
-          </div>
-          <div class="form-floating">
-            <select class="form-select" name="blood_group" id="floatingSelect" required>
-              <option value="">Select Option</option>
-              <option>Individual</option>
-              <option>NGO</option>
-              <option>Charity</option>
-            </select>
-            <label for="floatingSelect">Type</label>
-          </div>
-          <div class="form-floating">
-            <select class="form-select" name="blood_group" id="floating_blood_select" required>
-              <option value="">Select Blood Group</option>
-              <option>A+</option><option>A-</option>
-              <option>B+</option><option>B-</option>
-              <option>AB+</option><option>AB-</option>
-              <option>O+</option><option>O-</option>
-            </select>
-            <label for="floating_blood_select">Blood Group</label>
-          </div>
-          <div class="form-floating">
-            <input type="text" class="form-control" placeholder="Year of Birth" id="year_of_birth" name="year_of_birth" required>
-            <label for="year_of_birth">Year of Birth</label>
-          </div>
-          <div class="form-floating">
-            <input type="date" id="date" class="form-control" name="last_donation" placeholder="Last Date of Donation" required>
-            <label for="date">Last date of blood donation</label>
-          </div>
-          <div class="form-floating"> 
-            <input type="text" class="form-control" name="contact" placeholder="Contact Number" required>
-            <label for="">Contact Number</label>
-          </div>
-          <div class="form-floating">   
-            <input type="text" id="pin_code" class="form-control" name="pin_code" placeholder="Pin Code" required>
-            <label for="pin_code">Pin Code</label>
-          </div>
-          <div class="form-floating">   
-            <textarea class="form-control" name="address" placeholder="Address" required style="height: 100px"></textarea>
-            <label for="">Address</label>
-          </div>  
-            <button type="submit" class="btn-primary">Submit Registration</button>
-          </form>
-        </div>
-    
-        <!-- Receiver Registration -->
-        <div id="receiver" class="tab-content">
-          <form class="registration-form">
-            <select name="receiver_type" required>
+        <div class="container">
+            <h1 style="font-size: 24px;font-weight:600">Register as a Donor / Receiver</h1>
+
+            <div class="registration-tabs">
+                <button class="tab-btn" data-tab="donor">Donor</button>
+                <button class="tab-btn" data-tab="receiver">Receiver</button>
+                <button class="tab-btn" data-tab="volunteer">Volunteer</button>
+            </div>
+
+            <!-- Donor Registration -->
+            <div id="donor" class="tab-content">
+                <form class="registration-form">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" name="name" id="full_name" placeholder="Full Name"
+                            required>
+                        <label for="full_name">Full Name</label>
+                    </div>
+                    <div class="form-floating">
+                        <select class="form-select" name="blood_group" id="floatingSelect" required>
+                            <option value="">Select Option</option>
+                            <option>Individual</option>
+                            <option>NGO</option>
+                            <option>Charity</option>
+                        </select>
+                        <label for="floatingSelect">Type</label>
+                    </div>
+                    <div class="form-floating">
+                        <select class="form-select" name="blood_group" id="floating_blood_select" required>
+                            <option value="">Select Blood Group</option>
+                            <option>A+</option>
+                            <option>A-</option>
+                            <option>B+</option>
+                            <option>B-</option>
+                            <option>AB+</option>
+                            <option>AB-</option>
+                            <option>O+</option>
+                            <option>O-</option>
+                        </select>
+                        <label for="floating_blood_select">Blood Group</label>
+                    </div>
+                    <div class="form-floating">
+                        <select class="form-select" name="year_of_birth" id="year_of_birth" required>
+                            <option value="">Select Year</option>
+                            @php
+                                $currentYear = now()->year;
+                                $minYear = $currentYear - 65;
+                                $maxYear = $currentYear - 18;
+                            @endphp
+                            @for ($year = $maxYear; $year >= $minYear; $year--)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endfor
+                        </select>
+                        <label for="year_of_birth">Year of Birth</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="date" id="date" class="form-control" name="last_donation"
+                            placeholder="Last Date of Donation" required>
+                        <label for="date">Last date of blood donation</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="text" class="form-control" name="contact" placeholder="Contact Number" required>
+                        <label for="">Contact Number</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="text" id="pin_code" class="form-control" name="pin_code"
+                            placeholder="Pin Code" required>
+                        <label for="pin_code">Pin Code</label>
+                    </div>
+                    <div class="form-floating">
+                        <textarea class="form-control" name="address" placeholder="Address" required style="height: 100px"></textarea>
+                        <label for="">Address</label>
+                    </div>
+                    <button type="submit" class="btn-primary">Submit Registration</button>
+                </form>
+            </div>
+
+            <!-- Receiver Registration -->
+            <div id="receiver" class="tab-content">
+                <form class="registration-form">
+                    {{-- <select name="receiver_type" required>
               <option value="">Select Receiver Type</option>
               <option>Thalassemia Patient</option>
               <option>Emergency - Accident Case</option>
@@ -138,43 +153,469 @@
             <input type="text" name="name" placeholder="Patient Name" required>
             <input type="text" name="hospital" placeholder="Hospital Name" required>
             <input type="text" name="contact" placeholder="Contact Number" required>
-            <textarea name="address" placeholder="Address with Pin Code" required></textarea>
-            <button type="submit" class="btn-primary">Submit Registration</button>
-          </form>
-        </div>
-    
-        <!-- Volunteer Registration -->
-        <div id="volunteer" class="tab-content">
-          <form class="registration-form">
-            <div class="form-floating">
-              <select class="form-select" name="blood_group" id="floatingSelect" required>
-                <option value="">Select Option</option>
-                <option>Individual</option>
-                <option>NGO</option>
-                <option>Charity</option>
-              </select>
-              <label for="floatingSelect">Type</label>
+            <textarea name="address" placeholder="Address with Pin Code" required></textarea> --}}
+                    <!-- Receiver Type -->
+                    <div class="form-floating mb-3">
+                        <select class="form-select" name="receiver_type" id="receiver_type" required>
+                            <option value="">Select Receiver Type</option>
+                            <option>Thalassemia Patient</option>
+                            <option>Emergency - Accident Case</option>
+                            <option>Admitted Patient</option>
+                            <option>Other</option>
+                        </select>
+                        <label for="receiver_type">Receiver Type</label>
+                    </div>
+
+                    <!-- Patient Name -->
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name="name" id="name"
+                            placeholder="Patient Name" required>
+                        <label for="name">Patient Name</label>
+                    </div>
+                    <div class="form-floating">
+                        <select class="form-select" name="blood_group" id="floating_blood_select" required>
+                            <option value="">Select Blood Group</option>
+                            <option>A+</option>
+                            <option>A-</option>
+                            <option>B+</option>
+                            <option>B-</option>
+                            <option>AB+</option>
+                            <option>AB-</option>
+                            <option>O+</option>
+                            <option>O-</option>
+                        </select>
+                        <label for="floating_blood_select">Blood Group</label>
+                    </div>
+                    <!-- Hospital Name -->
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name="hospital" id="hospital"
+                            placeholder="Hospital Name" required>
+                        <label for="hospital">Hospital Name</label>
+                    </div>
+
+                    <!-- Contact Number -->
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name="contact" id="contact"
+                            placeholder="Contact Number" required>
+                        <label for="contact">Contact Number</label>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" name="address" id="address" placeholder="Address" style="height: 120px;" required></textarea>
+                        <label for="address">Address</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="text" id="pin_code" class="form-control" name="pin_code"
+                            placeholder="Pin Code" required>
+                        <label for="pin_code">Pin Code</label>
+                    </div>
+                    <button type="submit" class="btn-primary">Submit Registration</button>
+                </form>
             </div>
-            <input type="text" name="organization" placeholder="Organization / Trust Name" required>
-            <input type="text" name="contact" placeholder="Contact Number" required>
-            <input type="email" name="email" placeholder="Email ID" required>
-            <textarea name="address" placeholder="Address with Pin Code" required></textarea>
-            <button type="submit" class="btn-primary">Submit Registration</button>
-          </form>
+
+            <!-- Volunteer Registration -->
+            <div id="volunteer" class="tab-content">
+                <form class="registration-form">
+                    <div class="form-floating">
+                        <select class="form-select" onchange="volunteerFields(this)" name="blood_group"
+                            id="floatingSelect" required>
+                            <option value="">Select Option</option>
+                            <option value="individual">Individual</option>
+                            <option value="ngo">NGO</option>
+                            <option value="charity">Charity</option>
+                            <option value="club">Club</option>
+                        </select>
+                        <label for="floatingSelect">Type</label>
+                    </div>
+                    <div class="fields" id="individual">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" name="name" id="full_name"
+                                placeholder="Full Name" required>
+                            <label for="full_name">Full Name</label>
+                        </div>
+                        <div class="form-floating">
+                            <select class="form-select" name="blood_group" id="floating_blood_select" required>
+                                <option value="">Select Blood Group</option>
+                                <option>A+</option>
+                                <option>A-</option>
+                                <option>B+</option>
+                                <option>B-</option>
+                                <option>AB+</option>
+                                <option>AB-</option>
+                                <option>O+</option>
+                                <option>O-</option>
+                            </select>
+                            <label for="floating_blood_select">Blood Group</label>
+                        </div>
+                        <div class="form-floating">
+                            <select class="form-select" name="year_of_birth" id="year_of_birth" required>
+                                <option value="">Select Year</option>
+                                @php
+                                    $currentYear = now()->year;
+                                    $minYear = $currentYear - 65;
+                                    $maxYear = $currentYear - 18;
+                                @endphp
+                                @for ($year = $maxYear; $year >= $minYear; $year--)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endfor
+                            </select>
+                            <label for="year_of_birth">Year of Birth</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="date" id="date" class="form-control" name="last_donation"
+                                placeholder="Last Date of Donation" required>
+                            <label for="date">Last date of blood donation</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="text" class="form-control" name="contact" placeholder="Contact Number"
+                                required>
+                            <label for="">Contact Number</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="text" id="pin_code" class="form-control" name="pin_code"
+                                placeholder="Pin Code" required>
+                            <label for="pin_code">Pin Code</label>
+                        </div>
+                        <div class="form-floating">
+                            <textarea class="form-control" name="address" placeholder="Address" required style="height: 100px"></textarea>
+                            <label for="">Address</label>
+                        </div>
+                    </div>
+                    <div class="fields" id="ngo">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="registration_number"
+                                        placeholder="Registration Number" required>
+                                    <label>Registration Number</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="organization"
+                                        placeholder="Organization / Trust Name" required>
+                                    <label>Organization / Trust Name</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="number" class="form-control" name="group_quantity"
+                                        placeholder="Group Quantity" required>
+                                    <label>Group Quantity</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="contact"
+                                        placeholder="Contact Number" required>
+                                    <label>Contact Number</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="president_name"
+                                        placeholder="President Name">
+                                    <label>President Name</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="president_number"
+                                        placeholder="President Number">
+                                    <label>President Number</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 6 - Secretary -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="secretary_name"
+                                        placeholder="Secretary Name">
+                                    <label>Secretary Name</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="secretary_number"
+                                        placeholder="Secretary Number">
+                                    <label>Secretary Number</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 7 - Account -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="account_name"
+                                        placeholder="Account Name">
+                                    <label>Account Name</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="account_number"
+                                        placeholder="Account Number">
+                                    <label>Account Number</label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Members Section -->
+                        <div class="row">
+                            <div class="col-12">
+                                <h5 class="mt-3">Members</h5>
+                            </div>
+                        </div>
+
+                        <div id="members-area">
+
+                            <!-- Member Row Template -->
+                            <div class="row member-row">
+                                <div class="col-md-5">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="member_name[]"
+                                            placeholder="Member Name">
+                                        <label>Member Name</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="member_contact_number[]"
+                                            placeholder="Contact Number">
+                                        <label>Contact Number</label>
+                                    </div>
+                                </div>
+
+                                <!-- Position dropdown -->
+                                <div class="col-md-3">
+                                    <div class="form-floating mb-3">
+                                        <select class="form-select" name="member_position[]">
+                                            <option value="Member">Member</option>
+                                            <option value="President">President</option>
+                                            <option value="Secretary">Secretary</option>
+                                            <option value="Treasurer">Treasurer</option>
+                                        </select>
+                                        <label>Position</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Add Member Button -->
+                        <div class="row mb-2">
+                            <div class="col-3">
+                                <button type="button" class="btn btn-primary" onclick="addMember()">Add Member</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="email" class="form-control" name="email" placeholder="Email ID"
+                                        required>
+                                    <label>Email</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="pincode" placeholder="Pin Code">
+                                    <label>Pin Code</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-floating mb-3">
+                                    <textarea name="address" class="form-control" placeholder="Address" required></textarea>
+                                    <label>Address</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fields" id="charity">
+                      <div class="row">
+                          <div class="col-md-6">
+                              <div class="form-floating mb-3">
+                                  <input type="text" class="form-control" name="registration_number"
+                                      placeholder="Registration Number" required>
+                                  <label>Registration Number</label>
+                              </div>
+                          </div>
+
+                          <div class="col-md-6">
+                              <div class="form-floating mb-3">
+                                  <input type="text" class="form-control" name="organization"
+                                      placeholder="Organization / Trust Name" required>
+                                  <label>Organization / Trust Name</label>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-md-6">
+                              <div class="form-floating mb-3">
+                                  <input type="number" class="form-control" name="group_quantity"
+                                      placeholder="Group Quantity" required>
+                                  <label>Group Quantity</label>
+                              </div>
+                          </div>
+
+                          <div class="col-md-6">
+                              <div class="form-floating mb-3">
+                                  <input type="text" class="form-control" name="contact"
+                                      placeholder="Contact Number" required>
+                                  <label>Contact Number</label>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-md-6">
+                              <div class="form-floating mb-3">
+                                  <input type="text" class="form-control" name="president_name"
+                                      placeholder="President Name">
+                                  <label>President Name</label>
+                              </div>
+                          </div>
+
+                          <div class="col-md-6">
+                              <div class="form-floating mb-3">
+                                  <input type="text" class="form-control" name="president_number"
+                                      placeholder="President Number">
+                                  <label>President Number</label>
+                              </div>
+                          </div>
+                      </div>
+
+                      <!-- Row 6 - Secretary -->
+                      <div class="row">
+                          <div class="col-md-6">
+                              <div class="form-floating mb-3">
+                                  <input type="text" class="form-control" name="secretary_name"
+                                      placeholder="Secretary Name">
+                                  <label>Secretary Name</label>
+                              </div>
+                          </div>
+
+                          <div class="col-md-6">
+                              <div class="form-floating mb-3">
+                                  <input type="text" class="form-control" name="secretary_number"
+                                      placeholder="Secretary Number">
+                                  <label>Secretary Number</label>
+                              </div>
+                          </div>
+                      </div>
+
+                      <!-- Row 7 - Account -->
+                      <div class="row">
+                          <div class="col-md-6">
+                              <div class="form-floating mb-3">
+                                  <input type="text" class="form-control" name="account_name"
+                                      placeholder="Account Name">
+                                  <label>Account Name</label>
+                              </div>
+                          </div>
+
+                          <div class="col-md-6">
+                              <div class="form-floating mb-3">
+                                  <input type="text" class="form-control" name="account_number"
+                                      placeholder="Account Number">
+                                  <label>Account Number</label>
+                              </div>
+                          </div>
+                      </div>
+                      <!-- Members Section -->
+                      <div class="row">
+                          <div class="col-12">
+                              <h5 class="mt-3">Members</h5>
+                          </div>
+                      </div>
+
+                      <div id="members-area">
+
+                          <!-- Member Row Template -->
+                          <div class="row member-row">
+                              <div class="col-md-5">
+                                  <div class="form-floating mb-3">
+                                      <input type="text" class="form-control" name="member_name[]"
+                                          placeholder="Member Name">
+                                      <label>Member Name</label>
+                                  </div>
+                              </div>
+
+                              <div class="col-md-4">
+                                  <div class="form-floating mb-3">
+                                      <input type="text" class="form-control" name="member_contact_number[]"
+                                          placeholder="Contact Number">
+                                      <label>Contact Number</label>
+                                  </div>
+                              </div>
+
+                              <!-- Position dropdown -->
+                              <div class="col-md-3">
+                                  <div class="form-floating mb-3">
+                                      <select class="form-select" name="member_position[]">
+                                          <option value="Member">Member</option>
+                                          <option value="President">President</option>
+                                          <option value="Secretary">Secretary</option>
+                                          <option value="Treasurer">Treasurer</option>
+                                      </select>
+                                      <label>Position</label>
+                                  </div>
+                              </div>
+                          </div>
+
+                      </div>
+
+                      <!-- Add Member Button -->
+                      <div class="row mb-2">
+                          <div class="col-3">
+                              <button type="button" class="btn btn-primary" onclick="addMember()">Add Member</button>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-md-6">
+                              <div class="form-floating mb-3">
+                                  <input type="email" class="form-control" name="email" placeholder="Email ID"
+                                      required>
+                                  <label>Email</label>
+                              </div>
+                          </div>
+
+                          <div class="col-md-6">
+                              <div class="form-floating mb-3">
+                                  <input type="text" class="form-control" name="pincode" placeholder="Pin Code">
+                                  <label>Pin Code</label>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="row">
+                          <div class="col-12">
+                              <div class="form-floating mb-3">
+                                  <textarea name="address" class="form-control" placeholder="Address" required></textarea>
+                                  <label>Address</label>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                    <button type="submit" class="btn-primary">Submit Registration</button>
+                </form>
+            </div>
         </div>
-    
-        <!-- Blood Bank / Hospital -->
-        <div id="hospital" class="tab-content">
-          <form class="registration-form">
-            <input type="text" name="hospital_name" placeholder="Hospital / Blood Bank Name" required>
-            <input type="text" name="license" placeholder="Registration / License Number" required>
-            <input type="text" name="contact" placeholder="Contact Number" required>
-            <input type="email" name="email" placeholder="Email ID" required>
-            <textarea name="address" placeholder="Address with Pin Code" required></textarea>
-            <button type="submit" class="btn-primary">Submit Registration</button>
-          </form>
-        </div>
-      </div>
     </section>
     <!-- Donation Process Section -->
     <section class="donation-process py-5" data-aos="fade-down">
@@ -329,49 +770,49 @@
     </section> --}}
     <!-- On-Road Accidental Support Section -->
     <section class="accident-support d-flex align-items-center py-5" data-aos="fade-up">
-      <div class="container">
-        <div class="row justify-content-center align-items-center min-vh-100">
-          <div class="col-lg-8">
-            <h2 class="fw-bold text-center mb-5 section-title">
-              <i class="bi bi-truck-front me-2"></i> On-Road Accidental Support
-            </h2>
-    
-            <form class="support-form p-4 p-md-5 rounded-4 shadow-lg bg-white">
-              <div class="text-center mb-4">
-                <div class="support-icon mb-3">
-                  <i class="bi bi-geo-alt"></i>
+        <div class="container">
+            <div class="row justify-content-center align-items-center min-vh-100">
+                <div class="col-lg-8">
+                    <h2 class="fw-bold text-center mb-5 section-title">
+                        <i class="bi bi-truck-front me-2"></i> On-Road Accidental Support
+                    </h2>
+
+                    <form class="support-form p-4 p-md-5 rounded-4 shadow-lg bg-white">
+                        <div class="text-center mb-4">
+                            <div class="support-icon mb-3">
+                                <i class="bi bi-geo-alt"></i>
+                            </div>
+                            <p class="text-muted mb-0">
+                                Report an on-road emergency and get immediate support.
+                            </p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Your Location</label>
+                            <input type="text" class="form-control" placeholder="Enter your location">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Upload Image (optional)</label>
+                            <input type="file" class="form-control">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Describe the Situation</label>
+                            <textarea class="form-control" rows="4" placeholder="Provide details about the accident..."></textarea>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-danger fw-semibold py-2 btn-glow">
+                                <i class="bi bi-send-fill me-1"></i> Submit Request
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <p class="text-muted mb-0">
-                  Report an on-road emergency and get immediate support.
-                </p>
-              </div>
-    
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Your Location</label>
-                <input type="text" class="form-control" placeholder="Enter your location">
-              </div>
-    
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Upload Image (optional)</label>
-                <input type="file" class="form-control">
-              </div>
-    
-              <div class="mb-4">
-                <label class="form-label fw-semibold">Describe the Situation</label>
-                <textarea class="form-control" rows="4" placeholder="Provide details about the accident..."></textarea>
-              </div>
-    
-              <div class="d-grid">
-                <button type="submit" class="btn btn-danger fw-semibold py-2 btn-glow">
-                  <i class="bi bi-send-fill me-1"></i> Submit Request
-                </button>
-              </div>
-            </form>
-          </div>
+            </div>
         </div>
-      </div>
     </section>
-    
+
     <!-- ===== OUR VISION / ABOUT ===== -->
     {{-- <section class="vision">
         <div class="vision-text">
@@ -574,7 +1015,7 @@
 </section> --}}
     <section class="testimonial-section">
         <div class="container">
-            <h2 class="testimonial-title heading"  data-aos="fade-down">Testimonial</h2>
+            <h2 class="testimonial-title heading" data-aos="fade-down">Testimonial</h2>
 
             <!-- Swiper -->
             <div class="swiper mySwiper" data-aos="fade-down">
@@ -685,61 +1126,96 @@
     </div>
     {{-- @include('partials.home-content') --}}
 @section('scripts')
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const counters = document.querySelectorAll(".count");
-    const speed = 200; // lower = faster
-  
-    const animateCounter = (counter) => {
-      const updateCount = () => {
-        const target = +counter.getAttribute("data-target");
-        const count = +counter.innerText;
-        const increment = target / speed;
-  
-        if (count < target) {
-          counter.innerText = Math.ceil(count + increment);
-          requestAnimationFrame(updateCount);
-        } else {
-          counter.innerText = target.toLocaleString(); // formatted with commas
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const counters = document.querySelectorAll(".count");
+            const speed = 200; // lower = faster
+
+            const animateCounter = (counter) => {
+                const updateCount = () => {
+                    const target = +counter.getAttribute("data-target");
+                    const count = +counter.innerText;
+                    const increment = target / speed;
+
+                    if (count < target) {
+                        counter.innerText = Math.ceil(count + increment);
+                        requestAnimationFrame(updateCount);
+                    } else {
+                        counter.innerText = target.toLocaleString(); // formatted with commas
+                    }
+                };
+                updateCount();
+            };
+
+            // Use IntersectionObserver to trigger only when visible
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateCounter(entry.target);
+                        obs.unobserve(entry.target); // stop observing once animated
+                    }
+                });
+            }, {
+                threshold: 0.5
+            });
+
+            counters.forEach(counter => observer.observe(counter));
+        });
+    </script>
+    <script>
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                tabContents.forEach(content => content.classList.remove('active'));
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Optional mock submission
+        document.querySelectorAll('.registration-form').forEach(form => {
+            form.addEventListener('submit', e => {
+                e.preventDefault();
+                alert('Registration submitted successfully!');
+                form.reset();
+            });
+        });
+
+        function volunteerFields(elm) {
+            let volunteer = document.getElementById('volunteer');
+            volunteer.removeAttribute("style");
+            document.querySelectorAll('.fields').forEach(field => {
+                field.style.display = 'none';
+            });
+            switch (elm.value) {
+                case "individual":
+                    document.getElementById('individual').style.display = 'block';
+                    break;
+                case "ngo":
+                    document.getElementById('ngo').style.display = 'block';
+                    volunteer.style.maxWidth = '800px';
+                    break;
+                case "charity":
+                    document.getElementById('charity').style.display = 'block';
+                    volunteer.style.maxWidth = '800px';
+                    break;
+                case "club":
+                    document.getElementById('charity').style.display = 'block';
+                    volunteer.style.maxWidth = '800px';
+                    break;    
+                default:
+                    break;
+            }
         }
-      };
-      updateCount();
-    };
-  
-    // Use IntersectionObserver to trigger only when visible
-    const observer = new IntersectionObserver((entries, obs) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          animateCounter(entry.target);
-          obs.unobserve(entry.target); // stop observing once animated
+
+        function addMember() {
+            let memberRow = document.querySelector('.member-row').cloneNode(true);
+            memberRow.querySelectorAll('input').forEach(input => input.value = "");
+            document.getElementById('members-area').appendChild(memberRow);
         }
-      });
-    }, { threshold: 0.5 });
-  
-    counters.forEach(counter => observer.observe(counter));
-  });
-  </script>
-  <script>
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
-  
-    tabBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        tabBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        tabContents.forEach(content => content.classList.remove('active'));
-        document.getElementById(btn.dataset.tab).classList.add('active');
-      });
-    });
-  
-    // Optional mock submission
-    document.querySelectorAll('.registration-form').forEach(form => {
-      form.addEventListener('submit', e => {
-        e.preventDefault();
-        alert('Registration submitted successfully!');
-        form.reset();
-      });
-    });
-  </script>  
-@endsection    
+    </script>
+@endsection
 @endsection
