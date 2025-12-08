@@ -1,4 +1,5 @@
 $primary: #c70039;
+$text:#040414;
 
 @mixin overlay($t: 0, $l: 0, $w: 100%, $h: auto, $bg: rgba($color: #000000, $alpha: 1.0), $b: auto, $r: auto, $op: 1) {
   content: "";
@@ -1119,19 +1120,37 @@ nav ul li a.active {
 }
 
 .tab-content {
-  display: none;
+  // display: none;
   background: white;
   padding: 30px;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
+  // box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  // max-width: 600px;
   margin: 0 auto;
 }
 
 .tab-content.active {
   display: block;
 }
-
+.tab-interface{
+  background-color: #fff;
+  padding: 16px;
+  border-radius: 10px;
+  .nav-tabs{
+    border-color: $primary;
+    .nav-link{
+      color: $text;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 12px 40px;
+      &.active{
+        background-color: $primary;
+        color: #fff;
+        border-color: $primary;
+      }
+    }
+  }
+}
 .registration-form input,
 .registration-form select,
 .registration-form textarea {
