@@ -23,6 +23,7 @@
 </head>
 
 <body class="">
+<div class="body">
     <header>
         
         
@@ -67,31 +68,15 @@
             <div class="container">
                 
                 <div class="logo"><img src="https://schattaraj.github.io/asrij/public/assets/img/logo4.png" alt=""></div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            <div class="d-flex align-items-center">
+                <a href="#" class="btn btn-primary">Sign In</a>
+                <button class="navbar-toggler" onclick="handleMenu()" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                     <span class=""></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                  <ul class="navbar-nav mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link " href="http://127.0.0.1:8000">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">About Us</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Contact Us</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="https://schattaraj.github.io/asrij/public/registration">Register</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="https://schattaraj.github.io/asrij/public/login">Login</a>
-                    </li>
-                    
-                </ul>                
-                </div>
+                </button>                
+            </div>
+                
             </div>
         </nav>
     </header>
@@ -102,7 +87,7 @@
     <h1>Log In to BloodConnect</h1>
 
     <form class="login-form" method="POST" action="#">
-      <input type="hidden" name="_token" value="QbHxSde2iARICFLV0nQhk39psesLyK51l9Ujqvpe" autocomplete="off">      <label for="loginInput">Login with Mobile Number or Email ID</label>
+      <input type="hidden" name="_token" value="SdKAdcKxsUMrqlV7TgccNkCjdAOkCSuKaYEuaEc3" autocomplete="off">      <label for="loginInput">Login with Mobile Number or Email ID</label>
       <input
         type="text"
         id="loginInput"
@@ -170,6 +155,23 @@
             </div>
         </div>
     </footer>
+</div>
+<div class="menu">
+    <ul class="navbar-nav mb-2 mb-lg-0">
+        <li class="nav-item">
+            <a class="nav-link " href="http://127.0.0.1:8000">Home</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="#">About Us</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="#">Contact Us</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link " href="https://schattaraj.github.io/asrij/public/registration">Register</a>
+        </li>
+    </ul>    
+</div>       
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
     </script>
