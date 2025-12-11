@@ -24,6 +24,7 @@ body {
   --primary-color: #c70039;
   --secondary-color: #091019;
   overflow-x: hidden;
+  padding-right: 0 !important;
 }
 
 body {
@@ -57,12 +58,35 @@ body {
       }
     }
   }
+  .cross{
+    padding: 0;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
+    display: none;
+  }
   &.show-menu{
     .body{
       width: calc(100% - 250px);
+      @media (max-width:575px) {
+        width: 100%;        
+      }
     }
     .menu{
     width: 250px;
+    @media (max-width:575px) {
+      position: absolute;
+      right: 0;
+      top: 0;
+      background-color: #fff;
+      height: 100vh;
+      .cross{
+        display: block;
+      }
+    }
   }
   }
 }
@@ -70,6 +94,11 @@ body {
 .btn-primary {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
+  &:focus{
+    box-shadow: 0 0 0 .25rem rgba($primary, 0.4);
+    border-color: rgba($primary, 0.6);
+    background-color: rgba($primary, 0.8);
+  }
 }
 
 .btn-primary:hover {
@@ -209,6 +238,9 @@ header .logo img {
 
   @media (max-width:575px) {
     width: 200px;
+  }
+  @media (max-width:425px) {
+    width: 158px;
   }
 }
 
@@ -1839,4 +1871,80 @@ body.design2 {
 .form-floating select:required+label::after {
   content: " *";
   color: red;
+}
+.modal{
+  .modal-dialog{
+    max-width: 450px;
+  }
+  .modal-header{
+    justify-content: center;
+    border:none;
+    padding: 22px 0px;
+    position: relative;
+    padding-bottom: 16px;
+    .modal-title{
+      font-weight: 600;
+      font-size: 24px;
+      color: $primary;
+    }
+    .btn-close{
+      position: absolute;
+      right: 30px;
+    top: 26px;
+      span{
+        font-size:50px;
+        font-weight: 300;
+      }
+    }
+  }
+  a{
+    color: #000;
+    text-decoration: none;
+  }
+  .or{
+    text-align: center;
+    color: #888;
+    margin-bottom: 10px;
+    &::before{
+      content: "";
+      width: 40%;
+      height: 1px;
+      background: #ccc;
+      display: inline-block;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    &::after{
+      content: "";
+      width: 40%;
+      height: 1px;
+      background: #ccc;
+      display: inline-block;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+  }
+  .modal-content{
+    padding-bottom: 20px;
+    .modal-body{
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
+  a.color-primary{
+    color: $primary;
+    font-weight: 500;
+    text-decoration: none;
+    &:hover{
+      text-decoration: underline;
+    }
+  }
+  .modal-footer{
+    border:none;
+    justify-content: center;
+    padding-top: 0;
+    .btn{
+      padding: 10px 32px;
+    }
+  }
 }

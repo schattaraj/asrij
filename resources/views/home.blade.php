@@ -17,7 +17,7 @@
                 <div class="carousel-caption">
                     <h3>Donate Blood, Save Lives</h3>
                     <p>Your one drop of blood can give someone a new life.</p>
-                    <a href="#" class="btn btn-primary">Register Now</a>
+                    <a href="#registration-section" class="btn btn-primary">Register Now</a>
                 </div>
             </div>
             <div class="carousel-item">
@@ -63,9 +63,9 @@
             <p>Total Volunteers</p>
         </div>
     </section>
-    <section class="registration-section">
+    <section class="registration-section" id="registration-section">
         <div class="container">
-            <h1 style="font-size: 24px;font-weight:600">Register as a Donor / Receiver</h1>
+            <h1 style="font-size: 24px;font-weight:600">Register as a Donor / Receiver / Volunteer</h1>
 
             <div class="registration-tabs">
                 <button class="tab-btn" data-tab="donor">Donor</button>
@@ -80,6 +80,11 @@
                         <input type="text" class="form-control" name="name" id="full_name" placeholder="Full Name"
                             required>
                         <label for="full_name">Full Name</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="email" class="form-control" name="email" id="full_name" placeholder="Email"
+                            required>
+                        <label for="full_name">Email</label>
                     </div>
                     <div class="form-floating">
                         <select class="form-select" name="blood_group" id="floatingSelect" required>
@@ -173,6 +178,11 @@
                         <label for="name">Patient Name</label>
                     </div>
                     <div class="form-floating">
+                        <input type="email" class="form-control" name="email" id="full_name" placeholder="Email"
+                            required>
+                        <label for="full_name">Email</label>
+                    </div>
+                    <div class="form-floating">
                         <select class="form-select" name="blood_group" id="floating_blood_select" required>
                             <option value="">Select Blood Group</option>
                             <option>A+</option>
@@ -233,6 +243,11 @@
                             <input type="text" class="form-control" name="name" id="full_name"
                                 placeholder="Full Name" required>
                             <label for="full_name">Full Name</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="email" class="form-control" name="email" id="email" placeholder="Email"
+                                required>
+                            <label for="email">Email</label>
                         </div>
                         <div class="form-floating">
                             <select class="form-select" name="blood_group" id="floating_blood_select" required>
