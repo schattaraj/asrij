@@ -168,15 +168,33 @@
                         <label for="date">Last date of blood donation</label>
                     </div>
 
-                    <div class="form-floating">
-                        <input type="text" class="form-control @error('contact') is-invalid @enderror" name="contact"
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control @error('contact') is-invalid @enderror"
+                            id="contact" name="contact"
                             placeholder="Contact Number" value="{{ old('contact') }}" required>
                         @error('contact')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                         <label>Contact Number</label>
                     </div>
-
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" style="width: 16px" type="checkbox" id="sameAsContact">
+                        <label class="form-check-label" for="sameAsContact">
+                            WhatsApp number same as contact number
+                        </label>
+                    </div>
+                    
+                    <div class="form-floating mb-2">
+                        <input type="text" class="form-control @error('whatsapp') is-invalid @enderror"
+                            id="whatsapp" name="whatsapp"
+                            placeholder="WhatsApp Number" value="{{ old('whatsapp') }}" required>
+                        @error('whatsapp')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <label>WhatsApp Number</label>
+                    </div>
+                    
                     <div class="form-floating">
                         <input type="text" id="pin_code" class="form-control @error('pin_code') is-invalid @enderror"
                             name="pin_code" placeholder="Pin Code" value="{{ old('pin_code') }}" required>
@@ -261,11 +279,27 @@
 
                     <!-- Contact Number -->
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" name="contact" id="contact"
+                        <input type="text" class="form-control" name="contact"
                             placeholder="Contact Number" required>
                         <label for="contact">Contact Number</label>
                     </div>
-
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" style="width: 16px" type="checkbox" id="recieverWhatsapp">
+                        <label class="form-check-label" for="recieverWhatsapp">
+                            WhatsApp number same as contact number
+                        </label>
+                    </div>
+                    
+                    <div class="form-floating mb-2">
+                        <input type="text" class="form-control @error('whatsapp') is-invalid @enderror"
+                            name="whatsapp"
+                            placeholder="WhatsApp Number" value="{{ old('whatsapp') }}" required>
+                        @error('whatsapp')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <label>WhatsApp Number</label>
+                    </div>
+                    
                     <!-- Address -->
                     <div class="form-floating mb-3">
                         <textarea class="form-control" name="address" id="address" placeholder="Address" style="height: 120px;" required></textarea>
@@ -345,6 +379,22 @@
                             <input type="text" class="form-control" name="contact" placeholder="Contact Number"
                                 required>
                             <label for="">Contact Number</label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" style="width: 16px" type="checkbox" id="volunteerWhatsapp">
+                            <label class="form-check-label" for="volunteerWhatsapp">
+                                WhatsApp number same as contact number
+                            </label>
+                        </div>
+                        
+                        <div class="form-floating mb-2">
+                            <input type="text" class="form-control @error('whatsapp') is-invalid @enderror"
+                                name="whatsapp"
+                                placeholder="WhatsApp Number" value="{{ old('whatsapp') }}" required>
+                            @error('whatsapp')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <label>WhatsApp Number</label>
                         </div>
                         <div class="form-floating">
                             <input type="text" id="pin_code" class="form-control" name="pin_code"
@@ -1533,6 +1583,26 @@
             selectedLocation = {};
             clearBtn.style.display = "none";
         });
+//
+document.querySelectorAll(".registration-section .form-check-input").forEach(function(item){
+item.addEventListener("change",function(elm){
+    const checkbox = elm.target;
+     // closest parent container
+    const parent = checkbox.closest("form");
+      // find input inside that parent
+    const input = parent.querySelector("input[type='checkbox']");
+    const contact = parent.querySelector("input[name='contact']");
+    const whatsapp = parent.querySelector("input[name='whatsapp']");
+    if(input.checked){
+        whatsapp.value=contact.value;
+        whatsapp.setAttribute('readonly',true);
+    }
+    else{
+        whatsapp.value='';
+        whatsapp.removeAttribute('readonly');
+    }
+});
+});       
     </script>
 
     @if (session('success'))
