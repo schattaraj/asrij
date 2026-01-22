@@ -13,12 +13,9 @@ return new class extends Migration
     {
         Schema::create('volunteers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('organization_name');
-            $table->string('contact_number');
-            $table->string('address');
-            $table->string('pin_code');
-            $table->string('registration_number')->nullable();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('volunteer_type'); // individual / ngo / charity / club
+            $table->json('extra_data')->nullable(); // NGO, charity, members etc
             $table->timestamps();
         });
     }

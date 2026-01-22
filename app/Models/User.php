@@ -1,18 +1,22 @@
 <?php
 
-// namespace App\Models;
+namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Contracts\Auth\CanResetPassword;
+use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
     use HasApiTokens;
+    use CanResetPasswordTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -52,14 +56,14 @@ class User extends Authenticatable
     
     // 🔗 Relationships
 
-    public function donorProfile(): HasOne
+    public function donor(): HasOne
     {
-        return $this->hasOne(DonorProfile::class);
+        return $this->hasOne(Donor::class);
     }
 
-    public function receiverProfile(): HasOne
+    public function receiver(): HasOne
     {
-        return $this->hasOne(ReceiverProfile::class);
+        return $this->hasOne(Receiver::class);
     }
 
     public function volunteer(): HasOne
