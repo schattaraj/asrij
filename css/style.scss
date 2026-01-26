@@ -1966,3 +1966,11 @@ body.design2 {
 .clear-location:hover {
   color: #dc3545;
 }
+//css for profile page
+.list-group-item.active{
+  background-color: $primary;
+  border-color: $primary;
+}
+.bg-primary{
+  background-color: $primary !important;
+}

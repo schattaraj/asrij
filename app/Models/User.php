@@ -27,6 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'mobile',
+        'whatsapp_number',
         'password',
         'role',
     ];

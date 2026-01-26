@@ -42,7 +42,7 @@ class NewPasswordController extends Controller
         );
 
         if ($status === Password::PASSWORD_RESET) {
-            return redirect()->route('/')
+            return redirect()->route('home')
                 ->with('status', __($status));
         }
 

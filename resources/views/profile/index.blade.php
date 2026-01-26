@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.profile')
 @section('content')
     <style>
         .card p {
@@ -7,30 +7,9 @@
     </style>
     <div class="container mb-5">
         <div class="row">
-            <!-- LEFT MENU -->
-            <div class="col-md-3">
-                <div class="card shadow-sm">
-                    <div class="card-body p-0">
-                        <div class="list-group list-group-flush">
-                            <a class="list-group-item list-group-item-action active" id="tab-profile" data-bs-toggle="list" href="#profile">
-                                <i class="bi bi-person me-2"></i> Profile
-                            </a>
-                            <a class="list-group-item list-group-item-action" id="tab-notifications" data-bs-toggle="list" href="#notifications">
-                                <i class="bi bi-bell me-2"></i> Notifications
-                            </a>
-                            <a class="list-group-item list-group-item-action" id="tab-password" data-bs-toggle="list" href="#password">
-                                <i class="bi bi-lock me-2"></i> Password
-                            </a>
-                            <a class="list-group-item list-group-item-action" id="tab-chat" data-bs-toggle="list" href="#chat">
-                                <i class="bi bi-chat me-2"></i> Chat
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- RIGHT CONTENT -->
-            <div class="col-md-9">
+            <div class="col-md-12">
                 <div class="card shadow-sm">
                     <div class="card-header bg-primary text-white">
                         <h4 class="mb-0">{{ ucfirst($user->role) }} Settings</h4>

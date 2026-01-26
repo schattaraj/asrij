@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\DB;
 
 class RegistrationController extends Controller
 {
@@ -25,6 +26,7 @@ class RegistrationController extends Controller
         'role'   => 'required|in:donor,receiver,volunteer,admin',
         'email'  => 'email|unique:users,email',
         'contact'=> 'required|unique:users,mobile|digits_between:10,15',
+        'whatsapp'=>'required|unique:users,whatsapp_number',
         'address'=> 'required|string',
     ];
 
@@ -37,7 +39,7 @@ class RegistrationController extends Controller
             // 'type'            => 'required|in:Individual,NGO,Charity',
             'blood_group'     => 'required|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
             'year_of_birth'   => 'required|integer|min:1900|max:' . now()->year,
-            'last_donation'   => 'required|date',
+            'last_donation'   => 'nullable|date',
             'pin_code'        => 'required|digits:6',
         ]);
     }
@@ -94,13 +96,14 @@ class RegistrationController extends Controller
             ->withErrors($validator)
             ->withInput();
     }
-
+    DB::transaction(function () use ($request, $role) {
         $user = User::create([
             'name'     => $request->name ?? $request->organization ?? null,
             'email'    => $request->email,
             'password' => bcrypt(str()->random(12)), // Temporary password
             'role'     => $role,
             'mobile'  => $request->contact,
+            'whatsapp_number'=>$request->whatsapp
         ]);
         // 🔹 Trigger email verification
         event(new Registered($user));
@@ -155,7 +158,7 @@ class RegistrationController extends Controller
                 ]);
                 break;
         }
-
+    });
         return redirect()
         ->back()
         ->with('success', ucfirst($role) . ' registered successfully');

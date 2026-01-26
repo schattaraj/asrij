@@ -22,11 +22,27 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email'    => 'required|email|exists:users,email',
+            // 'email'    => 'required|email|exists:users,email',
+            'login' => ['required'],
             'password' => 'required|min:6'
         ];
     }
-    
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $login = request('login');
+
+            if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
+                if (!\App\Models\User::where('email', $login)->exists()) {
+                    $validator->errors()->add('login', 'Email not registered');
+                }
+            } else {
+                if (!\App\Models\User::where('mobile', $login)->exists()) {
+                    $validator->errors()->add('login', 'Mobile number not registered');
+                }
+            }
+        });
+    }
     public function messages(): array
     {
         return [

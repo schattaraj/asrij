@@ -28,7 +28,6 @@ class PageController extends Controller
     public function profile()
     {
         $user = auth()->user();
-
         $data = ['user' => $user];
         if ($user->role === 'donor') {
             $data['donor'] = $user->donor;

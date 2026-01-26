@@ -161,7 +161,7 @@
                     <div class="form-floating">
                         <input type="date" id="date"
                             class="form-control @error('last_donation') is-invalid @enderror" name="last_donation"
-                            value="{{ old('last_donation') }}" required>
+                            value="{{ old('last_donation') }}">
                         @error('last_donation')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -372,7 +372,7 @@
                         </div>
                         <div class="form-floating">
                             <input type="date" id="date" class="form-control" name="last_donation"
-                                placeholder="Last Date of Donation" required>
+                                placeholder="Last Date of Donation">
                             <label for="date">Last date of blood donation</label>
                         </div>
                         <div class="form-floating">

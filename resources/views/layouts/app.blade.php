@@ -233,7 +233,7 @@
                         @csrf
                         <div class="mb-3">
                             <div class="form-floating">
-                                <input type="email" class="form-control" name="email" autocomplete="off"
+                                <input type="email" class="form-control" name="login" autocomplete="off"
                                     id="email" placeholder="name@example.com" required>
                                 <label for="email">Email address or Mobile Number</label>
                             </div>

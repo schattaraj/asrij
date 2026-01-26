@@ -10,13 +10,26 @@ class AuthController extends Controller
 {
     public function login(LoginRequest $request)
     {
-        $credentials = $request->only('email', 'password');
+        $login = $request->input('login'); // email or mobile
+        $password = $request->input('password');
 
-        if (!Auth::attempt($credentials)) {
+        $field = filter_var($login, FILTER_VALIDATE_EMAIL)
+        ? 'email'
+        : 'mobile';
+
+        if (!Auth::attempt([$field => $login, 'password' => $password])) {
             return back()->withErrors([
-                'email' => 'Invalid email or password'
-            ]);
+                'login' => 'Invalid email/mobile or password',
+            ], 'login');
         }
+
+        // $credentials = $request->only('email', 'password');
+
+        // if (!Auth::attempt($credentials)) {
+        //     return back()->withErrors([
+        //         'email' => 'Invalid email or password'
+        //     ],'login');
+        // }
 
         $request->session()->regenerate();
         $user = Auth::user();
