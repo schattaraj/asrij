@@ -1136,19 +1136,50 @@ nav ul li a.active {
 }
 
 .tab-btn {
-  background: #ffeaea;
+  // background: #ffeaea;
+  background-color: #fff;
   border: none;
   padding: 24px 92px;
   border-radius: 25px;
   font-weight: 600;
   cursor: pointer;
   transition: 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 80px;
+  // background: #fff3f3;
+  border: 1px solid #ffd6d6;
+  i {
+    font-size: 24px;
+    color: #e63946;
+    margin-right: 8px;
+}
+span {
+  color: #333;
+}
+&.active{
+  background: #e63946;
+  border-color: #e63946;
+  i,span{
+    color: #fff;
+  }
+  &:hover{
+    background: #e63946;
+    border-color: #e63946;
+    i,span{
+      color: #fff;
+    }
+  }
+}
 }
 
-.tab-btn.active,
+// .tab-btn.active,
 .tab-btn:hover {
-  background: #c70039;
+  // background: #c70039;
   color: white;
+  background: #ffe1e1;
+  transform: translateY(-6px);
 }
 
 .tab-content {
@@ -1873,7 +1904,14 @@ body.design2 {
   content: " *";
   color: red;
 }
-.modal{
+.form-floating button{
+  border:none;
+  background-color: transparent;
+  position: absolute;
+  top: 17px;
+  right: 14px;
+}
+.modal.login{
   .modal-dialog{
     max-width: 450px;
   }
@@ -1973,4 +2011,36 @@ body.design2 {
 }
 .bg-primary{
   background-color: $primary !important;
+}
+#donateModal{
+  .modal-header{
+    background: linear-gradient(135deg, $primary, rgba($primary, 0.9));
+  }
+.modal-content {
+  background: #ffffff;
+  .modal-body{
+    .input-group{
+      .form-control{
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+    }
+  }
+}
+
+.form-control,
+.form-select {
+  border-radius: 0.75rem;
+}
+
+// .form-control:focus,
+// .form-select:focus {
+//   box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
+//   border-color: #4f46e5;
+// }
+
+.amount-btn {
+  border-radius: 999px;
+  padding: 0.6rem 1.5rem;
+}
 }

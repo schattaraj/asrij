@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DonationController;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
 // Route::get('/registration', [PageController::class, 'registration'])->name('registration');
@@ -45,7 +46,7 @@ Route::middleware(['auth','role:admin'])->group(function () {
   
 });
 
-Route::middleware(['auth','role:donor,receiver,volunteer'])->group(function () {
+Route::middleware(['auth','role:donor|receiver|volunteer'])->group(function () {
   Route::get('/profile', [PageController::class, 'profile'])->name('profile');
   Route::post('/change-password', [ProfileController::class, 'updatePassword'])
         ->name('profile.password.update');
@@ -88,3 +89,6 @@ Route::get('/test-whatsapp', function (App\Services\WhatsAppService $whatsapp) {
     );
     return $response;
 });
+
+
+Route::post('/donate', [DonationController::class, 'store'])->name('donate.store');

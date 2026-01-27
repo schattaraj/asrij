@@ -191,7 +191,8 @@
                                         class="fab fa-instagram"></i></a>
                             </li>
                             <li>
-                                <a href="#" class="btn btn-primary">Donate Now</a>
+                                <a href="#" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#donateModal">Donate Now</a>
                             </li>
                         </ul>
                     </div>
@@ -219,7 +220,7 @@
         </ul>
     </div>
     <!-- Bootstrap 5 Modal with Floating Labels -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+    <div class="modal fade login" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -243,6 +244,8 @@
                                 <input type="password" name="password" class="form-control" autocomplete="off"
                                     id="password" placeholder="Password" required>
                                 <label for="password">Password</label>
+                                <button onclick="togglePassword()" type="button"><i
+                                        class="fa-solid fa-eye-slash"></i></button>
                             </div>
                         </div>
                         <div class="form-check mb-3">
@@ -250,7 +253,7 @@
                             <label class="form-check-label" for="rememberMe">Remember me</label>
                         </div>
                         <div class="text-end">
-                            <a href="#" class="color-primary">Forgot password?</a>
+                            <a href="#" class="color-primary" id="forgotPasswordLink">Forgot password?</a>
                         </div>
 
                     </form>
@@ -263,6 +266,113 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="forgotPasswordLabel">Forgot Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="forgotPasswordForm" action="" method="post">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="forgotEmail" class="form-label">Enter your email address</label>
+                            <input type="email" class="form-control" id="forgotEmail" name="email"
+                                placeholder="name@example.com" required>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Send Reset Link</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="donateModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+
+                <!-- Header with Gradient -->
+                <div class="modal-header text-white border-0 py-4" style="">
+                    <div>
+                        <h3 class="mb-1 fw-bold">Make a Difference</h3>
+                        <p class="mb-0 opacity-75">
+                            Your generosity helps us change lives
+                        </p>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body py-2 px-4">
+                    <form action="{{ route('donate.store') }}" method="POST">
+                        @csrf
+
+                        <div class="row g-4">
+
+                            <!-- Donation Amount (Highlighted) -->
+                            <div class="col-12">
+                                <label class="form-label fw-semibold fs-5">
+                                    Donation Amount
+                                </label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" name="amount" class="form-control" min="1"
+                                        required>
+                                </div>
+                            </div>
+
+                            <!-- Name -->
+                            <div class="col-md-6">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" name="name" class="form-control form-control-lg" required>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" name="email" class="form-control form-control-lg" required>
+                            </div>
+
+                            <!-- Donation Type -->
+                            <div class="col-md-12">
+                                <label class="form-label">Donation Type</label>
+                                <select name="donation_type" class="form-select form-select-lg" required>
+                                    <option value="">Select donation type</option>
+                                    <option value="one-time">One-time</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+
+                            <!-- Message -->
+                            <div class="col-md-12">
+                                <label class="form-label">Message (Optional)</label>
+                                <textarea name="message" rows="3" class="form-control form-control-lg"></textarea>
+                            </div>
+
+                        </div>
+
+                        <!-- Footer CTA -->
+                        <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
+                            <span class="text-muted fs-6">
+                                🔒 100% Secure Donation
+                            </span>
+
+                            <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill text-white">
+                                Donate Now
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
 
     <script>
         function login() {
@@ -289,6 +399,33 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('js/custom.js') }}"></script>
     @yield('scripts')
+    <script>
+        function togglePassword() {
+            let input = document.getElementById('password');
+            let eye = document.querySelector('#password ~ button i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                eye.classList.remove('fa-eye-slash');
+                eye.classList.add('fa-eye');
+            } else {
+                input.type = 'password';
+                eye.classList.add('fa-eye-slash');
+                eye.classList.remove('fa-eye');
+            }
+        }
+        document.getElementById('forgotPasswordLink').addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent default link behavior
+
+            // Hide login modal
+            const loginModal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
+            if (loginModal) loginModal.hide();
+
+            // Show forgot password modal
+            const forgotModalEl = document.getElementById('forgotPasswordModal');
+            const forgotModal = new bootstrap.Modal(forgotModalEl);
+            forgotModal.show();
+        });
+    </script>
 </body>
 
 </html>
