@@ -217,6 +217,10 @@
                 <a class="nav-link {{ request()->routeIs('registration') ? 'active' : '' }}"
                     href="{{ route('registration') }}">Register</a>
             </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-bs-toggle="modal"
+                data-bs-target="#donateModal">Donate Now</a>
+            </li>
         </ul>
     </div>
     <!-- Bootstrap 5 Modal with Floating Labels -->
@@ -261,8 +265,8 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" onclick="login()">Login</button>
                 </div>
-                <div class="or">Or</div>
-                <a href="#" class="text-center">Do you have an account?</a>
+                {{-- <div class="or">Or</div>
+                <a href="#" class="text-center">Do you have an account?</a> --}}
             </div>
         </div>
     </div>

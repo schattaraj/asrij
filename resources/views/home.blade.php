@@ -68,11 +68,11 @@
             <h1 style="font-size: 24px;font-weight:600">Register as a Donor / Receiver / Volunteer</h1>
 
             <div class="registration-tabs">
-                <button class="tab-btn" data-tab="donor"> <i class="fa-solid fa-droplet"></i>
+                <button class="tab-btn" data-tab="donor" data-bs-target="#donor"> <i class="fa-solid fa-droplet"></i>
                     <span>Donor</span></button>
-                <button class="tab-btn" data-tab="receiver"> <i class="fa-solid fa-hand-holding-heart"></i>
+                <button class="tab-btn" data-tab="receiver" data-bs-target="#receiver"> <i class="fa-solid fa-hand-holding-heart"></i>
                     <span>Receiver</span></button>
-                <button class="tab-btn" data-tab="volunteer"> <i class="fa-solid fa-hands-helping"></i>
+                <button class="tab-btn" data-tab="volunteer" data-bs-target="#volunteer"> <i class="fa-solid fa-hands-helping"></i>
                     <span>Volunteer</span></button>
             </div>
             @if ($errors->any())
@@ -553,7 +553,7 @@
 
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="pincode" placeholder="Pin Code">
+                                    <input type="text" class="form-control" name="pincode" placeholder="Pin Code" required>
                                     <label>Pin Code</label>
                                 </div>
                             </div>
@@ -718,7 +718,7 @@
 
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="pincode" placeholder="Pin Code">
+                                    <input type="text" class="form-control" name="pincode" placeholder="Pin Code" required>
                                     <label>Pin Code</label>
                                 </div>
                             </div>
@@ -1358,10 +1358,16 @@
 
         tabBtns.forEach(btn => {
             btn.addEventListener('click', () => {
+                let checkClass = document.getElementById(btn.dataset.tab).classList;
+                if(checkClass.contains("active")){
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    return;
+                }
                 tabBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 tabContents.forEach(content => content.classList.remove('active'));
-                document.getElementById(btn.dataset.tab).classList.add('active');
+                checkClass.add('active');
             });
         });
 
