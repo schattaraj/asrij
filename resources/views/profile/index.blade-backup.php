@@ -12,7 +12,7 @@
             <div class="col-md-12">
                 <div class="card shadow-sm">
                     <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">Settings</h4>
+                        <h4 class="mb-0">{{ ucfirst($user->role) }} Settings</h4>
                     </div>
 
                     <div class="card-body">
@@ -21,14 +21,14 @@
                             <div class="tab-pane fade show active" id="profile">
                                 <h5 class="border-bottom pb-2">Basic Information</h5>
 
-                                {{-- <p><strong>Name:</strong> {{ $user->name }}</p>
+                                <p><strong>Name:</strong> {{ $user->name }}</p>
                                 <p><strong>Email:</strong> {{ $user->email }}</p>
                                 <p><strong>Contact:</strong> {{ $user->mobile ?? '-' }}</p>
                                 <p><strong>Pin Code:</strong> {{ $user->pin_code ?? '-' }}</p>
-                                <p><strong>Address:</strong> {{ $user->address }}</p> --}}
+                                <p><strong>Address:</strong> {{ $user->address }}</p>
 
                                 {{-- Role Specific --}}
-                                {{-- @if (in_array('donor', $user->roles ?? []))
+                                @if (in_array('donor', $user->roles ?? []))
                                 @include('profile.partials.donor', ['donor' => $donor])
                             @endif
                             
@@ -41,7 +41,7 @@
                                     'volunteer' => $volunteer,
                                     'extra' => $extra,
                                 ])
-                            @endif --}}
+                            @endif
                             </div>
 
                             <!-- Notifications -->

@@ -12,15 +12,27 @@ class Volunteer extends Model
 
     protected $fillable = [
         'user_id',
-        'organization_name',
+        'volunteer_type',
+        'organization',
         'contact_number',
         'address',
         'pin_code',
         'registration_number',
+        'group_quantity',
+        'president_name',
+        'president_number',
+        'secretary_name',
+        'secretary_number',
+        'account_name',
+        'account_number',
+        'extra_data',
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
+    protected $casts = [
+        'extra_data' => 'array',
+    ];
 }

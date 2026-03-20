@@ -13,9 +13,10 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DonationController;
+use App\Http\Controllers\BloodCampController;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
-// Route::get('/registration', [PageController::class, 'registration'])->name('registration');
+Route::get('/registration', [PageController::class, 'registration'])->name('registration');
 Route::get('/login', [PageController::class, 'login'])->name('login');
 // Route::get('/dashboard', [PageController::class, 'dashboard'])->name('dashboard');
 Route::get('/conversation', [PageController::class, 'conversation'])->name('conversation');
@@ -45,11 +46,12 @@ Route::post('/reset-password', [NewPasswordController::class, 'store'])
 Route::middleware(['auth','role:admin'])->group(function () {
   
 });
-
+Route::get('/profile', [PageController::class, 'profile'])->name('profile');
 Route::middleware(['auth','role:donor|receiver|volunteer'])->group(function () {
-  Route::get('/profile', [PageController::class, 'profile'])->name('profile');
+
   Route::post('/change-password', [ProfileController::class, 'updatePassword'])
         ->name('profile.password.update');
+  Route::get('/blood-camps', [BloodCampController::class, 'index'])->name('bloodCamps');      
 });
 // Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
 Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -92,3 +94,8 @@ Route::get('/test-whatsapp', function (App\Services\WhatsAppService $whatsapp) {
 
 
 Route::post('/donate', [DonationController::class, 'store'])->name('donate.store');
+
+Route::get('/users/update/{id}', [RegistrationController::class, 'index'])
+    ->name('users.update');
+Route::post('/users/{id}/update-role', [RegistrationController::class, 'updateUserRole'])
+    ->name('users.update.role');

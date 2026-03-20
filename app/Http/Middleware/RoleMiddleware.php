@@ -19,8 +19,14 @@ class RoleMiddleware
             abort(403);
         }
         $allowedRoles = explode('|', $roles);
-        if (! in_array(auth()->user()->role, $allowedRoles)) {
-            abort(403);
+        $userRoles = auth()->user()->roles ?? [];
+
+        // if (! in_array(auth()->user()->role, $allowedRoles)) {
+        //     abort(403);
+        // }
+        // Check if any allowed role is in user's roles
+        if (!array_intersect($allowedRoles, $userRoles)) {
+        abort(403);
         }
         return $next($request);
     }

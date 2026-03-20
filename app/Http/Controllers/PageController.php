@@ -29,19 +29,22 @@ class PageController extends Controller
     {
         $user = auth()->user();
         $data = ['user' => $user];
-        if ($user->role === 'donor') {
-            $data['donor'] = $user->donor;
-        }
-    
-        if ($user->role === 'receiver') {
-            $data['receiver'] = $user->receiver;
-        }
-    
-        if ($user->role === 'volunteer') {
-            $data['volunteer'] = $user->volunteer;
-            $data['extra'] = json_decode($user->volunteer->extra_data ?? '{}', true);
-        }
-    
+
+        $roles = $user->roles ?? [];
+
+    if (in_array('donor', $roles)) {
+        $data['donor'] = $user->donor;
+    }
+
+    if (in_array('receiver', $roles)) {
+        $data['receiver'] = $user->receiver;
+    }
+
+    if (in_array('volunteer', $roles)) {
+        $data['volunteer'] = $user->volunteer;
+        $data['extra'] = $user->volunteer->extra_data ?? [];
+    }
+
         return view('profile.index', $data);
     }
     

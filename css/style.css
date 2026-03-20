@@ -358,21 +358,25 @@ header nav.navbar .navbar-nav li a.active {
 
 /* ===== GALLERY ===== */
 .gallery {
-  text-align: center;
   padding: 100px 0;
   background: linear-gradient(135deg, #ffcccc 0%, #ffeaea 100%);
   position: relative;
   overflow: hidden;
 }
 
+.gallery .swiper {
+  padding-bottom: 32px;
+}
+
 .gallery .swiper .swiper-slide {
   border-radius: 12px;
   overflow: hidden;
+  background-color: #fff;
 }
 
 .gallery .swiper .swiper-slide img {
   width: 100%;
-  height: 250px;
+  height: 270px;
   -o-object-fit: cover;
      object-fit: cover;
   border-radius: 12px;
@@ -380,13 +384,34 @@ header nav.navbar .navbar-nav li a.active {
   transition: -webkit-transform 0.4s ease, -webkit-box-shadow 0.4s ease;
   transition: transform 0.4s ease, box-shadow 0.4s ease;
   transition: transform 0.4s ease, box-shadow 0.4s ease, -webkit-transform 0.4s ease, -webkit-box-shadow 0.4s ease;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
-.gallery .swiper .swiper-slide:hover img {
-  -webkit-transform: scale(1.05);
-          transform: scale(1.05);
-  -webkit-box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-          box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+.gallery .swiper .swiper-slide .text-area {
+  padding: 16px 20px;
+}
+
+.gallery .swiper .swiper-slide .text-area .date {
+  margin-bottom: 16px;
+  background-color: #444;
+  color: #fff;
+  padding: 6px 16px;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+.gallery .swiper .swiper-slide .text-area h4 {
+  text-align: left;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.gallery .swiper .swiper-slide .text-area a {
+  text-decoration: none;
+  color: #444;
 }
 
 .gallery .swiper .swiper-button-prev,
@@ -423,6 +448,8 @@ header nav.navbar .navbar-nav li a.active {
   display: inline-block;
   color: #b30000;
   margin-bottom: 50px;
+  width: 100%;
+  text-align: center;
 }
 
 .gallery h2::after {
@@ -2142,7 +2169,7 @@ body.design2 .carousel .carousel-item img {
 }
 
 .modal.login a {
-  color: #000;
+  color: var(--primary-color);
   text-decoration: none;
 }
 
@@ -2254,5 +2281,64 @@ body.design2 .carousel .carousel-item img {
 #donateModal .amount-btn {
   border-radius: 999px;
   padding: 0.6rem 1.5rem;
+}
+
+.loader-container {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  --r1: 154%;
+  --r2: 68.5%;
+  width: 60px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(var(--r1) var(--r2) at top, #0000 79.5%, var(--primary-color) 80%), radial-gradient(var(--r1) var(--r2) at bottom, var(--primary-color) 79.5%, #0000 80%), radial-gradient(var(--r1) var(--r2) at top, #0000 79.5%, var(--primary-color) 80%), #ffffff;
+  background-size: 50.5% 220%;
+  background-position: -100% 0%,0% 0%,100% 0%;
+  background-repeat: no-repeat;
+  -webkit-animation: l9 2s infinite linear;
+          animation: l9 2s infinite linear;
+}
+
+@-webkit-keyframes l9 {
+  33% {
+    background-position: 0% 33% ,100% 33% ,200% 33%;
+  }
+  66% {
+    background-position: -100%  66%,0%   66% ,100% 66%;
+  }
+  100% {
+    background-position: 0% 100%,100% 100%,200% 100%;
+  }
+}
+
+@keyframes l9 {
+  33% {
+    background-position: 0% 33% ,100% 33% ,200% 33%;
+  }
+  66% {
+    background-position: -100%  66%,0%   66% ,100% 66%;
+  }
+  100% {
+    background-position: 0% 100%,100% 100%,200% 100%;
+  }
 }
 /*# sourceMappingURL=style.css.map */

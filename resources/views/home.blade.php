@@ -63,6 +63,8 @@
             <p>Total Volunteers</p>
         </div>
     </section>
+    @auth
+    @else  
     <section class="registration-section" id="registration-section">
         <div class="container">
             <h1 style="font-size: 24px;font-weight:600">Register as a Donor / Receiver / Volunteer</h1>
@@ -70,9 +72,11 @@
             <div class="registration-tabs">
                 <button class="tab-btn" data-tab="donor" data-bs-target="#donor"> <i class="fa-solid fa-droplet"></i>
                     <span>Donor</span></button>
-                <button class="tab-btn" data-tab="receiver" data-bs-target="#receiver"> <i class="fa-solid fa-hand-holding-heart"></i>
+                <button class="tab-btn" data-tab="receiver" data-bs-target="#receiver"> <i
+                        class="fa-solid fa-hand-holding-heart"></i>
                     <span>Receiver</span></button>
-                <button class="tab-btn" data-tab="volunteer" data-bs-target="#volunteer"> <i class="fa-solid fa-hands-helping"></i>
+                <button class="tab-btn" data-tab="volunteer" data-bs-target="#volunteer"> <i
+                        class="fa-solid fa-hands-helping"></i>
                     <span>Volunteer</span></button>
             </div>
             @if ($errors->any())
@@ -92,11 +96,11 @@
 
                     <div class="form-floating">
                         <input type="text" class="form-control @error('name') is-invalid mb-0 @enderror" name="name"
-                            id="full_name" placeholder="Full Name" value="{{ old('name') }}" required>
+                            id="donor_full_name" placeholder="Full Name" value="{{ old('name') }}" required>
                         @error('name')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <label for="full_name">Full Name</label>
+                        <label for="donor_full_name">Full Name</label>
                     </div>
 
                     <div class="form-floating">
@@ -125,7 +129,7 @@
 
                     <div class="form-floating">
                         <select class="form-select @error('blood_group') is-invalid @enderror" name="blood_group"
-                            id="floating_blood_select" required>
+                            id="donor_floating_blood_select" required>
                             <option value="">Select Blood Group</option>
                             @foreach (['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] as $group)
                                 <option value="{{ $group }}" {{ old('blood_group') == $group ? 'selected' : '' }}>
@@ -136,12 +140,12 @@
                         @error('blood_group')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <label for="floating_blood_select">Blood Group</label>
+                        <label for="donor_floating_blood_select">Blood Group</label>
                     </div>
 
                     <div class="form-floating">
                         <select class="form-select @error('year_of_birth') is-invalid @enderror" name="year_of_birth"
-                            id="year_of_birth" required>
+                            id="donor_year_of_birth" required>
                             <option value="">Select Year</option>
                             @php
                                 $currentYear = now()->year;
@@ -158,7 +162,7 @@
                         @error('year_of_birth')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <label for="year_of_birth">Year of Birth</label>
+                        <label for="donor_year_of_birth">Year of Birth</label>
                     </div>
 
                     <div class="form-floating">
@@ -197,12 +201,13 @@
                     </div>
 
                     <div class="form-floating">
-                        <input type="text" id="pin_code" class="form-control @error('pin_code') is-invalid @enderror"
-                            name="pin_code" placeholder="Pin Code" value="{{ old('pin_code') }}" required>
+                        <input type="text" id="donor_pin_code"
+                            class="form-control @error('pin_code') is-invalid @enderror" name="pin_code"
+                            placeholder="Pin Code" value="{{ old('pin_code') }}" required>
                         @error('pin_code')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <label for="pin_code">Pin Code</label>
+                        <label for="donor_pin_code">Pin Code</label>
                     </div>
 
                     <div class="form-floating">
@@ -253,11 +258,12 @@
                         <label for="name">Patient Name</label>
                     </div>
                     <div class="form-floating">
-                        <input type="email" class="form-control" name="email" id="full_name" placeholder="Email">
-                        <label for="full_name">Email</label>
+                        <input type="email" class="form-control" name="email" id="receiver_full_name"
+                            placeholder="Email">
+                        <label for="receiver_full_name">Email</label>
                     </div>
                     <div class="form-floating">
-                        <select class="form-select" name="blood_group" id="floating_blood_select" required>
+                        <select class="form-select" name="blood_group" id="receiver_floating_blood_select" required>
                             <option value="">Select Blood Group</option>
                             <option>A+</option>
                             <option>A-</option>
@@ -268,7 +274,7 @@
                             <option>O+</option>
                             <option>O-</option>
                         </select>
-                        <label for="floating_blood_select">Blood Group</label>
+                        <label for="receiver_floating_blood_select">Blood Group</label>
                     </div>
                     <!-- Hospital Name -->
                     <div class="form-floating mb-3">
@@ -304,9 +310,9 @@
                         <label for="address">Address</label>
                     </div>
                     <div class="form-floating">
-                        <input type="text" id="pin_code" class="form-control" name="pin_code"
+                        <input type="text" id="receiver_pin_code" class="form-control" name="pin_code"
                             placeholder="Pin Code" required>
-                        <label for="pin_code">Pin Code</label>
+                        <label for="receiver_pin_code">Pin Code</label>
                     </div>
                     <button type="submit" class="btn-primary">Submit Registration</button>
                 </form>
@@ -317,9 +323,8 @@
                 <form action="{{ route('registration') }}" class="registration-form" method="POST">
                     @csrf
                     <input type="hidden" name="role" value="volunteer">
-                    <input type="hidden" name="volunteer_type" value="individual">
                     <div class="form-floating">
-                        <select class="form-select" onchange="volunteerFields(this)" name="blood_group"
+                        <select class="form-select" onchange="volunteerFields(this)" name="volunteer_type"
                             id="floatingSelect" required>
                             <option value="">Select Option</option>
                             <option value="individual">Individual</option>
@@ -336,12 +341,12 @@
                             <label for="full_name">Full Name</label>
                         </div>
                         <div class="form-floating">
-                            <input type="email" class="form-control" name="email" id="email"
+                            <input type="email" class="form-control" name="email" id="volunteer_email"
                                 placeholder="Email" required>
-                            <label for="email">Email</label>
+                            <label for="volunteer_email">Email</label>
                         </div>
                         <div class="form-floating">
-                            <select class="form-select" name="blood_group" id="floating_blood_select" required>
+                            <select class="form-select" name="blood_group" id="volunteer_floating_blood_select" required>
                                 <option value="">Select Blood Group</option>
                                 <option>A+</option>
                                 <option>A-</option>
@@ -352,10 +357,10 @@
                                 <option>O+</option>
                                 <option>O-</option>
                             </select>
-                            <label for="floating_blood_select">Blood Group</label>
+                            <label for="volunteer_floating_blood_select">Blood Group</label>
                         </div>
                         <div class="form-floating">
-                            <select class="form-select" name="year_of_birth" id="year_of_birth" required>
+                            <select class="form-select" name="year_of_birth" id="volunteer_year_of_birth" required>
                                 <option value="">Select Year</option>
                                 @php
                                     $currentYear = now()->year;
@@ -366,7 +371,7 @@
                                     <option value="{{ $year }}">{{ $year }}</option>
                                 @endfor
                             </select>
-                            <label for="year_of_birth">Year of Birth</label>
+                            <label for="volunteer_year_of_birth">Year of Birth</label>
                         </div>
                         <div class="form-floating">
                             <input type="date" id="date" class="form-control" name="last_donation"
@@ -394,9 +399,9 @@
                             <label>WhatsApp Number</label>
                         </div>
                         <div class="form-floating">
-                            <input type="text" id="pin_code" class="form-control" name="pin_code"
+                            <input type="text" id="volunteer_pin_code" class="form-control" name="pin_code"
                                 placeholder="Pin Code" required>
-                            <label for="pin_code">Pin Code</label>
+                            <label for="volunteer_pin_code">Pin Code</label>
                         </div>
                         <div class="form-floating">
                             <textarea class="form-control" name="address" placeholder="Address" required style="height: 100px"></textarea>
@@ -493,6 +498,32 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="email" class="form-control" name="email" placeholder="Email ID"
+                                        required>
+                                    <label>Email</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="pincode" placeholder="Pin Code"
+                                        required>
+                                    <label>Pin Code</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-floating mb-3">
+                                    <textarea name="address" class="form-control" placeholder="Address" required></textarea>
+                                    <label>Address</label>
+                                </div>
+                            </div>
+                        </div>
                         <!-- Members Section -->
                         <div class="row">
                             <div class="col-12">
@@ -540,31 +571,6 @@
                         <div class="row mb-2">
                             <div class="col-3">
                                 <button type="button" class="btn btn-primary" onclick="addMember()">Add Member</button>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="email" class="form-control" name="email" placeholder="Email ID"
-                                        required>
-                                    <label>Email</label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="pincode" placeholder="Pin Code" required>
-                                    <label>Pin Code</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-floating mb-3">
-                                    <textarea name="address" class="form-control" placeholder="Address" required></textarea>
-                                    <label>Address</label>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -658,6 +664,32 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="email" class="form-control" name="email" placeholder="Email ID"
+                                        required>
+                                    <label>Email</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="pincode" placeholder="Pin Code"
+                                        required>
+                                    <label>Pin Code</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-floating mb-3">
+                                    <textarea name="address" class="form-control" placeholder="Address" required></textarea>
+                                    <label>Address</label>
+                                </div>
+                            </div>
+                        </div>
                         <!-- Members Section -->
                         <div class="row">
                             <div class="col-12">
@@ -707,37 +739,14 @@
                                 <button type="button" class="btn btn-primary" onclick="addMember()">Add Member</button>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="email" class="form-control" name="email" placeholder="Email ID"
-                                        required>
-                                    <label>Email</label>
-                                </div>
-                            </div>
 
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="pincode" placeholder="Pin Code" required>
-                                    <label>Pin Code</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-floating mb-3">
-                                    <textarea name="address" class="form-control" placeholder="Address" required></textarea>
-                                    <label>Address</label>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     <button type="submit" class="btn-primary">Submit Registration</button>
                 </form>
             </div>
         </div>
     </section>
+    @endauth  
     <!-- Donation Process Section -->
     <section class="donation-process py-5" data-aos="fade-down">
         <div class="container text-center">
@@ -828,10 +837,68 @@
                 <!-- Additional required wrapper -->
                 <div class="swiper-wrapper">
                     <!-- Slides -->
-                    <div class="swiper-slide"><img src="{{ asset('assets/img/camp1.jpg') }}" alt="Blood Camp 1"></div>
-                    <div class="swiper-slide"><img src="{{ asset('assets/img/camp2.jpg') }}" alt="Blood Camp 1"></div>
-                    <div class="swiper-slide"><img src="{{ asset('assets/img/camp1.jpg') }}" alt="Blood Camp 1"></div>
-                    <div class="swiper-slide"><img src="{{ asset('assets/img/camp1.jpg') }}" alt="Blood Camp 1"></div>
+                    <div class="swiper-slide"><a href="#"><img src="{{ asset('assets/img/camp1.jpg') }}" alt="Blood Camp 1"></a>
+                        <div class="text-area">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="date mb-0">
+                                    17 Feb, 2026
+                                </div>
+                                <a class="author" href="#"><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</a>
+                            </div>
+                            <h4><a href="#">O- Blood Donors Needed</a></h4>
+                            <p>O Negative blood cells are called “universal” meaning they can be transfused to almost any
+                                patient in need and blood cells are safest.</p>
+                                <div class="event-latest-details">
+                                    <a class="comments" href="#"> <i class="fa-solid fa-location-dot"></i> Selimpore Road, Kolkata</a>
+                                </div>    
+                        </div>
+                    </div>
+                    <div class="swiper-slide"><img src="{{ asset('assets/img/camp2.jpg') }}" alt="Blood Camp 1">
+                        <div class="text-area">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="date mb-0">
+                                    17 Feb, 2026
+                                </div>
+                                <a class="author" href="#"><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</a>
+                            </div>
+                            <h4>Donation - Feel Real Peace</h4>
+                            <p>You're the real hero because you can gift a new life for patient.So donate your blood and
+                                enjoy a precious life. Don't fear, it's really easy.</p>
+                                <div class="event-latest-details">
+                                    <a class="comments" href="#"> <i class="fa-solid fa-location-dot"></i> Pure Life Hospital</a>
+                                </div>    
+                        </div>
+                    </div>
+                    <div class="swiper-slide"><img src="{{ asset('assets/img/camp1.jpg') }}" alt="Blood Camp 1">
+                        <div class="text-area">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="date mb-0">
+                                    17 Feb, 2026
+                                </div>
+                                <a class="author" href="#"><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</a>
+                            </div>
+                            <h4>A Campus Blood Mission</h4>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.</p>
+                                <div class="event-latest-details">
+                                    <a class="comments" href="#"> <i class="fa-solid fa-location-dot"></i> Pure Life Hospital</a>
+                                </div>    
+                        </div>
+                    </div>
+                    <div class="swiper-slide"><img src="{{ asset('assets/img/camp1.jpg') }}" alt="Blood Camp 1">
+                        <div class="text-area">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="date mb-0">
+                                    17 Feb, 2026
+                                </div>
+                                <a class="author" href="#"><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</a>
+                            </div>
+                            <h4>A Campus Blood Mission</h4>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.</p>
+                                <div class="event-latest-details">
+                                    <a class="comments" href="#"> <i class="fa-solid fa-location-dot"></i> Pure Life Hospital</a>
+                                </div>    
+                        </div>
+                    </div>
                 </div>
                 <!-- If we need pagination -->
                 <div class="swiper-pagination"></div>
@@ -1358,8 +1425,16 @@
 
         tabBtns.forEach(btn => {
             btn.addEventListener('click', () => {
+                let token =  localStorage.getItem("token");
+                if(!token){
+                    console.log("No Token found");        
+            let loginModalEl = document.getElementById('loginModal');            
+            let loginModal = bootstrap.Modal.getOrCreateInstance(loginModalEl);
+            loginModal.show();
+                    return;
+                }
                 let checkClass = document.getElementById(btn.dataset.tab).classList;
-                if(checkClass.contains("active")){
+                if (checkClass.contains("active")) {
                     tabBtns.forEach(b => b.classList.remove('active'));
                     tabContents.forEach(content => content.classList.remove('active'));
                     return;
@@ -1382,6 +1457,7 @@
 
         function volunteerFields(elm) {
             let volunteer = document.getElementById('volunteer');
+            const types = ['individual', 'ngo', 'charity'];
             volunteer.removeAttribute("style");
             document.querySelectorAll('.fields').forEach(field => {
                 field.style.display = 'none';
@@ -1405,6 +1481,21 @@
                 default:
                     break;
             }
+            types.forEach(type => {
+                const section = document.getElementById(type);
+                const inputs = section.querySelectorAll('input, select, textarea');
+
+                if (type === elm.value) {
+                    section.style.display = 'block';
+                    inputs.forEach(el => el.disabled = false);
+                } else {
+                    section.style.display = 'none';
+                    inputs.forEach(el => {
+                        el.disabled = true;
+                        el.removeAttribute('required');
+                    });
+                }
+            });
         }
 
         function addMember() {

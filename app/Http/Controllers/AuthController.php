@@ -33,10 +33,16 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
         $user = Auth::user();
+        $roles = $user->roles ?? [];
         // Role-based redirect
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
+        // if ($user->role === 'admin') {
+        //     return redirect()->route('admin.dashboard');
+        // }
+          // Admin has highest priority
+        if (in_array('admin', $roles)) {
+        return redirect()->route('admin.dashboard');
         }
+
         return redirect()->route('profile');
         // return match (Auth::user()->role) {
         //     'admin'     => redirect()->route('admin.dashboard'),

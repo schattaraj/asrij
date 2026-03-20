@@ -41,7 +41,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'remember_token',
     ];
-
+    
+    protected $casts = [
+        'roles' => 'array',
+    ];
     /**
      * Get the attributes that should be cast.
      *

@@ -22,6 +22,23 @@
     <link rel="stylesheet" href="dist/assets/css/style.css">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="assets/img/favicon.png" />
+    <style>
+        .card .table-responsive td a.btn {
+            border-radius: 50%;
+            padding: 0;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
+            color: var(--bs-success);
+        }
+
+        .card .table-responsive td a.btn-danger {
+            color: var(--bs-danger);
+        }
+    </style>
 </head>
 
 <body>
@@ -29,10 +46,10 @@
         <!-- partial:partials/_navbar.html -->
         <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
             <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
-                <a class="navbar-brand brand-logo" href="{{route('home')}}"><img src="assets/img/logo.png"
-                        alt="logo" style="height:40px"/></a>
-                <a class="navbar-brand brand-logo-mini" href="{{route('home')}}"><img src="dist/assets/images/logo-mini.svg"
-                        alt="logo" /></a>
+                <a class="navbar-brand brand-logo" href="{{ route('home') }}"><img src="assets/img/logo.png"
+                        alt="logo" style="height:40px" /></a>
+                <a class="navbar-brand brand-logo-mini" href="{{ route('home') }}"><img
+                        src="dist/assets/images/logo-mini.svg" alt="logo" /></a>
             </div>
             <div class="navbar-menu-wrapper d-flex align-items-stretch">
                 <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
@@ -58,14 +75,14 @@
                                 <span class="availability-status online"></span>
                             </div>
                             <div class="nav-profile-text">
-                                <p class="mb-1 text-black">{{$user->name}}</p>
+                                {{-- <p class="mb-1 text-black">{{$user->name}}</p> --}}
                             </div>
                         </a>
                         <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
                             <a class="dropdown-item" href="#">
                                 <i class="mdi mdi-cached me-2 text-success"></i> Activity Log </a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{route('logout')}}">
+                            <a class="dropdown-item" href="{{ route('logout') }}">
                                 <i class="mdi mdi-logout me-2 text-primary"></i> Signout </a>
                         </div>
                     </li>
@@ -206,14 +223,14 @@
                                 <!--change to offline or busy as needed-->
                             </div>
                             <div class="nav-profile-text d-flex flex-column">
-                                <span class="font-weight-bold mb-2">{{$user->name}}</span>
-                                <span class="text-secondary text-small">{{$user->role}}</span>
+                                {{-- <span class="font-weight-bold mb-2">{{$user->name}}</span> --}}
+                                {{-- <span class="text-secondary text-small">{{$user->role}}</span> --}}
                             </div>
                             <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{route('profile')}}">
+                        <a class="nav-link" href="{{ route('profile') }}">
                             <span class="menu-title">Profile</span>
                             {{-- <i class="mdi mdi-home menu-icon"></i> --}}
                         </a>
@@ -233,6 +250,13 @@
                             <span class="menu-title">Chat</span>
                         </a>
                     </li>
+                    {{-- @if ($user->role == 'volunteer')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{route('bloodCamps')}}">
+                            <span class="menu-title">Manage Blood Camps</span>
+                        </a>
+                    </li>
+                    @endif --}}
                 </ul>
             </nav>
             <!-- partial -->
@@ -249,29 +273,108 @@
             <!-- endinject -->
             <!-- Plugin js for this page -->
             <script src="dist/assets/vendors/chart.js/chart.umd.js"></script>
-    <script src="dist/assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+            <script src="dist/assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
             <!-- End plugin js for this page -->
             <!-- inject:js -->
             <script src="dist/assets/js/off-canvas.js"></script>
-    <script src="dist/assets/js/misc.js"></script>
-    <script src="dist/assets/js/settings.js"></script>
-    <script src="dist/assets/js/todolist.js"></script>
-    <script src="dist/assets/js/jquery.cookie.js"></script>
+            <script src="dist/assets/js/misc.js"></script>
+            <script src="dist/assets/js/settings.js"></script>
+            <script src="dist/assets/js/todolist.js"></script>
+            <script src="dist/assets/js/jquery.cookie.js"></script>
             <!-- endinject -->
             <!-- Custom js for this page -->
             <!-- <script src="dist/assets/js/dashboard.js"></script> -->
             <!-- End custom js for this page -->
-          </div>
-          <!-- content-wrapper ends -->
-          <!-- partial:partials/_footer.html -->
-          <footer class="footer">
-            <div class="d-sm-flex justify-content-center justify-content-sm-between">
-              <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2026 <a href="https://www.asrij.in/" target="_blank">Asrij</a>. All rights reserved.</span>
-              {{-- <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="mdi mdi-heart text-danger"></i></span> --}}
-            </div>
-          </footer>
-          <!-- partial -->
         </div>
+        <!-- content-wrapper ends -->
+        <!-- partial:partials/_footer.html -->
+        <footer class="footer">
+            <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2026 <a
+                        href="https://www.asrij.in/" target="_blank">Asrij</a>. All rights reserved.</span>
+                {{-- <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="mdi mdi-heart text-danger"></i></span> --}}
+            </div>
+        </footer>
+        <!-- partial -->
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            getUser();
+        });
+        function getUser() {
+            const token = localStorage.getItem("token");
+
+            const loginBtn = document.getElementById("loginBtn");
+            const profileBtn = document.getElementById("profileBtn");
+
+            // Pages that require login
+            const protectedPages = [
+                "/profile",
+                "/dashboard",
+                "/orders",
+                "/checkout"
+            ];
+
+            const currentPath = window.location.pathname;
+
+            function redirectToHome() {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Session Expired",
+                    text: "Please login to continue.",
+                    confirmButtonText: "Go to Home"
+                }).then(() => {
+                    window.location.href = "{{ url('/') }}";
+                });
+            }
+
+            if (token) {
+
+                fetch("{{ url('/') }}/api/v1/user", {
+                        method: "GET",
+                        headers: {
+                            "Authorization": "Bearer " + token,
+                            "Accept": "application/json"
+                        }
+                    })
+                    .then(async (res) => {
+                        const data = await res.json();
+
+                        if (!res.ok) {
+
+                            // Token invalid or expired
+                            localStorage.removeItem("token");
+
+                            if (protectedPages.includes(currentPath)) {
+                                redirectToHome();
+                            }
+
+                            throw new Error("Unauthorized");
+                        }
+
+                        return data;
+                    })
+                    .then(data => {
+                        if (data.roles && data.roles.includes("admin")) {
+                            profileBtn.href = "{{ route('admin.dashboard') }}";
+                        } else {
+                            profileBtn.href = "{{ route('profile') }}";
+                        }
+
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+
+            } else {
+                // If user visits protected page without login
+                if (protectedPages.includes(currentPath)) {
+                    redirectToHome();
+                }
+            }
+        }
+    </script>
 </body>
 
 </html>

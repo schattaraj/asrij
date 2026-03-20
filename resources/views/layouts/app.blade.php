@@ -25,6 +25,9 @@
 </head>
 
 <body class="">
+    <div class="loader-container" id="loader">
+        <div class="loader"></div>
+    </div>
     <div class="body">
         <header>
             {{-- <div class="logo">🩸 BloodConnect</div> --}}
@@ -82,8 +85,19 @@
                     <div class="logo"><a href="{{ route('home') }}"><img src="{{ asset('assets/img/logo4.png') }}"
                                 alt=""></a></div>
                     <div class="d-flex align-items-center">
-                        @guest
-                            <a href="#exampleModal" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                        <!-- Login Button -->
+                        <a href="#loginModal" data-bs-toggle="modal" data-bs-target="#loginModal" id="loginBtn"
+                            class="btn btn-primary d-none d-md-block">
+                            Login
+                        </a>
+
+                        <!-- Profile Button -->
+                        <a href="#" id="profileBtn" class="btn d-none d-md-block"
+                            style="font-size:30px;padding:8px;">
+                            <i class="fa-regular fa-circle-user"></i>
+                        </a>
+                        {{-- @guest
+                            <a href="#loginModal" data-bs-toggle="modal" data-bs-target="#loginModal"
                                 class="btn btn-primary d-none d-md-block">
                                 Login
                             </a>
@@ -96,12 +110,12 @@
                                     <i class="fa-regular fa-circle-user"></i>
                                 </a>
                             @else
-                                <a href="{{ route('profile') }}" class="btn d-none d-md-block"
-                                    style="font-size: 30px;padding:8px;">
+                                <a href="{{ auth()->user()->roles === 'admin' ? route('admin.dashboard') : route('profile') }}"
+                                    class="btn d-none d-md-block" style="font-size: 30px;padding:8px;">
                                     <i class="fa-regular fa-circle-user"></i>
                                 </a>
                             @endif
-                        @endauth
+                        @endauth --}}
                         <button class="navbar-toggler" onclick="handleMenu()" type="button" data-bs-toggle="collapse"
                             data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                             aria-expanded="false" aria-label="Toggle navigation">
@@ -171,8 +185,8 @@
                             <li><i class="fa-solid fa-angles-right"></i> <a href="#">Contact Us</a></li>
                             <li><i class="fa-solid fa-angles-right"></i> <a href="#registration-section">Register</a>
                             </li>
-                            <li><i class="fa-solid fa-angles-right"></i> <a href="#exampleModal"
-                                    data-bs-toggle="modal" data-bs-target="#exampleModal">Login</a></li>
+                            <li><i class="fa-solid fa-angles-right"></i> <a href="#loginModal" data-bs-toggle="modal"
+                                    data-bs-target="#loginModal">Login</a></li>
                         </ul>
                     </div>
                     <div class="col-md-4">
@@ -218,29 +232,57 @@
                     href="{{ route('registration') }}">Register</a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link" data-bs-toggle="modal"
-                data-bs-target="#donateModal">Donate Now</a>
+                <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#donateModal">Donate
+                    Now</a>
             </li>
         </ul>
     </div>
     <!-- Bootstrap 5 Modal with Floating Labels -->
-    <div class="modal fade login" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+    <div class="modal fade register" id="registerModal" tabindex="-1" aria-labelledby="registrationModal"
         aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog" style="max-width: 600px">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Login</h5>
+                    <h5 class="modal-title" id="loginModalLabel">Sign Up</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <!-- Login Form -->
-                    <form autocomplete="off" id="login" action="{{ route('login') }}" method="post">
+                    <form autocomplete="off" id="register" action="" method="post">
                         @csrf
                         <div class="mb-3">
                             <div class="form-floating">
-                                <input type="email" class="form-control" name="login" autocomplete="off"
-                                    id="email" placeholder="name@example.com" required>
-                                <label for="email">Email address or Mobile Number</label>
+                                <input type="text" class="form-control" name="name" autocomplete="off"
+                                    id="name" placeholder="Name" required>
+                                <label for="email">Name</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <input type="email" class="form-control" name="login_email" autocomplete="off"
+                                    id="login_email" placeholder="name@example.com" required>
+                                <label for="email">Mobile Number</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <input type="date" class="form-control" name="dob" autocomplete="off"
+                                    id="dob" placeholder="Date of Birth" required>
+                                <label for="dob">Date of Birth</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" name="address" autocomplete="off"
+                                    id="address" placeholder="Address" required>
+                                <label for="address">Address</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" name="pin_code" autocomplete="off"
+                                    id="pin_code" placeholder="Pin Code" required>
+                                <label for="address">Pin Code</label>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -252,18 +294,126 @@
                                         class="fa-solid fa-eye-slash"></i></button>
                             </div>
                         </div>
-                        <div class="form-check mb-3">
-                            <input type="checkbox" class="form-check-input" id="rememberMe">
-                            <label class="form-check-label" for="rememberMe">Remember me</label>
+                        <div class="text-center">
+                            <p class="mb-1">Already have an account?</p>
+                            <a href="#loginModal" id="openLogin">Login</a>
                         </div>
-                        <div class="text-end">
-                            <a href="#" class="color-primary" id="forgotPasswordLink">Forgot password?</a>
-                        </div>
-
                     </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="login()">Login</button>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-primary" onclick="login()">Sign Up</button>
+                </div>
+                {{-- <div class="or">Or</div>
+            <a href="#" class="text-center">Do you have an account?</a> --}}
+            </div>
+        </div>
+    </div>
+    <div class="modal fade login" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Login Form -->
+                    <form autocomplete="off" id="login" action="{{ route('login') }}" method="post">
+                        @csrf
+                        <div id="mobileStep">
+                            <div class="mb-3">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="mobileNumber"
+                                        placeholder="name@example.com" required>
+                                    <label for="mobileNumber">Mobile Number</label>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary w-100" type="button" onclick="sendOtp()">
+                                Send OTP
+                            </button>
+
+                            <div class="text-center mt-3">
+                                <a href="#" id="switchToPassword1" class="small text-decoration-none">
+                                    Login with Password
+                                </a>
+                            </div>
+
+                        </div>
+                        <!-- OTP SECTION (DEFAULT VISIBLE) -->
+                        <div id="otpSection" class="d-none">
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <small class="text-muted">Enter 6-digit OTP</small>
+                                <a href="#" id="switchToPassword" class="small text-decoration-none">
+                                    Login with Password
+                                </a>
+                            </div>
+
+                            <p class="small text-muted mb-2" id="otpSentText"></p>
+                            <!-- OTP INPUT BOXES -->
+                            <div class="d-flex justify-content-between otp-inputs mb-3">
+                                <input type="text" maxlength="1" class="form-control text-center otp-box me-1">
+                                <input type="text" maxlength="1" class="form-control text-center otp-box me-1">
+                                <input type="text" maxlength="1" class="form-control text-center otp-box me-1">
+                                <input type="text" maxlength="1" class="form-control text-center otp-box me-1">
+                                <input type="text" maxlength="1" class="form-control text-center otp-box me-1">
+                                <input type="text" maxlength="1" class="form-control text-center otp-box">
+                            </div>
+
+                            <div class="text-end mb-3">
+                                <small id="resendTimer" class="text-muted">Resend OTP in 30s</small>
+                                <a href="#" id="resendOtp" class="small d-none">Resend OTP</a>
+                            </div>
+
+                            <button class="btn btn-primary w-100" type="button" onclick="verifyOtp()">Verify
+                                OTP</button>
+                        </div>
+                        <!-- PASSWORD SECTION (HIDDEN DEFAULT) -->
+                        <div id="passwordSection" class="d-none">
+                            <div class="mb-3">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="mobileNumber2"
+                                        placeholder="0000000000" required>
+                                    <label for="mobileNumber2">Mobile Number</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-floating">
+                                    <input type="password" name="password" class="form-control" autocomplete="off"
+                                        id="loginPassword" placeholder="Password" required>
+                                    <label for="loginPassword">Password</label>
+                                    <button onclick="togglePassword()" type="button"><i
+                                            class="fa-solid fa-eye-slash"></i></button>
+                                </div>
+                            </div>
+                           
+                            {{-- <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">Remember me</label>
+                        </div> --}}
+                            <div class="text-end">
+                                <a href="#" class="color-primary" id="forgotPasswordLink">Forgot password?</a>
+                            </div>
+                            <div class="text-center mb-3">
+                                <button type="button" class="btn btn-primary" onclick="loginWithPassword()">Login</button>
+                            </div>
+                            <div class="d-flex justify-content-center mb-2">
+                                {{-- <small class="text-muted">Enter your password</small> --}}
+                                <a href="#" onclick="showMobileStep()" id="switchToOtp"
+                                    class="small text-decoration-none">
+                                    Login with OTP
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer flex-column">
+                    {{-- <button type="button" class="btn btn-primary" onclick="login()">Login</button> --}}
+                    <div class="text-center">
+                        <p>Do not have an account?</p>
+                        <a href="#" id="openRegister">Create an account</a>
+                    </div>
                 </div>
                 {{-- <div class="or">Or</div>
                 <a href="#" class="text-center">Do you have an account?</a> --}}
@@ -380,7 +530,7 @@
 
     <script>
         function login() {
-            document.getElementById('login').submit();
+            // document.getElementById('login').submit();
             //   const email = document.getElementById('email').value;
             //   const password = document.getElementById('password').value;
             //   const rememberMe = document.getElementById('rememberMe').checked;
@@ -404,8 +554,348 @@
     <script src="{{ asset('js/custom.js') }}"></script>
     @yield('scripts')
     <script>
+        const loader = document.getElementById("loader");
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(() => {
+                loader.style.display = "none";
+            }, 1000);
+            getUser();
+        });
+
+        function getUser() {
+            const token = localStorage.getItem("token");
+
+            const loginBtn = document.getElementById("loginBtn");
+            const profileBtn = document.getElementById("profileBtn");
+
+            if (token) {
+                // Fetch user info
+                fetch("{{ url('/') }}/api/v1/user", {
+                        method: "GET",
+                        headers: {
+                            "Authorization": "Bearer " + token,
+                            "Accept": "application/json"
+                        }
+                    })
+                    .then(async (res) => {
+                        const data = await res.json();
+                        if (!res.ok) {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: data.message || "Something went wrong"
+                            });
+                            throw new Error("Request failed");
+                        }
+                        return data;
+                    })
+                    .then(data => {
+
+                        // Hide login button
+                        if (loginBtn.classList.contains("d-md-block")) {
+                            loginBtn.classList.remove("d-md-block");
+                        }
+
+                        // Show profile button
+                        if (!profileBtn.classList.contains("d-md-block")) {
+                            profileBtn.classList.add("d-md-block");
+                        }
+                        if (data.roles && data.roles.includes("admin")) {
+                            profileBtn.href = "{{ route('admin.dashboard') }}";
+                        } else {
+                            profileBtn.href = "{{ route('profile') }}";
+                        }
+
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+
+            } else {
+                if (!loginBtn.classList.contains("d-md-block")) {
+                    loginBtn.classList.add("d-md-block");
+                }
+
+                if (profileBtn.classList.contains("d-md-block")) {
+                    profileBtn.classList.remove("d-md-block");
+                }
+
+            }
+        }
+
+        function sendOtp() {
+            const mobile = document.getElementById("mobileNumber").value;
+
+            if (mobile.length !== 10) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Invalid Mobile Number",
+                    text: "Please enter a valid 10 digit mobile number"
+                });
+                return;
+            }
+            loader.style.display = "flex";
+            fetch('{{ url('/') }}/api/v1/send-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        mobile: mobile
+                    })
+                })
+                .then(async (res) => {
+                    const data = await res.json();
+                    if (!res.ok) {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: data.message || "Something went wrong"
+                        });
+                        throw new Error("Request failed");
+                    }
+                    return data;
+                })
+                .then(data => {
+                    alert(data.message);
+                    // Mask Mobile Number
+                    const masked = mobile.substring(0, 2) + "******" + mobile.substring(8);
+                    document.getElementById("otpSentText").innerText =
+                        "OTP sent to +91 " + masked;
+
+                    document.getElementById("mobileStep").classList.add("d-none");
+                    document.getElementById("otpSection").classList.remove("d-none");
+
+                    startResendTimer();
+                    document.querySelector(".otp-box").focus();
+                })
+                .finally(() => {
+                    loader.style.display = "none";
+                });
+
+        }
+
+        function getOtpValue() {
+            let otp = '';
+            document.querySelectorAll('.otp-box').forEach(input => {
+                otp += input.value;
+            });
+            return otp;
+        }
+
+        function verifyOtp() {
+            let otp = getOtpValue();
+            if (otp.length !== 6) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Invalid OTP",
+                    text: "Please enter the 6 digit OTP"
+                });
+                return;
+            }
+            loader.style.display = "flex";
+            fetch('{{ url('/') }}/api/v1/verify-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        mobile: document.getElementById('mobileNumber').value,
+                        otp: otp
+                    })
+                })
+                .then(async (res) => {
+                    const data = await res.json();
+                    if (!res.ok) {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Verification Failed",
+                            text: data.message || "Invalid or expired OTP"
+                        });
+                        throw new Error("OTP verification failed");
+                    }
+                    return data;
+                }).then(data => {
+                    // Save token 
+                    localStorage.setItem('token', data.token);
+                    Swal.fire({
+                        icon: "success",
+                        title: "Login Successful",
+                        text: "You are now logged in",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    // redirect if needed 
+                    // window.location.href = "/dashboard";
+                }).catch(error => {
+                    console.log(error);
+                }).finally(() => {
+                    loader.style.display = "none";
+                });
+        }
+
+        function editNumber() {
+            document.getElementById("otpSection").classList.add("d-none");
+            document.getElementById("mobileStep").classList.remove("d-none");
+        }
+
+        function showMobileStep() {
+            document.getElementById("passwordSection").classList.add("d-none");
+            document.getElementById("mobileStep").classList.remove("d-none");
+        }
+        function loginWithPassword() {
+            const mobile = document.getElementById('mobileNumber2').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (mobile.length !== 10) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Invalid Mobile Number",
+                    text: "Please enter a valid 10 digit mobile number"
+                });
+                return;
+            }
+
+            if (password === "") {
+                Swal.fire({
+                    icon: "error",
+                    title: "Password Required",
+                    text: "Please enter your password"
+                });
+                return;
+            }
+
+            loader.style.display = "flex";
+
+            fetch('{{ url('/') }}/api/v1/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        mobile: mobile,
+                        password: password
+                    })
+                })
+                .then(async (res) => {
+
+                    const data = await res.json();
+
+                    if (!res.ok) {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Login Failed",
+                            text: data.message || "Invalid mobile or password"
+                        });
+                        throw new Error("Login failed");
+                    }
+
+                    return data;
+                })
+                .then(data => {
+
+                    // Save token
+                    localStorage.setItem('token', data.token);
+
+                    Swal.fire({
+                        icon: "success",
+                        title: "Login Successful",
+                        text: "Welcome back!",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    getUser();
+                    const modalElement = document.getElementById('loginModal');
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    modal.hide();
+                    // redirect if needed
+                    // window.location.href = "/dashboard";
+
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+                .finally(() => {
+                    loader.style.display = "none";
+                });
+        }
+        document.getElementById("switchToPassword1").addEventListener("click", function() {
+            document.getElementById("mobileStep").classList.add("d-none");
+            document.getElementById("passwordSection").classList.remove("d-none");
+        });
+
+        // OTP Auto Move
+        const otpInputs = document.querySelectorAll(".otp-box");
+
+        otpInputs.forEach((input, index) => {
+            input.addEventListener("input", () => {
+                input.value = input.value.replace(/[^0-9]/g, '');
+                if (input.value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+            });
+
+            input.addEventListener("keydown", (e) => {
+                if (e.key === "Backspace" && input.value === "" && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+        });
+
+        // Resend Timer
+        function startResendTimer() {
+            let timeLeft = 30;
+            const timer = document.getElementById("resendTimer");
+            const resendBtn = document.getElementById("resendOtp");
+
+            timer.classList.remove("d-none");
+            resendBtn.classList.add("d-none");
+
+            const countdown = setInterval(() => {
+                timeLeft--;
+                timer.innerText = "Resend in " + timeLeft + "s";
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    timer.classList.add("d-none");
+                    resendBtn.classList.remove("d-none");
+                }
+            }, 1000);
+        }
+
+
+
+        function logout() {
+
+            const token = localStorage.getItem("token");
+
+            fetch("{{url('/')}}/api/v1/logout", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                })
+                .then(() => {
+                    localStorage.removeItem("token");
+                    location.reload();
+                });
+
+        }
+
+        // function logout() {
+        //     localStorage.removeItem("token");
+        //     getUser();
+        //     Swal.fire({
+        //         icon: "success",
+        //         title: "Logged Out",
+        //         text: "You have been logged out successfully",
+        //         timer: 1500,
+        //         showConfirmButton: false
+        //     });
+        // }
+
         function togglePassword() {
-            let input = document.getElementById('password');
+            let input = document.getElementById('loginPassword');
             let eye = document.querySelector('#password ~ button i');
             if (input.type === 'password') {
                 input.type = 'text';
@@ -421,13 +911,49 @@
             e.preventDefault(); // Prevent default link behavior
 
             // Hide login modal
-            const loginModal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
+            const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
             if (loginModal) loginModal.hide();
 
             // Show forgot password modal
             const forgotModalEl = document.getElementById('forgotPasswordModal');
             const forgotModal = new bootstrap.Modal(forgotModalEl);
             forgotModal.show();
+        });
+
+        document.getElementById('openRegister').addEventListener('click', function(e) {
+            e.preventDefault();
+
+            let loginModalEl = document.getElementById('loginModal');
+            let registerModalEl = document.getElementById('registerModal');
+
+            let loginModal = bootstrap.Modal.getOrCreateInstance(loginModalEl);
+            let registerModal = bootstrap.Modal.getOrCreateInstance(registerModalEl);
+
+            loginModalEl.addEventListener('hidden.bs.modal', function() {
+                registerModal.show();
+            }, {
+                once: true
+            });
+
+            loginModal.hide();
+        });
+
+        document.getElementById('openLogin').addEventListener('click', function(e) {
+            e.preventDefault();
+
+            let loginModalEl = document.getElementById('loginModal');
+            let registerModalEl = document.getElementById('registerModal');
+
+            let loginModal = bootstrap.Modal.getOrCreateInstance(loginModalEl);
+            let registerModal = bootstrap.Modal.getOrCreateInstance(registerModalEl);
+
+            registerModalEl.addEventListener('hidden.bs.modal', function() {
+                loginModal.show();
+            }, {
+                once: true
+            });
+
+            registerModal.hide();
         });
     </script>
 </body>

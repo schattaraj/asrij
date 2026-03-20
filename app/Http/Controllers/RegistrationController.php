@@ -70,6 +70,11 @@ class RegistrationController extends Controller
         }
 
         if (in_array($request->volunteer_type, ['ngo','charity','club'])) {
+            unset($rules['whatsapp']); 
+            unset($rules['name']); 
+            unset($rules['blood_group']); 
+            unset($rules['year_of_birth']); 
+            unset($rules['last_donation']);
             $rules = array_merge($rules, [
                 'registration_number' => 'required|string',
                 'organization'        => 'required|string|max:255',
@@ -101,7 +106,7 @@ class RegistrationController extends Controller
             'name'     => $request->name ?? $request->organization ?? null,
             'email'    => $request->email,
             'password' => bcrypt(str()->random(12)), // Temporary password
-            'role'     => $role,
+            'roles'     => [$role],
             'mobile'  => $request->contact,
             'whatsapp_number'=>$request->whatsapp
         ]);
@@ -115,7 +120,7 @@ class RegistrationController extends Controller
             case 'donor':
                 Donor::create([
                     'user_id'        => $user->id,
-                    'type'           => $request->type,
+                    // 'type'           => $request->type,
                     'blood_group'    => $request->blood_group,
                     'year_of_birth'  => $request->year_of_birth,
                     'last_donation'  => $request->last_donation,
@@ -134,6 +139,22 @@ class RegistrationController extends Controller
                 break;
 
             case 'volunteer':
+                $members = [];
+                if ($request->has('member_name')) {
+                    foreach ($request->member_name as $index => $name) {
+                
+                        // Skip empty rows
+                        if (empty($name)) {
+                            continue;
+                        }
+                
+                        $members[] = [
+                            'name'     => $name,
+                            'contact'  => $request->member_contact_number[$index] ?? null,
+                            'position' => $request->member_position[$index] ?? null,
+                        ];
+                    }
+                }
                 Volunteer::create([
                     'user_id'        => $user->id,
                     'volunteer_type' => $request->volunteer_type,
@@ -145,10 +166,11 @@ class RegistrationController extends Controller
                     'secretary_name' => $request->secretary_name,
                     'secretary_number' => $request->secretary_number,
                     'account_name'  => $request->account_name,
+                    'account_number'  => $request->account_number,
                     'contact' => $request->contact,
-                    'extra_data'     => json_encode($request->except([
-                        'name','email','role','contact','pin_code','address'
-                    ])),
+                    'extra_data'     => [
+                        'members' => $members
+                    ],
                 ]);
                 break;
 
@@ -162,5 +184,23 @@ class RegistrationController extends Controller
         return redirect()
         ->back()
         ->with('success', ucfirst($role) . ' registered successfully');
+    }
+    public function updateUserRole(Request $request, $userId)
+    {
+        $request->validate([
+            'role' => 'required|in:donor,receiver,volunteer,admin'
+        ]);
+    
+        $user = User::findOrFail($userId);
+    
+        $user->roles = [$request->role]; // overwrite roles
+        $user->save();
+    
+        return back()->with('success', 'Role updated successfully.');
+    }
+    public function index($id)
+    {
+        $user = User::with('donor', 'receiver', 'volunteer')->findOrFail($id);
+        return view('users.update-role', compact('user'));
     }
 }
