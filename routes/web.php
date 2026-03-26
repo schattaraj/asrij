@@ -14,6 +14,7 @@ use App\Http\Controllers\SupportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\BloodCampController;
+use Illuminate\Http\Request;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/registration', [PageController::class, 'registration'])->name('registration');

@@ -357,6 +357,7 @@ header nav.navbar .navbar-nav li a.active {
   // background-color: #494949;
   .swiper {
     padding-bottom: 32px;
+    position: relative;
     .swiper-slide {
       border-radius: 12px;
       overflow: hidden;
@@ -393,6 +394,17 @@ header nav.navbar .navbar-nav li a.active {
         font-size: 24px;
         font-weight: 600;
         margin-bottom: 16px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-height: 29px;
+      }
+      p{
+        min-height:96px;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
       }
       a{
         text-decoration: none;
@@ -403,13 +415,16 @@ header nav.navbar .navbar-nav li a.active {
 
     .swiper-button-prev,
     .swiper-button-next {
-      color: #b30000;
-      background: rgba(255, 255, 255, 0.8);
+      // color: #b30000;
+      // background: rgba(255, 255, 255, 0.8);
+      color: rgba(255, 255, 255, 0.8);
+      background: #b30000;
       border-radius: 50%;
       width: 45px;
       height: 45px;
       transition: 0.3s;
-
+      top: 50%;
+      transform:translateY(-50%);
       svg {
         height: 20px;
       }

@@ -238,7 +238,7 @@
         </ul>
     </div>
     <!-- Bootstrap 5 Modal with Floating Labels -->
-    <div class="modal fade register" id="registerModal" tabindex="-1" aria-labelledby="registrationModal"
+    <div class="modal fade register login" id="registerModal" tabindex="-1" aria-labelledby="registrationModal"
         aria-hidden="true">
         <div class="modal-dialog" style="max-width: 600px">
             <div class="modal-content">
@@ -294,14 +294,14 @@
                                         class="fa-solid fa-eye-slash"></i></button>
                             </div>
                         </div>
-                        <div class="text-center">
-                            <p class="mb-1">Already have an account?</p>
-                            <a href="#loginModal" id="openLogin">Login</a>
-                        </div>
                     </form>
                 </div>
-                <div class="modal-footer justify-content-center">
+                <div class="modal-footer justify-content-center flex-column">
                     <button type="button" class="btn btn-primary" onclick="login()">Sign Up</button>
+                    <div class="text-center mt-3">
+                        <p class="mb-1">Already have an account?</p>
+                        <a href="#loginModal" id="openLogin">Login</a>
+                    </div>
                 </div>
                 {{-- <div class="or">Or</div>
             <a href="#" class="text-center">Do you have an account?</a> --}}
@@ -410,8 +410,8 @@
                 </div>
                 <div class="modal-footer flex-column">
                     {{-- <button type="button" class="btn btn-primary" onclick="login()">Login</button> --}}
-                    <div class="text-center">
-                        <p>Do not have an account?</p>
+                    <div class="text-center w-100">
+                        <p class="or">OR</p>
                         <a href="#" id="openRegister">Create an account</a>
                     </div>
                 </div>
