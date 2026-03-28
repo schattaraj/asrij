@@ -728,11 +728,11 @@
                                         </select>
                                         <label>Position</label>
                                     </div>
+
                                 </div>
                             </div>
 
                         </div>
-
                         <!-- Add Member Button -->
                         <div class="row mb-2">
                             <div class="col-3">
@@ -805,8 +805,8 @@
                     <h2 class="fw-bold mb-3 text-uppercase" style="color: var(--primary-color);">Our Vision</h2>
                     <p class="lead text-secondary">
                         We aim to build a digital bridge connecting donors and receivers across communities.
-                        Through this portal, we promote timely blood donations and emergency response systems
                         for saving lives efficiently.
+                        Through this portal, we promote timely blood donations and emergency response systems
                     </p>
                     <a href="#donate" class="btn btn-primary mt-3 px-4 py-2 shadow-sm">
                         Learn More <i class="bi bi-arrow-right ms-2"></i>
@@ -833,6 +833,7 @@
             <img src="{{asset('assets/img/camp2.jpg')}}" alt="Blood Camp 2">
             <img src="{{asset('assets/img/camp1.jpg')}}" alt="Blood Camp 3">
         </div> --}}
+        <div class="w-100" style="position:relative;">
             <div class="swiper" data-aos="fade-down">
                 <!-- Additional required wrapper -->
                 <div class="swiper-wrapper">
@@ -843,9 +844,9 @@
                                 <div class="date mb-0">
                                     17 Feb, 2026
                                 </div>
-                                <a class="author" href="#"><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</a>
+                                <span><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</span>
                             </div>
-                            <h4><a href="#">O- Blood Donors Needed</a></h4>
+                            <a href="#"><h4>O- Blood Donors Needed</h4></a>
                             <p>O Negative blood cells are called “universal” meaning they can be transfused to almost any
                                 patient in need and blood cells are safest.</p>
                                 <div class="event-latest-details">
@@ -859,9 +860,9 @@
                                 <div class="date mb-0">
                                     17 Feb, 2026
                                 </div>
-                                <a class="author" href="#"><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</a>
+                                <span><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</span>
                             </div>
-                            <h4>Donation - Feel Real Peace</h4>
+                            <a href="#"></a><h4>Donation - Feel Real Peace</h4>
                             <p>You're the real hero because you can gift a new life for patient.So donate your blood and
                                 enjoy a precious life. Don't fear, it's really easy.</p>
                                 <div class="event-latest-details">
@@ -875,9 +876,9 @@
                                 <div class="date mb-0">
                                     17 Feb, 2026
                                 </div>
-                                <a class="author" href="#"><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</a>
+                                <span><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</span>
                             </div>
-                            <h4>A Campus Blood Mission</h4>
+                            <a href="#"><h4>A Campus Blood Mission</h4></a>
                             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.</p>
                                 <div class="event-latest-details">
                                     <a class="comments" href="#"> <i class="fa-solid fa-location-dot"></i> Pure Life Hospital</a>
@@ -890,7 +891,7 @@
                                 <div class="date mb-0">
                                     17 Feb, 2026
                                 </div>
-                                <a class="author" href="#"><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</a>
+                                <span><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</span>
                             </div>
                             <h4>A Campus Blood Mission</h4>
                             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.</p>
@@ -902,13 +903,12 @@
                 </div>
                 <!-- If we need pagination -->
                 <div class="swiper-pagination"></div>
-
-                <!-- If we need navigation buttons -->
-                <div class="swiper-button-prev"></div>
-                <div class="swiper-button-next"></div>
-
                 <!-- If we need scrollbar -->
                 {{-- <div class="swiper-scrollbar"></div> --}}
+            </div>
+            <!-- If we need navigation buttons -->
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
             </div>
         </div>
     </section>

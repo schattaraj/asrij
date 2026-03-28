@@ -384,10 +384,11 @@ header nav.navbar .navbar-nav li a.active {
         padding: 16px 20px;
         .date{
           margin-bottom: 16px;
-          background-color: #444;
+          background-color: $primary;
           color: #fff;
           padding: 6px 16px;
           width: fit-content;
+          border-radius: 4px;
         }
        h4{
         text-align: left;
@@ -412,31 +413,36 @@ header nav.navbar .navbar-nav li a.active {
       }
       }
     }
-
-    .swiper-button-prev,
-    .swiper-button-next {
-      // color: #b30000;
-      // background: rgba(255, 255, 255, 0.8);
-      color: rgba(255, 255, 255, 0.8);
-      background: #b30000;
-      border-radius: 50%;
-      width: 45px;
-      height: 45px;
-      transition: 0.3s;
-      top: 50%;
-      transform:translateY(-50%);
-      svg {
-        height: 20px;
-      }
-    }
-
-    .swiper-button-prev:hover,
-    .swiper-button-next:hover {
-      background: #b30000;
-      color: #fff;
+  }
+  .swiper-button-prev,
+  .swiper-button-next {
+    color: #b30000;
+    background: rgba(255, 255, 255, 0.8);
+    // color: rgba(255, 255, 255, 0.8);
+    // background: #b30000;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    transition: 0.3s;
+    top: 50%;
+    transform:translateY(-50%);
+    svg {
+      height: 20px;
+      stroke-width: 3px;
     }
   }
-
+  .swiper-button-next{
+    right: -40px;
+  }
+  .swiper-button-prev{
+    right: auto;
+    left: -40px;
+  }
+  .swiper-button-prev:hover,
+  .swiper-button-next:hover {
+    background: #b30000;
+    color: #fff;
+  }
   h2 {
     font-weight: 600;
     margin-bottom: 32px;

@@ -252,17 +252,30 @@
                         @csrf
                         <div class="mb-3">
                             <div class="form-floating">
+                                <input type="text" class="form-control" name="mobile" autocomplete="off"
+                                    id="mobile" placeholder="9112345678" maxlength="10" required>
+                                <label for="mobile">Mobile Number</label>
+                                 <!-- ✅ Tick Icon -->
+                        <i id="mobileVerifiedIcon" class="fa-solid fa-circle-check text-success position-absolute d-none"
+                        style="right: 15px; top: 50%; transform: translateY(-50%); font-size: 18px;"></i>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <button type="button" id="sendOtpBtn" class="btn btn-primary w-100" onclick="sendRegisterOtp(this)">Send OTP</button>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-floating">
                                 <input type="text" class="form-control" name="name" autocomplete="off"
                                     id="name" placeholder="Name" required>
                                 <label for="email">Name</label>
                             </div>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-3 d-none" id="otpRegistraionSection">
                             <div class="form-floating">
-                                <input type="email" class="form-control" name="login_email" autocomplete="off"
-                                    id="login_email" placeholder="name@example.com" required>
-                                <label for="email">Mobile Number</label>
+                                <input type="text" class="form-control" id="otp" placeholder="Enter OTP">
+                                <label for="otp">Enter OTP</label>
                             </div>
+                            <button type="button" id="verifyOtpBtn" class="btn btn-success w-100 mt-2" onclick="verifyRegisterOtp()">Verify OTP</button>
                         </div>
                         <div class="mb-3">
                             <div class="form-floating">
@@ -285,7 +298,7 @@
                                 <label for="address">Pin Code</label>
                             </div>
                         </div>
-                        <div class="mb-3">
+                        {{-- <div class="mb-3">
                             <div class="form-floating">
                                 <input type="password" name="password" class="form-control" autocomplete="off"
                                     id="password" placeholder="Password" required>
@@ -293,11 +306,11 @@
                                 <button onclick="togglePassword()" type="button"><i
                                         class="fa-solid fa-eye-slash"></i></button>
                             </div>
-                        </div>
+                        </div> --}}
                     </form>
                 </div>
                 <div class="modal-footer justify-content-center flex-column">
-                    <button type="button" class="btn btn-primary" onclick="login()">Sign Up</button>
+                    <button type="button" class="btn btn-primary" onclick="registerUser()">Submit</button>
                     <div class="text-center mt-3">
                         <p class="mb-1">Already have an account?</p>
                         <a href="#loginModal" id="openLogin">Login</a>
@@ -334,7 +347,7 @@
                             </button>
 
                             <div class="text-center mt-3">
-                                <a href="#" id="switchToPassword1" class="small text-decoration-none">
+                                <a href="#" id="switchToPassword1" class="small text-decoration-none d-none">
                                     Login with Password
                                 </a>
                             </div>
@@ -345,7 +358,7 @@
 
                             <div class="d-flex justify-content-between mb-2">
                                 <small class="text-muted">Enter 6-digit OTP</small>
-                                <a href="#" id="switchToPassword" class="small text-decoration-none">
+                                <a href="#" id="switchToPassword" class="small text-decoration-none d-none">
                                     Login with Password
                                 </a>
                             </div>
@@ -569,6 +582,7 @@
             const profileBtn = document.getElementById("profileBtn");
 
             if (token) {
+                loader.style.display = "d-flex";
                 // Fetch user info
                 fetch("{{ url('/') }}/api/v1/user", {
                         method: "GET",
@@ -609,6 +623,9 @@
                     })
                     .catch(err => {
                         console.log(err);
+                    })
+                    .finally(()=>{
+                        loader.style.display = "none";
                     });
 
             } else {
@@ -955,6 +972,159 @@
 
             registerModal.hide();
         });
+        
+let registerOtpVerified = false;
+// ✅ SweetAlert helper
+function showAlert(type, message) {
+    Swal.fire({
+        icon: type, // success | error | warning | info
+        text: message,
+        confirmButtonColor: '#3085d6'
+    });
+}
+// ✅ Send OTP (Registration)
+function sendRegisterOtp(elm) {
+    const mobile = document.getElementById('mobile').value;
+
+    if (!mobile || mobile.length !== 10) {
+        showAlert('warning', 'Enter valid mobile number');
+        return;
+    }
+
+    fetch('{{ url('/') }}/api/v1/send-registration-otp', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ mobile: mobile })
+    })
+    .then(async res => {
+        const data = await res.json();
+if (res.ok) {
+    showAlert('success', data.message || 'OTP sent successfully');
+    document.getElementById('otpRegistraionSection').classList.remove('d-none');
+    elm.innerHTML = "Resend OTP";
+    console.log(data);
+} else {
+    // Handle validation errors (422)
+    if (res.status === 422 && data.errors) {
+        let errorMessages = Object.values(data.errors)
+            .flat()
+            .join('\n');
+
+        showAlert('error', errorMessages);
+    } else {
+        showAlert('error', data.message || 'Something went wrong');
+    }
+}
+    })
+    .catch(err => {
+        showAlert('error', err.message || 'Error sending OTP');
+        console.error(err);
+    });
+}
+
+// ✅ Verify OTP (Registration)
+function verifyRegisterOtp() {
+    const mobile = document.getElementById('mobile').value;
+    const otp = document.getElementById('otp').value;
+
+    if (!otp) {
+        showAlert('warning', 'Enter OTP');
+        return;
+    }
+
+    fetch('{{ url('/') }}/api/v1/verify-registration-otp', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            mobile: mobile,
+            otp: otp
+        })
+    })
+    .then(async res => {
+        const data = await res.json();
+
+        if (!res.ok) throw data;
+
+        if (data.message === 'OTP verified successfully') {
+            showAlert('success', 'OTP verified successfully');
+
+            registerOtpVerified = true;
+
+            // ✅ Disable OTP input
+            document.getElementById('otp').disabled = true;
+
+            // ✅ Show tick icon
+            document.getElementById('mobileVerifiedIcon').classList.remove('d-none');
+
+            // ✅ Hide buttons
+            document.getElementById('sendOtpBtn').classList.add('d-none');
+            document.getElementById('verifyOtpBtn').classList.add('d-none');
+
+        } else {
+            showAlert('error', data.message || 'Invalid OTP');
+        }
+    })
+    .catch(err => {
+        showAlert('error', err.message || 'Invalid OTP');
+        console.error(err);
+    });
+}
+
+// ✅ Register User
+function registerUser() {
+
+if (!registerOtpVerified) {
+    showAlert('warning', 'Please verify OTP first');
+    return;
+}
+
+const form = document.getElementById('register');
+const formData = new FormData(form);
+
+// Convert FormData to plain object
+const data = Object.fromEntries(formData.entries());
+
+fetch('{{ url('/') }}/api/v1/register', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+    },
+    body: JSON.stringify(data)
+})
+.then(async res => {
+    const response = await res.json();
+
+    if (!res.ok) {
+        throw response;
+    }
+
+    showAlert('success', 'Registration successful');
+
+    form.reset();
+    document.getElementById('otpRegistraionSection').classList.add('d-none');
+    registerOtpVerified = false;
+
+    const modal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
+    modal.hide();
+})
+.catch(err => {
+    if (err && typeof err === 'object') {
+        let firstError = Object.values(err)[0];
+        if (Array.isArray(firstError)) firstError = firstError[0];
+        showAlert('error', firstError);
+    } else {
+        showAlert('error', 'Registration failed');
+    }
+    console.error(err);
+});
+}
     </script>
 </body>
 

@@ -326,12 +326,13 @@ header nav.navbar .navbar-nav li a.active {
 }
 .gallery .swiper .swiper-slide .text-area .date {
   margin-bottom: 16px;
-  background-color: #444;
+  background-color: #c70039;
   color: #fff;
   padding: 6px 16px;
   width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
+  border-radius: 4px;
 }
 .gallery .swiper .swiper-slide .text-area h4 {
   text-align: left;
@@ -354,10 +355,10 @@ header nav.navbar .navbar-nav li a.active {
   text-decoration: none;
   color: #444;
 }
-.gallery .swiper .swiper-button-prev,
-.gallery .swiper .swiper-button-next {
-  color: rgba(255, 255, 255, 0.8);
-  background: #b30000;
+.gallery .swiper-button-prev,
+.gallery .swiper-button-next {
+  color: #b30000;
+  background: rgba(255, 255, 255, 0.8);
   border-radius: 50%;
   width: 45px;
   height: 45px;
@@ -365,12 +366,20 @@ header nav.navbar .navbar-nav li a.active {
   top: 50%;
   transform: translateY(-50%);
 }
-.gallery .swiper .swiper-button-prev svg,
-.gallery .swiper .swiper-button-next svg {
+.gallery .swiper-button-prev svg,
+.gallery .swiper-button-next svg {
   height: 20px;
+  stroke-width: 3px;
 }
-.gallery .swiper .swiper-button-prev:hover,
-.gallery .swiper .swiper-button-next:hover {
+.gallery .swiper-button-next {
+  right: -40px;
+}
+.gallery .swiper-button-prev {
+  right: auto;
+  left: -40px;
+}
+.gallery .swiper-button-prev:hover,
+.gallery .swiper-button-next:hover {
   background: #b30000;
   color: #fff;
 }

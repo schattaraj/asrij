@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -21,34 +23,76 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name'      => 'required|string|max:255',
-            'email'     => 'nullable|email|unique:users,email',
+            // 'email'     => 'nullable|email|unique:users,email',
             'mobile'    => 'required|digits:10|unique:users,mobile',
             'dob'       => 'nullable|date',
             'address'   => 'nullable|string',
             'pin_code'  => 'nullable|string|max:10',
-            'password'  => 'nullable|min:6'
+            // 'password'  => 'nullable|min:6'
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
+    // ✅ Check OTP verified
+    if (!Cache::get('otp_verified_' . $request->mobile)) {
+        return response()->json([
+            'message' => 'Please verify OTP first'
+        ], 403);
+    }
         $user = User::create([
             'name'      => $request->name,
-            'email'     => $request->email,
+            // 'email'     => $request->email,
             'mobile'    => $request->mobile,
             'dob'       => $request->dob,
             'address'   => $request->address,
             'pin_code'  => $request->pin_code,
-            'password'  => $request->password ? Hash::make($request->password) : null,
+            // 'password'  => $request->password ? Hash::make($request->password) : null,
         ]);
+
+    // Optional: clear OTP verification
+    Cache::forget('otp_verified_' . $request->mobile);
 
         return response()->json([
             'message' => 'User registered successfully',
             'user'    => $user
         ], 201);
     }
+    public function sendRegistartionOtp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'mobile' => 'required|digits:10|unique:users,mobile'
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+        $otp = rand(100000, 999999);
+    
+        // Store OTP
+        DB::table('otps')->updateOrInsert(
+            ['mobile' => $request->mobile],
+            [
+                'otp' => $otp,
+                'expires_at' => now()->addMinutes(5),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]
+        );
+    
+        // TODO: Integrate SMS API here
+        // For testing:
+        return response()->json([
+            'status' => true,
+            'message' => 'OTP sent successfully',
+            'otp' => $otp // remove in production
+        ]);
+    }
     /*
     |--------------------------------------------------------------------------
     | SEND OTP
@@ -124,6 +168,36 @@ class AuthController extends Controller
         ]);
     }
 
+    public function verifyRegistrationOtp(Request $request)
+{
+    $request->validate([
+        'mobile' => 'required|digits:10',
+        'otp'    => 'required|digits:6'
+    ]);
+
+    $record = DB::table('otps')
+        ->where('mobile', $request->mobile)
+        ->first();
+
+    if (!$record) {
+        return response()->json(['message' => 'OTP not found'], 404);
+    }
+
+    if ($record->otp != $request->otp) {
+        return response()->json(['message' => 'Invalid OTP'], 400);
+    }
+
+    if (now()->gt($record->expires_at)) {
+        return response()->json(['message' => 'OTP expired'], 400);
+    }
+
+    // Mark verified (optional: store in session/cache)
+    Cache::put('otp_verified_' . $request->mobile, true, 300);
+    return response()->json([
+        'message' => 'OTP verified successfully',
+        'verification_token' => Str::random(40)
+    ]);
+}
     /*
     |--------------------------------------------------------------------------
     | LOGIN WITH PASSWORD
