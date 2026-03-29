@@ -48,6 +48,7 @@ class AuthController extends Controller
             'dob'       => $request->dob,
             'address'   => $request->address,
             'pin_code'  => $request->pin_code,
+            'roles'     => ['user'],
             // 'password'  => $request->password ? Hash::make($request->password) : null,
         ]);
 

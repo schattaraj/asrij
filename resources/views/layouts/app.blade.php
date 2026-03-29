@@ -55,7 +55,7 @@
                                     <polyline points="22,6 12,13 2,6"></polyline>
                                 </svg>
                                 info@asrij.in</a>
-                            <a href="tel:8653846646">
+                            <a href="tel:7048115559">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round" class="feather feather-phone">
@@ -63,10 +63,10 @@
                                         d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
                                     </path>
                                 </svg>
-                                865 384 6646</a>
+                                704 811 5559</a>
                         </div>
                         <div class="right">
-                            <a href="#">
+                            <a href="https://www.facebook.com/profile.php?id=61586204187656&mibextid=rS40aB7S9Ucbxw6v">
                                 <i class="fa-brands fa-facebook-f"></i>
                             </a>
                             <a href="#">
@@ -87,12 +87,12 @@
                     <div class="d-flex align-items-center">
                         <!-- Login Button -->
                         <a href="#loginModal" data-bs-toggle="modal" data-bs-target="#loginModal" id="loginBtn"
-                            class="btn btn-primary d-none d-md-block">
+                            class="btn btn-primary d-none">{{-- d-md-block --}}
                             Login
                         </a>
 
                         <!-- Profile Button -->
-                        <a href="#" id="profileBtn" class="btn d-none d-md-block"
+                        <a href="#" id="profileBtn" class="btn d-none"{{-- d-md-block --}}
                             style="font-size:30px;padding:8px;">
                             <i class="fa-regular fa-circle-user"></i>
                         </a>
@@ -196,10 +196,10 @@
                                     href="mailto:contact@asrij.com">contact@asrij.com</a>
                             </li>
                             <li>
-                                <i class="fa-solid fa-phone"></i> <a href="tel:911234567890">+911234567890</a>
+                                <i class="fa-solid fa-phone"></i> <a href="tel:917048115559">+917048115559</a>
                             </li>
                             <li>
-                                <a href="#" class="text-white fs-4 social-link"><i
+                                <a href="https://www.facebook.com/profile.php?id=61586204187656&mibextid=rS40aB7S9Ucbxw6v" class="text-white fs-4 social-link"><i
                                         class="fab fa-facebook-f"></i></a>
                                 <a href="#" class="text-white fs-4 social-link"><i
                                         class="fab fa-instagram"></i></a>
@@ -586,7 +586,7 @@
             const profileBtn = document.getElementById("profileBtn");
 
             if (token) {
-                loader.style.display = "d-flex";
+                loader.style.display = "flex";
                 // Fetch user info
                 fetch("{{ url('/') }}/api/v1/user", {
                         method: "GET",
@@ -748,6 +748,10 @@
                     });
                     // redirect if needed 
                     // window.location.href = "/dashboard";
+                    getUser();
+                    const modalElement = document.getElementById('loginModal');
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    modal.hide();
                 }).catch(error => {
                     console.log(error);
                 }).finally(() => {

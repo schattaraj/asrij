@@ -1312,15 +1312,14 @@
                 <div class="col-md-4 right" data-aos="fade-left">
                     <div class="contact-info">
                         <h3>Contact Information</h3>
-                        <a href="https://maps.app.goo.gl/ZJaR9YWVEXCS45539" target="_blank">
-                            <div class="item"><i class="fa-solid fa-location-dot"></i><span>Ganesh Glory, Gota,
-                                    Ahmedabad, Gujarat, 382481</span></div>
+                        <a href="#" target="">
+                            <div class="item"><i class="fa-solid fa-location-dot"></i><span>Sai Plaza Ground Floor, Police Chowki, Bishnupur, Bankura, West Bengal, India 722122</span></div>
                         </a>
                         <a href="mailto:info@asrij.com">
                             <div class="item"><i class="fa-solid fa-envelope"></i><span>info@asrij.com</span></div>
                         </a>
-                        <a href="tel:+919907234335" target="_blank">
-                            <div class="item"><i class="fa-solid fa-phone"></i><span>+91 9907234335</span></div>
+                        <a href="tel:+917048115559" target="_blank">
+                            <div class="item"><i class="fa-solid fa-phone"></i><span>+91 7048115559</span></div>
                         </a>
                     </div>
                     <div class="social-links">
