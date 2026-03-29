@@ -28,6 +28,7 @@ class AuthController extends Controller
             'dob'       => 'nullable|date',
             'address'   => 'nullable|string',
             'pin_code'  => 'nullable|string|max:10',
+            'blood_group' => 'nullable|string|max:3',
             // 'password'  => 'nullable|min:6'
         ]);
 
@@ -48,6 +49,7 @@ class AuthController extends Controller
             'dob'       => $request->dob,
             'address'   => $request->address,
             'pin_code'  => $request->pin_code,
+            'blood_group' => $request->blood_group,
             'roles'     => ['user'],
             // 'password'  => $request->password ? Hash::make($request->password) : null,
         ]);
