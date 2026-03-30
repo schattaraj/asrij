@@ -287,6 +287,22 @@
                                 <label for="dob">Date of Birth</label>
                             </div>
                         </div>
+                      <div class="mb-3">
+                             <div class="form-floating">
+                                 <select class="form-control" name="blood_group" id="blood_group" required>
+                                     <option value="" disabled selected>Select Blood Group</option>
+                                     <option value="A+">A+</option>
+                                     <option value="A-">A-</option>
+                                     <option value="B+">B+</option>
+                                     <option value="B-">B-</option>
+                                     <option value="AB+">AB+</option>
+                                     <option value="AB-">AB-</option>
+                                     <option value="O+">O+</option>
+                                     <option value="O-">O-</option>
+                                 </select>
+                                 <label for="blood_group">Blood Group</label>
+                             </div>
+                         </div>
                         <div class="mb-3">
                             <div class="form-floating">
                                 <input type="text" class="form-control" name="address" autocomplete="off"
