@@ -1243,8 +1243,8 @@ span {
   display: block;
 }
 
-.registration-form input,
-.registration-form select,
+.registration-form .form-control,
+.registration-form .form-select,
 .registration-form textarea {
   width: 100%;
   margin-bottom: 15px;

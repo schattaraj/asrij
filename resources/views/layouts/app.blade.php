@@ -290,7 +290,7 @@
                       <div class="mb-3">
                              <div class="form-floating">
                                  <select class="form-control" name="blood_group" id="blood_group" required>
-                                     <option value="" disabled selected>Select Blood Group</option>
+                                     <option value="" disabled selected>Select Your Blood Group</option>
                                      <option value="A+">A+</option>
                                      <option value="A-">A-</option>
                                      <option value="B+">B+</option>

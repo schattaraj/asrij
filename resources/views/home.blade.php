@@ -67,14 +67,15 @@
     @else  
     <section class="registration-section" id="registration-section">
         <div class="container">
-            <h1 style="font-size: 24px;font-weight:600">Register as a Donor / Receiver / Volunteer</h1>
+            {{-- <h1 style="font-size: 24px;font-weight:600">Register as a Donor / Receiver / Volunteer</h1> --}}
+            <h1 style="font-size: 24px;font-weight:600">Choose Your Role</h1>
 
             <div class="registration-tabs">
                 <button class="tab-btn" data-tab="donor" data-bs-target="#donor"> <i class="fa-solid fa-droplet"></i>
-                    <span>Donor</span></button>
+                    <span>Donate</span></button>
                 <button class="tab-btn" data-tab="receiver" data-bs-target="#receiver"> <i
                         class="fa-solid fa-hand-holding-heart"></i>
-                    <span>Receiver</span></button>
+                    <span>Request</span></button>
                 <button class="tab-btn" data-tab="volunteer" data-bs-target="#volunteer"> <i
                         class="fa-solid fa-hands-helping"></i>
                     <span>Volunteer</span></button>
@@ -91,9 +92,14 @@
             <!-- Donor Registration -->
             <div id="donor" class="tab-content">
                 <form action="{{ route('registration') }}" class="registration-form" method="post">
-                    @csrf
+                    @csrf   
                     <input type="hidden" name="role" value="donor">
-
+                    <div class="form-check mb-3">
+                        <input class="form-check-input autofill-user" type="checkbox" id="autofill-user">
+                        <label class="form-check-label" for="autofill-user">
+                            Use my profile details
+                        </label>
+                    </div>
                     <div class="form-floating">
                         <input type="text" class="form-control @error('name') is-invalid mb-0 @enderror" name="name"
                             id="donor_full_name" placeholder="Full Name" value="{{ old('name') }}" required>
@@ -176,9 +182,9 @@
                     </div>
 
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control @error('contact') is-invalid @enderror" id="contact"
-                            name="contact" placeholder="Contact Number" value="{{ old('contact') }}" required>
-                        @error('contact')
+                        <input type="text" class="form-control @error('mobile') is-invalid @enderror" id="contact"
+                            name="mobile" placeholder="Contact Number" value="{{ old('mobile') }}" required>
+                        @error('mobile')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                         <label>Contact Number</label>
@@ -192,9 +198,9 @@
                     </div>
 
                     <div class="form-floating mb-2">
-                        <input type="text" class="form-control @error('whatsapp') is-invalid @enderror" id="whatsapp"
-                            name="whatsapp" placeholder="WhatsApp Number" value="{{ old('whatsapp') }}" required>
-                        @error('whatsapp')
+                        <input type="text" class="form-control @error('whatsapp_number') is-invalid @enderror" id="whatsapp"
+                            name="whatsapp_number" placeholder="WhatsApp Number" value="{{ old('whatsapp_number') }}" required>
+                        @error('whatsapp_number')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                         <label>WhatsApp Number</label>
@@ -228,17 +234,6 @@
                 <form action="{{ route('registration') }}" class="registration-form" method="POST">
                     @csrf
                     <input type="hidden" name="role" value="receiver">
-                    {{-- <select name="receiver_type" required>
-              <option value="">Select Receiver Type</option>
-              <option>Thalassemia Patient</option>
-              <option>Emergency - Accident Case</option>
-              <option>Admitted Patient</option>
-              <option>Other</option>
-            </select>
-            <input type="text" name="name" placeholder="Patient Name" required>
-            <input type="text" name="hospital" placeholder="Hospital Name" required>
-            <input type="text" name="contact" placeholder="Contact Number" required>
-            <textarea name="address" placeholder="Address with Pin Code" required></textarea> --}}
                     <!-- Receiver Type -->
                     <div class="form-floating mb-3">
                         <select class="form-select" name="receiver_type" id="receiver_type" required>
@@ -250,7 +245,12 @@
                         </select>
                         <label for="receiver_type">Receiver Type</label>
                     </div>
-
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="requestForSelf">
+                        <label class="form-check-label" for="requestForSelf">
+                            Request for myself
+                        </label>
+                    </div>
                     <!-- Patient Name -->
                     <div class="form-floating mb-3">
                         <input type="text" class="form-control" name="name" id="name"
@@ -285,7 +285,7 @@
 
                     <!-- Contact Number -->
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" name="contact" placeholder="Contact Number" required>
+                        <input type="text" class="form-control" name="mobile" placeholder="Contact Number" required>
                         <label for="contact">Contact Number</label>
                     </div>
                     <div class="form-check mb-3">
@@ -296,9 +296,9 @@
                     </div>
 
                     <div class="form-floating mb-2">
-                        <input type="text" class="form-control @error('whatsapp') is-invalid @enderror"
-                            name="whatsapp" placeholder="WhatsApp Number" value="{{ old('whatsapp') }}" required>
-                        @error('whatsapp')
+                        <input type="text" class="form-control @error('whatsapp_number') is-invalid @enderror"
+                            name="whatsapp_number" placeholder="WhatsApp Number" value="{{ old('whatsapp_number') }}" required>
+                        @error('whatsapp_number')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                         <label>WhatsApp Number</label>
@@ -1383,6 +1383,140 @@
 
 @section('scripts')
     <script>
+            document.getElementById("requestForSelf").addEventListener('change', function () {
+                
+                const form = this.closest('form'); // ✅ get current form
+                
+                if (this.checked) {
+                    fetch(`{{url('/')}}/api/v1/user`, {
+                        headers: {
+                            'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        fillForm(form, data);
+                        disableFields(form, true);
+                    });
+                } else {
+                    clearForm(form);
+                    disableFields(form, false);
+                }
+            });
+
+        function fillForm(form, data) {
+            form.querySelector('[name="name"]').value = data.name || '';
+            form.querySelector('[name="email"]').value = data.email || '';
+            form.querySelector('[name="mobile"]').value = data.mobile || '';
+            form.querySelector('[name="whatsapp_number"]').value = data.whatsapp_number || '';
+            form.querySelector('[name="address"]').value = data.address || '';
+            form.querySelector('[name="pin_code"]').value = data.pin_code || '';
+        }
+
+        function disableFields(form, state) {
+            const fields = ['name','email','mobile','whatsapp_number','address','pin_code'];
+            fields.forEach(field => {
+                const el = form.querySelector(`[name="${field}"]`);
+                if (el && el.value) el.readOnly = state;
+            });
+        }
+
+        function clearForm(form) {
+            const fields = ['name','email','mobile','whatsapp_number','address','pin_code'];
+            fields.forEach(field => {
+                const el = form.querySelector(`[name="${field}"]`);
+                if (el) el.value = '';
+            });
+        }
+    </script>
+    <script>
+        document.querySelectorAll('.autofill-user').forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+        
+                const form = this.closest('form');
+        
+                if (this.checked) {
+                    fetch(`{{url('/')}}/api/v1/user`, {
+                        headers: {
+                            'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        autoFill(form, data);
+                        toggleFields(form, true);
+                    });
+                } else {
+                    clearForm(form);
+                    toggleFields(form, false);
+                }
+            });
+        });
+        
+        function autoFill(form, data) {
+        
+            const fieldMap = {
+                name: 'name',
+                email: 'email',
+                contact: 'mobile',
+                whatsapp: 'whatsapp_number',
+                address: 'address',
+                pin_code: 'pin_code',
+                blood_group: 'blood_group',
+                year_of_birth: 'year_of_birth'
+            };
+        
+            Object.keys(fieldMap).forEach(key => {
+                const input = form.querySelector(`[name="${fieldMap[key]}"]`);
+                if (input && data[key]) {
+                    input.value = data[key];
+                }
+            });
+        
+            // Special case: WhatsApp same as contact checkbox (if exists)
+            const sameCheckbox = form.querySelector('#sameAsContact');
+            if (sameCheckbox && data.mobile === data.whatsapp_number) {
+                sameCheckbox.checked = true;
+            }
+        }
+        
+        function toggleFields(form, state) {
+            const fields = ['name','email','mobile','whatsapp_number','address','pin_code'];
+        
+            fields.forEach(field => {
+                const el = form.querySelector(`[name="${field}"]`);
+                if (el && el.value) {
+                    el.readOnly = state;
+                }
+                else{
+                    el.readOnly = false;
+                };
+            });
+        
+            // Disable selects too (like blood group, year)
+            ['blood_group', 'year_of_birth'].forEach(field => {
+                const el = form.querySelector(`[name="${field}"]`);
+                if (el && el.value) {
+                    el.disabled = state;
+                }
+                else{
+                    el.disabled = false;
+                }
+            });
+        }
+        
+        function clearForm(form) {
+            form.querySelectorAll('input, textarea, select').forEach(el => {
+                if (el.type !== 'hidden' && el.type !== 'checkbox') {
+                    el.value = '';
+                }
+            });
+            form.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+        }
+        </script>
+    <script>
         document.addEventListener("DOMContentLoaded", () => {
             const counters = document.querySelectorAll(".count");
             const speed = 200; // lower = faster
@@ -1684,8 +1818,8 @@
                 const parent = checkbox.closest("form");
                 // find input inside that parent
                 const input = parent.querySelector("input[type='checkbox']");
-                const contact = parent.querySelector("input[name='contact']");
-                const whatsapp = parent.querySelector("input[name='whatsapp']");
+                const contact = parent.querySelector("input[name='mobile']");
+                const whatsapp = parent.querySelector("input[name='whatsapp_number']");
                 if (input.checked) {
                     whatsapp.value = contact.value;
                     whatsapp.setAttribute('readonly', true);
