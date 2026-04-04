@@ -29,6 +29,8 @@ class AuthController extends Controller
             'address'   => 'nullable|string',
             'pin_code'  => 'nullable|string|max:10',
             'blood_group' => 'nullable|string|max:3',
+            'latitude'  => 'nullable|string|max:20',
+            'longitude' => 'nullable|string|max:20',
             // 'password'  => 'nullable|min:6'
         ]);
 
@@ -50,6 +52,9 @@ class AuthController extends Controller
             'address'   => $request->address,
             'pin_code'  => $request->pin_code,
             'blood_group' => $request->blood_group,
+            'latitude'  => $request->latitude,
+            'longitude' => $request->longitude,
+
             'roles'     => ['user'],
             // 'password'  => $request->password ? Hash::make($request->password) : null,
         ]);
