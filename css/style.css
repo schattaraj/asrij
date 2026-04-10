@@ -2368,4 +2368,71 @@ body.design2 .carousel .carousel-item img {
     background-position: 0% 100%,100% 100%,200% 100%;
   }
 }
+
+.filter-bar {
+  border-radius: 12px;
+}
+
+.request-card {
+  width: 100%;
+  border-radius: 14px;
+  padding: 15px;
+  background: #fff;
+  border: 1px solid #eee;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  height: 100%;
+  /* Better modern shadow */
+  -webkit-box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+          box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  -webkit-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+  /* Push button to bottom */
+}
+
+.request-card:hover {
+  -webkit-transform: translateY(-6px);
+          transform: translateY(-6px);
+  -webkit-box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.request-card .blood-group {
+  font-size: 22px;
+  font-weight: 700;
+  color: #e63946;
+}
+
+.request-card .meta {
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.request-card .donate-btn {
+  margin-top: auto;
+}
+
+/* Make all columns stretch equally */
+#requestContainer > div {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+/* Urgent Styling */
+.urgent-card {
+  border-left: 4px solid #e63946;
+  background: -webkit-gradient(linear, left top, right top, from(#fff5f5), to(#ffffff));
+  background: linear-gradient(to right, #fff5f5, #ffffff);
+}
+
+/* Button polish */
+.btn-danger {
+  border-radius: 8px;
+}
 /*# sourceMappingURL=style.css.map */

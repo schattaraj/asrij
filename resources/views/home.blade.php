@@ -64,61 +64,64 @@
         </div>
     </section>
     @auth
-    @else  
-    <section class="registration-section" id="registration-section">
-        <div class="container">
-            {{-- <h1 style="font-size: 24px;font-weight:600">Register as a Donor / Receiver / Volunteer</h1> --}}
-            <h1 style="font-size: 24px;font-weight:600">Choose Your Role</h1>
+    @else
+        <section class="registration-section" id="registration-section">
+            <div class="container">
+                {{-- <h1 style="font-size: 24px;font-weight:600">Register as a Donor / Receiver / Volunteer</h1> --}}
+                <h1 style="font-size: 24px;font-weight:600">Choose Your Role</h1>
 
-            <div class="registration-tabs">
-                <button class="tab-btn" data-tab="donor" data-bs-target="#donor"> <i class="fa-solid fa-droplet"></i>
-                    <span>Donate</span></button>
-                <button class="tab-btn" data-tab="receiver" data-bs-target="#receiver"> <i
-                        class="fa-solid fa-hand-holding-heart"></i>
-                    <span>Request</span></button>
-                <button class="tab-btn" data-tab="volunteer" data-bs-target="#volunteer"> <i
-                        class="fa-solid fa-hands-helping"></i>
-                    <span>Volunteer</span></button>
-            </div>
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+                <div class="registration-tabs">
+                    <button class="tab-btn" data-tab="donor" data-bs-target="#donor"> <i class="fa-solid fa-droplet"></i>
+                        <span>Donor</span></button>
+                    <button class="tab-btn" data-tab="request_blood" data-bs-target="#request_blood"> <i
+                            class="fa-solid fa-hand-holding-heart"></i>
+                        <span>Request Blood</span></button>
+                    <button class="tab-btn" data-tab="volunteer" data-bs-target="#volunteer"> <i
+                            class="fa-solid fa-hands-helping"></i>
+                        <span>Volunteer</span></button>
                 </div>
-            @endif
-            <!-- Donor Registration -->
-            <div id="donor" class="tab-content">
-                <form action="{{ route('registration') }}" class="registration-form" method="post">
-                    @csrf   
-                    <input type="hidden" name="role" value="donor">
-                    <div class="form-check mb-3">
-                        <input class="form-check-input autofill-user" type="checkbox" id="autofill-user">
-                        <label class="form-check-label" for="autofill-user">
-                            Use my profile details
-                        </label>
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-                    <div class="form-floating">
-                        <input type="text" class="form-control @error('name') is-invalid mb-0 @enderror" name="name"
-                            id="donor_full_name" placeholder="Full Name" value="{{ old('name') }}" required>
-                        @error('name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <label for="donor_full_name">Full Name</label>
+                @endif
+                <!-- Donor Registration -->
+                <div id="donor" class="tab-content">
+                    <div class="role-message alert alert-info d-none">
+                        You are already a donor.
                     </div>
+                    <form action="{{ route('registration') }}" class="registration-form" method="post">
+                        @csrf
+                        <input type="hidden" name="role" value="donor">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input autofill-user" type="checkbox" id="autofill-user">
+                            <label class="form-check-label" for="autofill-user">
+                                Use my profile details
+                            </label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="text" class="form-control @error('name') is-invalid mb-0 @enderror" name="name"
+                                id="donor_full_name" placeholder="Full Name" value="{{ old('name') }}" required>
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <label for="donor_full_name">Full Name</label>
+                        </div>
 
-                    <div class="form-floating">
-                        <input type="email" class="form-control @error('email') is-invalid @enderror" name="email"
-                            id="donor_email" placeholder="Email" value="{{ old('email') }}">
-                        @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <label for="donor_email">Email</label>
-                    </div>
+                        <div class="form-floating">
+                            <input type="email" class="form-control @error('email') is-invalid @enderror" name="email"
+                                id="donor_email" placeholder="Email" value="{{ old('email') }}">
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <label for="donor_email">Email</label>
+                        </div>
 
-                    {{-- <div class="form-floating">
+                        {{-- <div class="form-floating">
                         <select class="form-select @error('type') is-invalid @enderror" name="type" id="donorType"
                             required>
                             <option value="">Select Option</option>
@@ -133,220 +136,151 @@
                         <label for="donorType">Type</label>
                     </div> --}}
 
-                    <div class="form-floating">
-                        <select class="form-select @error('blood_group') is-invalid @enderror" name="blood_group"
-                            id="donor_floating_blood_select" required>
-                            <option value="">Select Blood Group</option>
-                            @foreach (['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] as $group)
-                                <option value="{{ $group }}" {{ old('blood_group') == $group ? 'selected' : '' }}>
-                                    {{ $group }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('blood_group')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <label for="donor_floating_blood_select">Blood Group</label>
-                    </div>
-
-                    <div class="form-floating">
-                        <select class="form-select @error('year_of_birth') is-invalid @enderror" name="year_of_birth"
-                            id="donor_year_of_birth" required>
-                            <option value="">Select Year</option>
-                            @php
-                                $currentYear = now()->year;
-                                $minYear = $currentYear - 65;
-                                $maxYear = $currentYear - 18;
-                            @endphp
-                            @for ($year = $maxYear; $year >= $minYear; $year--)
-                                <option value="{{ $year }}"
-                                    {{ old('year_of_birth') == $year ? 'selected' : '' }}>
-                                    {{ $year }}
-                                </option>
-                            @endfor
-                        </select>
-                        @error('year_of_birth')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <label for="donor_year_of_birth">Year of Birth</label>
-                    </div>
-
-                    <div class="form-floating">
-                        <input type="date" id="date"
-                            class="form-control @error('last_donation') is-invalid @enderror" name="last_donation"
-                            value="{{ old('last_donation') }}">
-                        @error('last_donation')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <label for="date">Last date of blood donation</label>
-                    </div>
-
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control @error('mobile') is-invalid @enderror" id="contact"
-                            name="mobile" placeholder="Contact Number" value="{{ old('mobile') }}" required>
-                        @error('mobile')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <label>Contact Number</label>
-                    </div>
-
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" style="width: 16px" type="checkbox" id="sameAsContact">
-                        <label class="form-check-label" for="sameAsContact">
-                            WhatsApp number same as contact number
-                        </label>
-                    </div>
-
-                    <div class="form-floating mb-2">
-                        <input type="text" class="form-control @error('whatsapp_number') is-invalid @enderror" id="whatsapp"
-                            name="whatsapp_number" placeholder="WhatsApp Number" value="{{ old('whatsapp_number') }}" required>
-                        @error('whatsapp_number')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <label>WhatsApp Number</label>
-                    </div>
-
-                    <div class="form-floating">
-                        <input type="text" id="donor_pin_code"
-                            class="form-control @error('pin_code') is-invalid @enderror" name="pin_code"
-                            placeholder="Pin Code" value="{{ old('pin_code') }}" required>
-                        @error('pin_code')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <label for="donor_pin_code">Pin Code</label>
-                    </div>
-
-                    <div class="form-floating">
-                        <textarea class="form-control @error('address') is-invalid @enderror" name="address" placeholder="Address"
-                            style="height: 100px" required>{{ old('address') }}</textarea>
-                        @error('address')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <label>Address</label>
-                    </div>
-
-                    <button type="submit" class="btn-primary">Submit Registration</button>
-                </form>
-            </div>
-
-            <!-- Receiver Registration -->
-            <div id="receiver" class="tab-content">
-                <form action="{{ route('registration') }}" class="registration-form" method="POST">
-                    @csrf
-                    <input type="hidden" name="role" value="receiver">
-                    <!-- Receiver Type -->
-                    <div class="form-floating mb-3">
-                        <select class="form-select" name="receiver_type" id="receiver_type" required>
-                            <option value="">Select Receiver Type</option>
-                            <option>Thalassemia Patient</option>
-                            <option>Emergency - Accident Case</option>
-                            <option>Admitted Patient</option>
-                            <option>Other</option>
-                        </select>
-                        <label for="receiver_type">Receiver Type</label>
-                    </div>
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="requestForSelf">
-                        <label class="form-check-label" for="requestForSelf">
-                            Request for myself
-                        </label>
-                    </div>
-                    <!-- Patient Name -->
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" name="name" id="name"
-                            placeholder="Patient Name" required>
-                        <label for="name">Patient Name</label>
-                    </div>
-                    <div class="form-floating">
-                        <input type="email" class="form-control" name="email" id="receiver_full_name"
-                            placeholder="Email">
-                        <label for="receiver_full_name">Email</label>
-                    </div>
-                    <div class="form-floating">
-                        <select class="form-select" name="blood_group" id="receiver_floating_blood_select" required>
-                            <option value="">Select Blood Group</option>
-                            <option>A+</option>
-                            <option>A-</option>
-                            <option>B+</option>
-                            <option>B-</option>
-                            <option>AB+</option>
-                            <option>AB-</option>
-                            <option>O+</option>
-                            <option>O-</option>
-                        </select>
-                        <label for="receiver_floating_blood_select">Blood Group</label>
-                    </div>
-                    <!-- Hospital Name -->
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" name="hospital" id="hospital"
-                            placeholder="Hospital Name" required>
-                        <label for="hospital">Hospital Name</label>
-                    </div>
-
-                    <!-- Contact Number -->
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" name="mobile" placeholder="Contact Number" required>
-                        <label for="contact">Contact Number</label>
-                    </div>
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" style="width: 16px" type="checkbox" id="recieverWhatsapp">
-                        <label class="form-check-label" for="recieverWhatsapp">
-                            WhatsApp number same as contact number
-                        </label>
-                    </div>
-
-                    <div class="form-floating mb-2">
-                        <input type="text" class="form-control @error('whatsapp_number') is-invalid @enderror"
-                            name="whatsapp_number" placeholder="WhatsApp Number" value="{{ old('whatsapp_number') }}" required>
-                        @error('whatsapp_number')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <label>WhatsApp Number</label>
-                    </div>
-
-                    <!-- Address -->
-                    <div class="form-floating mb-3">
-                        <textarea class="form-control" name="address" id="address" placeholder="Address" style="height: 120px;" required></textarea>
-                        <label for="address">Address</label>
-                    </div>
-                    <div class="form-floating">
-                        <input type="text" id="receiver_pin_code" class="form-control" name="pin_code"
-                            placeholder="Pin Code" required>
-                        <label for="receiver_pin_code">Pin Code</label>
-                    </div>
-                    <button type="submit" class="btn-primary">Submit Registration</button>
-                </form>
-            </div>
-
-            <!-- Volunteer Registration -->
-            <div id="volunteer" class="tab-content">
-                <form action="{{ route('registration') }}" class="registration-form" method="POST">
-                    @csrf
-                    <input type="hidden" name="role" value="volunteer">
-                    <div class="form-floating">
-                        <select class="form-select" onchange="volunteerFields(this)" name="volunteer_type"
-                            id="floatingSelect" required>
-                            <option value="">Select Option</option>
-                            <option value="individual">Individual</option>
-                            <option value="ngo">NGO</option>
-                            <option value="charity">Charity</option>
-                            <option value="club">Club</option>
-                        </select>
-                        <label for="floatingSelect">Type</label>
-                    </div>
-                    <div class="fields" id="individual">
                         <div class="form-floating">
-                            <input type="text" class="form-control" name="name" id="full_name"
-                                placeholder="Full Name" required>
-                            <label for="full_name">Full Name</label>
+                            <select class="form-select @error('blood_group') is-invalid @enderror" name="blood_group"
+                                id="donor_floating_blood_select" required>
+                                <option value="">Select Blood Group</option>
+                                @foreach (['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] as $group)
+                                    <option value="{{ $group }}" {{ old('blood_group') == $group ? 'selected' : '' }}>
+                                        {{ $group }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('blood_group')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <label for="donor_floating_blood_select">Blood Group</label>
+                        </div>
+
+                        <div class="form-floating">
+                            <select class="form-select @error('year_of_birth') is-invalid @enderror" name="year_of_birth"
+                                id="donor_year_of_birth" required>
+                                <option value="">Select Year</option>
+                                @php
+                                    $currentYear = now()->year;
+                                    $minYear = $currentYear - 65;
+                                    $maxYear = $currentYear - 18;
+                                @endphp
+                                @for ($year = $maxYear; $year >= $minYear; $year--)
+                                    <option value="{{ $year }}"
+                                        {{ old('year_of_birth') == $year ? 'selected' : '' }}>
+                                        {{ $year }}
+                                    </option>
+                                @endfor
+                            </select>
+                            @error('year_of_birth')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <label for="donor_year_of_birth">Year of Birth</label>
+                        </div>
+
+                        <div class="form-floating">
+                            <input type="date" id="date"
+                                class="form-control @error('last_donation') is-invalid @enderror" name="last_donation"
+                                value="{{ old('last_donation') }}">
+                            @error('last_donation')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <label for="date">Last date of blood donation</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control @error('mobile') is-invalid @enderror" id="contact"
+                                name="mobile" placeholder="Contact Number" value="{{ old('mobile') }}" maxlength="10"
+                                required>
+                            @error('mobile')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <label>Contact Number</label>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" style="width: 16px" type="checkbox" name="whatsapp_checkbox" id="sameAsContact">
+                            <label class="form-check-label" for="sameAsContact">
+                                WhatsApp number same as contact number
+                            </label>
+                        </div>
+
+                        <div class="form-floating mb-2">
+                            <input type="text" class="form-control @error('whatsapp_number') is-invalid @enderror"
+                                id="whatsapp" name="whatsapp_number" placeholder="WhatsApp Number" maxlength="10"
+                                value="{{ old('whatsapp_number') }}" required>
+                            @error('whatsapp_number')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <label>WhatsApp Number</label>
+                        </div>
+
+                        <div class="form-floating">
+                            <input type="text" id="donor_pin_code"
+                                class="form-control @error('pin_code') is-invalid @enderror" name="pin_code"
+                                placeholder="Pin Code" value="{{ old('pin_code') }}" required>
+                            @error('pin_code')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <label for="donor_pin_code">Pin Code</label>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="form-floating flex-grow-1">
+                                <input id="donor_address" class="form-control mb-0 @error('address') is-invalid @enderror"
+                                    name="address" placeholder="Address"
+                                    style="border-top-right-radius: 0;border-bottom-right:0;" required
+                                    value="{{ old('address') }}" readonly>
+                                @error('address')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <label>Address</label>
+                            </div>
+                            <button type="button" class="btn btn-outline-danger rounded-end w-auto open-location-modal"
+                                data-bs-toggle="modal" data-bs-target="#locationModal" data-location-input="donor_address"
+                                data-lat="donor_latitude" data-lng="donor_longitude">
+                                Change
+                            </button>
+                            <input type="hidden" name="donor_latitude" id="donor_latitude">
+                            <input type="hidden" name="donor_longitude" id="donor_longitude">
+                        </div>
+                        <button type="submit" class="btn-primary">Submit Registration</button>
+                    </form>
+                </div>
+
+                <!-- Request Blood -->
+                <div id="request_blood" class="tab-content">
+                    <div class="role-message alert alert-info d-none">
+                        You already have a blood request.
+                    </div>
+                    <form action="{{ route('blood-requests.store') }}" class="registration-form" method="POST">
+                        @csrf
+                        <input type="hidden" name="role" value="receiver">
+                        <!-- Receiver Type -->
+                        <div class="form-floating mb-3">
+                            <select class="form-select" name="patient_type" id="patient_type" required>
+                                <option value="">Select Medicine Condition</option>
+                                <option>Thalassemia Patient</option>
+                                <option>Emergency - Accident Case</option>
+                                <option>Admitted Patient</option>
+                                <option>Other</option>
+                            </select>
+                            <label for="patient_type">Medical Condition</label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="requestForSelf" name="request_for">
+                            <label class="form-check-label" for="requestForSelf">
+                                Request for myself
+                            </label>
+                        </div>
+                        <!-- Patient Name -->
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name="name" id="name"
+                                placeholder="Patient Name" required>
+                            <label for="name">Patient Name</label>
                         </div>
                         <div class="form-floating">
-                            <input type="email" class="form-control" name="email" id="volunteer_email"
-                                placeholder="Email" required>
-                            <label for="volunteer_email">Email</label>
+                            <input type="email" class="form-control" name="email" id="receiver_full_name"
+                                placeholder="Email">
+                            <label for="receiver_full_name">Email</label>
                         </div>
                         <div class="form-floating">
-                            <select class="form-select" name="blood_group" id="volunteer_floating_blood_select" required>
+                            <select class="form-select" name="blood_group" id="receiver_floating_blood_select" required>
                                 <option value="">Select Blood Group</option>
                                 <option>A+</option>
                                 <option>A-</option>
@@ -357,396 +291,527 @@
                                 <option>O+</option>
                                 <option>O-</option>
                             </select>
-                            <label for="volunteer_floating_blood_select">Blood Group</label>
+                            <label for="receiver_floating_blood_select">Blood Group</label>
                         </div>
-                        <div class="form-floating">
-                            <select class="form-select" name="year_of_birth" id="volunteer_year_of_birth" required>
-                                <option value="">Select Year</option>
-                                @php
-                                    $currentYear = now()->year;
-                                    $minYear = $currentYear - 65;
-                                    $maxYear = $currentYear - 18;
-                                @endphp
-                                @for ($year = $maxYear; $year >= $minYear; $year--)
-                                    <option value="{{ $year }}">{{ $year }}</option>
-                                @endfor
+                        <!-- Hospital Name -->
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name="hospital_name" id="hospital"
+                                placeholder="Hospital Name" required>
+                            <label for="hospital">Hospital Name</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="number" class="form-control" name="unit" id="unit"
+                                placeholder="Unit Needed" required>
+                            <label for="unit">Unit Needed</label>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="form-floating flex-grow-1">
+                                <input type="number" class="form-control mb-0" name="required_before"
+                                    placeholder="Required Within" min="1" style="border-top-right-radius: 0;border-bottom-right-radius:0;" required>
+                                <label>Required Within</label>
+                            </div>
+                            <select class="form-select mb-0" name="required_before_unit" style="max-width: 120px;">
+                                <option value="days">Days</option>
+                                <option value="hours">Hours</option>
                             </select>
-                            <label for="volunteer_year_of_birth">Year of Birth</label>
                         </div>
-                        <div class="form-floating">
-                            <input type="date" id="date" class="form-control" name="last_donation"
-                                placeholder="Last Date of Donation">
-                            <label for="date">Last date of blood donation</label>
-                        </div>
-                        <div class="form-floating">
-                            <input type="text" class="form-control" name="contact" placeholder="Contact Number"
-                                required>
-                            <label for="">Contact Number</label>
+                        <!-- Contact Number -->
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name="mobile" placeholder="Contact Number" required>
+                            <label for="contact">Contact Number</label>
                         </div>
                         <div class="form-check mb-3">
-                            <input class="form-check-input" style="width: 16px" type="checkbox" id="volunteerWhatsapp">
-                            <label class="form-check-label" for="volunteerWhatsapp">
+                            <input class="form-check-input" style="width: 16px" type="checkbox" name="whatsapp_checkbox" id="recieverWhatsapp">
+                            <label class="form-check-label" for="recieverWhatsapp">
                                 WhatsApp number same as contact number
                             </label>
                         </div>
 
                         <div class="form-floating mb-2">
-                            <input type="text" class="form-control @error('whatsapp') is-invalid @enderror"
-                                name="whatsapp" placeholder="WhatsApp Number" value="{{ old('whatsapp') }}" required>
-                            @error('whatsapp')
+                            <input type="text" class="form-control @error('whatsapp_number') is-invalid @enderror"
+                                name="whatsapp_number" placeholder="WhatsApp Number" value="{{ old('whatsapp_number') }}"
+                                required>
+                            @error('whatsapp_number')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                             <label>WhatsApp Number</label>
                         </div>
+
+                        <!-- Address -->
+                        {{-- <div class="form-floating mb-3">
+                            <textarea class="form-control" name="address" id="address" placeholder="Address" style="height: 120px;" required></textarea>
+                            <label for="address">Address</label>
+                        </div> --}}
+                        <div class="input-group mb-3">
+                            <div class="form-floating flex-grow-1">
+                                <input id="patient_address" class="form-control mb-0 @error('address') is-invalid @enderror"
+                                    name="address" placeholder="Address"
+                                    style="border-top-right-radius: 0;border-bottom-right:0;" required
+                                    value="{{ old('address') }}" readonly>
+                                @error('address')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <label>Address</label>
+                            </div>
+                            <button type="button" class="btn btn-outline-danger rounded-end w-auto open-location-modal"
+                                data-bs-toggle="modal" data-bs-target="#locationModal" data-location-input="patient_address"
+                                data-lat="patient_latitude" data-lng="patient_longitude">
+                                Change
+                            </button>
+                            <input type="hidden" name="patient_latitude" id="patient_latitude">
+                            <input type="hidden" name="patient_longitude" id="patient_longitude">
+                        </div>
+                        {{-- <div class="form-floating">
+                            <input type="file" id="prescription" class="form-control" name="prescription"
+                                placeholder="Prescription" required>
+                            <label for="prescription">Upload Prescriotion</label>
+                        </div> --}}
+                        <div class="form-group">
+                            <label for="" class="form-label">Upload Prescriotion</label>
+                            <input type="file" id="prescription" class="form-control" name="prescription"
+                            placeholder="Prescription" required>
+                        </div>
                         <div class="form-floating">
-                            <input type="text" id="volunteer_pin_code" class="form-control" name="pin_code"
+                            <input type="text" id="receiver_pin_code" class="form-control" name="pin_code"
                                 placeholder="Pin Code" required>
-                            <label for="volunteer_pin_code">Pin Code</label>
+                            <label for="receiver_pin_code">Pin Code</label>
                         </div>
+                        <button type="submit" class="btn-primary">Submit Registration</button>
+                    </form>
+                </div>
+
+                <!-- Volunteer Registration -->
+                <div id="volunteer" class="tab-content">
+                    <div class="role-message alert alert-info d-none">
+                        You are already a volunteer.
+                    </div>
+                    <form action="{{ route('registration') }}" class="registration-form" method="POST">
+                        @csrf
+                        <input type="hidden" name="role" value="volunteer">
                         <div class="form-floating">
-                            <textarea class="form-control" name="address" placeholder="Address" required style="height: 100px"></textarea>
-                            <label for="">Address</label>
+                            <select class="form-select" onchange="volunteerFields(this)" name="volunteer_type"
+                                id="floatingSelect" required>
+                                <option value="">Select Option</option>
+                                <option value="individual">Individual</option>
+                                <option value="ngo">NGO</option>
+                                <option value="charity">Charity</option>
+                                <option value="club">Club</option>
+                            </select>
+                            <label for="floatingSelect">Type</label>
                         </div>
-                    </div>
-                    <div class="fields" id="ngo">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="registration_number"
-                                        placeholder="Registration Number" required>
-                                    <label>Registration Number</label>
-                                </div>
+                        <div class="fields" id="individual">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" name="name" id="full_name"
+                                    placeholder="Full Name" required>
+                                <label for="full_name">Full Name</label>
+                            </div>
+                            <div class="form-floating">
+                                <input type="email" class="form-control" name="email" id="volunteer_email"
+                                    placeholder="Email" required>
+                                <label for="volunteer_email">Email</label>
+                            </div>
+                            <div class="form-floating">
+                                <select class="form-select" name="blood_group" id="volunteer_floating_blood_select" required>
+                                    <option value="">Select Blood Group</option>
+                                    <option>A+</option>
+                                    <option>A-</option>
+                                    <option>B+</option>
+                                    <option>B-</option>
+                                    <option>AB+</option>
+                                    <option>AB-</option>
+                                    <option>O+</option>
+                                    <option>O-</option>
+                                </select>
+                                <label for="volunteer_floating_blood_select">Blood Group</label>
+                            </div>
+                            <div class="form-floating">
+                                <select class="form-select" name="year_of_birth" id="volunteer_year_of_birth" required>
+                                    <option value="">Select Year</option>
+                                    @php
+                                        $currentYear = now()->year;
+                                        $minYear = $currentYear - 65;
+                                        $maxYear = $currentYear - 18;
+                                    @endphp
+                                    @for ($year = $maxYear; $year >= $minYear; $year--)
+                                        <option value="{{ $year }}">{{ $year }}</option>
+                                    @endfor
+                                </select>
+                                <label for="volunteer_year_of_birth">Year of Birth</label>
+                            </div>
+                            <div class="form-floating">
+                                <input type="date" id="date" class="form-control" name="last_donation"
+                                    placeholder="Last Date of Donation">
+                                <label for="date">Last date of blood donation</label>
+                            </div>
+                            <div class="form-floating">
+                                <input type="text" class="form-control" name="contact" placeholder="Contact Number"
+                                    required>
+                                <label for="">Contact Number</label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" style="width: 16px" type="checkbox" id="volunteerWhatsapp">
+                                <label class="form-check-label" for="volunteerWhatsapp">
+                                    WhatsApp number same as contact number
+                                </label>
                             </div>
 
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="organization"
-                                        placeholder="Organization / Trust Name" required>
-                                    <label>Organization / Trust Name</label>
-                                </div>
+                            <div class="form-floating mb-2">
+                                <input type="text" class="form-control @error('whatsapp') is-invalid @enderror"
+                                    name="whatsapp" placeholder="WhatsApp Number" value="{{ old('whatsapp') }}" required>
+                                @error('whatsapp')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <label>WhatsApp Number</label>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="number" class="form-control" name="group_quantity"
-                                        placeholder="Group Quantity" required>
-                                    <label>Group Quantity</label>
-                                </div>
+                            <div class="form-floating">
+                                <input type="text" id="volunteer_pin_code" class="form-control" name="pin_code"
+                                    placeholder="Pin Code" required>
+                                <label for="volunteer_pin_code">Pin Code</label>
                             </div>
-
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="contact"
-                                        placeholder="Contact Number" required>
-                                    <label>Contact Number</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="president_name"
-                                        placeholder="President Name">
-                                    <label>President Name</label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="president_number"
-                                        placeholder="President Number">
-                                    <label>President Number</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Row 6 - Secretary -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="secretary_name"
-                                        placeholder="Secretary Name">
-                                    <label>Secretary Name</label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="secretary_number"
-                                        placeholder="Secretary Number">
-                                    <label>Secretary Number</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Row 7 - Account -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="account_name"
-                                        placeholder="Account Name">
-                                    <label>Account Name</label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="account_number"
-                                        placeholder="Account Number">
-                                    <label>Account Number</label>
-                                </div>
+                            <div class="form-floating">
+                                <textarea class="form-control" name="address" placeholder="Address" required style="height: 100px"></textarea>
+                                <label for="">Address</label>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="email" class="form-control" name="email" placeholder="Email ID"
-                                        required>
-                                    <label>Email</label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="pincode" placeholder="Pin Code"
-                                        required>
-                                    <label>Pin Code</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-floating mb-3">
-                                    <textarea name="address" class="form-control" placeholder="Address" required></textarea>
-                                    <label>Address</label>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Members Section -->
-                        <div class="row">
-                            <div class="col-12">
-                                <h5 class="mt-3">Members</h5>
-                            </div>
-                        </div>
-
-                        <div id="members-area">
-
-                            <!-- Member Row Template -->
-                            <div class="row member-row">
-                                <div class="col-md-5">
+                        <div class="fields" id="ngo">
+                            <div class="row">
+                                <div class="col-md-6">
                                     <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="member_name[]"
-                                            placeholder="Member Name">
-                                        <label>Member Name</label>
+                                        <input type="text" class="form-control" name="registration_number"
+                                            placeholder="Registration Number" required>
+                                        <label>Registration Number</label>
                                     </div>
                                 </div>
 
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="member_contact_number[]"
-                                            placeholder="Contact Number">
+                                        <input type="text" class="form-control" name="organization"
+                                            placeholder="Organization / Trust Name" required>
+                                        <label>Organization / Trust Name</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="number" class="form-control" name="group_quantity"
+                                            placeholder="Group Quantity" required>
+                                        <label>Group Quantity</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="contact"
+                                            placeholder="Contact Number" required>
                                         <label>Contact Number</label>
                                     </div>
                                 </div>
-
-                                <!-- Position dropdown -->
-                                <div class="col-md-3">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
                                     <div class="form-floating mb-3">
-                                        <select class="form-select" name="member_position[]">
-                                            <option value="Member">Member</option>
-                                            <option value="President">President</option>
-                                            <option value="Secretary">Secretary</option>
-                                            <option value="Treasurer">Treasurer</option>
-                                        </select>
-                                        <label>Position</label>
+                                        <input type="text" class="form-control" name="president_name"
+                                            placeholder="President Name">
+                                        <label>President Name</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="president_number"
+                                            placeholder="President Number">
+                                        <label>President Number</label>
                                     </div>
                                 </div>
                             </div>
 
-                        </div>
-
-                        <!-- Add Member Button -->
-                        <div class="row mb-2">
-                            <div class="col-3">
-                                <button type="button" class="btn btn-primary" onclick="addMember()">Add Member</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="fields" id="charity">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="registration_number"
-                                        placeholder="Registration Number" required>
-                                    <label>Registration Number</label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="organization"
-                                        placeholder="Organization / Trust Name" required>
-                                    <label>Organization / Trust Name</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="number" class="form-control" name="group_quantity"
-                                        placeholder="Group Quantity" required>
-                                    <label>Group Quantity</label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="contact"
-                                        placeholder="Contact Number" required>
-                                    <label>Contact Number</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="president_name"
-                                        placeholder="President Name">
-                                    <label>President Name</label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="president_number"
-                                        placeholder="President Number">
-                                    <label>President Number</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Row 6 - Secretary -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="secretary_name"
-                                        placeholder="Secretary Name">
-                                    <label>Secretary Name</label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="secretary_number"
-                                        placeholder="Secretary Number">
-                                    <label>Secretary Number</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Row 7 - Account -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="account_name"
-                                        placeholder="Account Name">
-                                    <label>Account Name</label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="account_number"
-                                        placeholder="Account Number">
-                                    <label>Account Number</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="email" class="form-control" name="email" placeholder="Email ID"
-                                        required>
-                                    <label>Email</label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="pincode" placeholder="Pin Code"
-                                        required>
-                                    <label>Pin Code</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-floating mb-3">
-                                    <textarea name="address" class="form-control" placeholder="Address" required></textarea>
-                                    <label>Address</label>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Members Section -->
-                        <div class="row">
-                            <div class="col-12">
-                                <h5 class="mt-3">Members</h5>
-                            </div>
-                        </div>
-
-                        <div id="members-area">
-
-                            <!-- Member Row Template -->
-                            <div class="row member-row">
-                                <div class="col-md-5">
+                            <!-- Row 6 - Secretary -->
+                            <div class="row">
+                                <div class="col-md-6">
                                     <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="member_name[]"
-                                            placeholder="Member Name">
-                                        <label>Member Name</label>
+                                        <input type="text" class="form-control" name="secretary_name"
+                                            placeholder="Secretary Name">
+                                        <label>Secretary Name</label>
                                     </div>
                                 </div>
 
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="member_contact_number[]"
-                                            placeholder="Contact Number">
+                                        <input type="text" class="form-control" name="secretary_number"
+                                            placeholder="Secretary Number">
+                                        <label>Secretary Number</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 7 - Account -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="account_name"
+                                            placeholder="Account Name">
+                                        <label>Account Name</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="account_number"
+                                            placeholder="Account Number">
+                                        <label>Account Number</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="email" class="form-control" name="email" placeholder="Email ID"
+                                            required>
+                                        <label>Email</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="pincode" placeholder="Pin Code"
+                                            required>
+                                        <label>Pin Code</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <textarea name="address" class="form-control" placeholder="Address" required></textarea>
+                                        <label>Address</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Members Section -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <h5 class="mt-3">Members</h5>
+                                </div>
+                            </div>
+
+                            <div id="members-area">
+
+                                <!-- Member Row Template -->
+                                <div class="row member-row">
+                                    <div class="col-md-5">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" name="member_name[]"
+                                                placeholder="Member Name">
+                                            <label>Member Name</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" name="member_contact_number[]"
+                                                placeholder="Contact Number">
+                                            <label>Contact Number</label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Position dropdown -->
+                                    <div class="col-md-3">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" name="member_position[]">
+                                                <option value="Member">Member</option>
+                                                <option value="President">President</option>
+                                                <option value="Secretary">Secretary</option>
+                                                <option value="Treasurer">Treasurer</option>
+                                            </select>
+                                            <label>Position</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Add Member Button -->
+                            <div class="row mb-2">
+                                <div class="col-3">
+                                    <button type="button" class="btn btn-primary" onclick="addMember()">Add Member</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fields" id="charity">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="registration_number"
+                                            placeholder="Registration Number" required>
+                                        <label>Registration Number</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="organization"
+                                            placeholder="Organization / Trust Name" required>
+                                        <label>Organization / Trust Name</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="number" class="form-control" name="group_quantity"
+                                            placeholder="Group Quantity" required>
+                                        <label>Group Quantity</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="contact"
+                                            placeholder="Contact Number" required>
                                         <label>Contact Number</label>
                                     </div>
                                 </div>
-
-                                <!-- Position dropdown -->
-                                <div class="col-md-3">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
                                     <div class="form-floating mb-3">
-                                        <select class="form-select" name="member_position[]">
-                                            <option value="Member">Member</option>
-                                            <option value="President">President</option>
-                                            <option value="Secretary">Secretary</option>
-                                            <option value="Treasurer">Treasurer</option>
-                                        </select>
-                                        <label>Position</label>
+                                        <input type="text" class="form-control" name="president_name"
+                                            placeholder="President Name">
+                                        <label>President Name</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="president_number"
+                                            placeholder="President Number">
+                                        <label>President Number</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 6 - Secretary -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="secretary_name"
+                                            placeholder="Secretary Name">
+                                        <label>Secretary Name</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="secretary_number"
+                                            placeholder="Secretary Number">
+                                        <label>Secretary Number</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 7 - Account -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="account_name"
+                                            placeholder="Account Name">
+                                        <label>Account Name</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="account_number"
+                                            placeholder="Account Number">
+                                        <label>Account Number</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="email" class="form-control" name="email" placeholder="Email ID"
+                                            required>
+                                        <label>Email</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="pincode" placeholder="Pin Code"
+                                            required>
+                                        <label>Pin Code</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <textarea name="address" class="form-control" placeholder="Address" required></textarea>
+                                        <label>Address</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Members Section -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <h5 class="mt-3">Members</h5>
+                                </div>
+                            </div>
+
+                            <div id="members-area">
+
+                                <!-- Member Row Template -->
+                                <div class="row member-row">
+                                    <div class="col-md-5">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" name="member_name[]"
+                                                placeholder="Member Name">
+                                            <label>Member Name</label>
+                                        </div>
                                     </div>
 
+                                    <div class="col-md-4">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" name="member_contact_number[]"
+                                                placeholder="Contact Number">
+                                            <label>Contact Number</label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Position dropdown -->
+                                    <div class="col-md-3">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" name="member_position[]">
+                                                <option value="Member">Member</option>
+                                                <option value="President">President</option>
+                                                <option value="Secretary">Secretary</option>
+                                                <option value="Treasurer">Treasurer</option>
+                                            </select>
+                                            <label>Position</label>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- Add Member Button -->
+                            <div class="row mb-2">
+                                <div class="col-3">
+                                    <button type="button" class="btn btn-primary" onclick="addMember()">Add Member</button>
                                 </div>
                             </div>
 
                         </div>
-                        <!-- Add Member Button -->
-                        <div class="row mb-2">
-                            <div class="col-3">
-                                <button type="button" class="btn btn-primary" onclick="addMember()">Add Member</button>
-                            </div>
-                        </div>
-
-                    </div>
-                    <button type="submit" class="btn-primary">Submit Registration</button>
-                </form>
+                        <button type="submit" class="btn-primary">Submit Registration</button>
+                    </form>
+                </div>
             </div>
-        </div>
-    </section>
-    @endauth  
+        </section>
+    @endauth
     <!-- Donation Process Section -->
     <section class="donation-process py-5" data-aos="fade-down">
         <div class="container text-center">
@@ -796,6 +861,81 @@
             </div>
         </div>
     </section>
+    <section id="blood_requests_section">
+        <div class="container my-5">
+
+            <!-- Section Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold mb-0">🩸 Blood Requests</h3>
+                    <small class="text-muted">Help save lives by responding to requests</small>
+                </div>
+                <span class="badge bg-danger px-3 py-2">Live</span>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-bar mb-4 p-3 rounded shadow-sm bg-white">
+                <div class="row g-2">
+
+                    <div class="col-md-3">
+                        <select class="form-select" id="bloodFilter">
+                            <option value="">All Blood Groups</option>
+                            <option>O+</option>
+                            <option>A+</option>
+                            <option>B+</option>
+                            <option>AB+</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <select class="form-select" id="urgencyFilter">
+                            <option value="">All</option>
+                            <option value="urgent">Urgent</option>
+                            <option value="normal">Normal</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <input type="text" id="searchInput" class="form-control"
+                            placeholder="Search location or hospital...">
+                    </div>
+
+                    <div class="col-md-2">
+                        <button class="btn btn-danger w-100" onclick="resetFilters()">Reset</button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Requests Grid -->
+            <div class="row g-3" id="requestContainer"></div>
+            {{-- <div class="text-center mt-4">
+                <button class="btn btn-outline-danger px-4">
+                  View All Requests
+                </button>
+              </div> --}}
+            <div id="viewAllWrapper" class="text-center mt-4" style="display:none;">
+                <a href="/requests" class="btn btn-outline-danger px-4">
+                    View All Requests
+                </a>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="donateModal">
+            <div class="modal-dialog">
+                <div class="modal-content p-3">
+                    <h5 class="fw-bold">Donate Blood</h5>
+                    <p class="text-muted">Confirm your availability</p>
+
+                    <input type="text" class="form-control mb-2" placeholder="Your Name">
+                    <input type="tel" class="form-control mb-3" placeholder="Phone Number">
+
+                    <button class="btn btn-danger w-100">Confirm Donation</button>
+                </div>
+            </div>
+        </div>
+    </section>
     <!-- ===== OUR VISION / ABOUT ===== -->
     <section class="d-none vision py-5 bg-light">
         <div class="container">
@@ -833,82 +973,95 @@
             <img src="{{asset('assets/img/camp2.jpg')}}" alt="Blood Camp 2">
             <img src="{{asset('assets/img/camp1.jpg')}}" alt="Blood Camp 3">
         </div> --}}
-        <div class="w-100" style="position:relative;">
-            <div class="swiper" data-aos="fade-down">
-                <!-- Additional required wrapper -->
-                <div class="swiper-wrapper">
-                    <!-- Slides -->
-                    <div class="swiper-slide"><a href="#"><img src="{{ asset('assets/img/camp1.jpg') }}" alt="Blood Camp 1"></a>
-                        <div class="text-area">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <div class="date mb-0">
-                                    17 Feb, 2026
+            <div class="w-100" style="position:relative;">
+                <div class="swiper" data-aos="fade-down">
+                    <!-- Additional required wrapper -->
+                    <div class="swiper-wrapper">
+                        <!-- Slides -->
+                        <div class="swiper-slide"><a href="#"><img src="{{ asset('assets/img/camp1.jpg') }}"
+                                    alt="Blood Camp 1"></a>
+                            <div class="text-area">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <div class="date mb-0">
+                                        17 Feb, 2026
+                                    </div>
+                                    <span><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</span>
                                 </div>
-                                <span><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</span>
-                            </div>
-                            <a href="#"><h4>O- Blood Donors Needed</h4></a>
-                            <p>O Negative blood cells are called “universal” meaning they can be transfused to almost any
-                                patient in need and blood cells are safest.</p>
+                                <a href="#">
+                                    <h4>O- Blood Donors Needed</h4>
+                                </a>
+                                <p>O Negative blood cells are called “universal” meaning they can be transfused to almost
+                                    any
+                                    patient in need and blood cells are safest.</p>
                                 <div class="event-latest-details">
-                                    <a class="comments" href="#"> <i class="fa-solid fa-location-dot"></i> Selimpore Road, Kolkata</a>
-                                </div>    
+                                    <a class="comments" href="#"> <i class="fa-solid fa-location-dot"></i>
+                                        Selimpore Road, Kolkata</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="swiper-slide"><img src="{{ asset('assets/img/camp2.jpg') }}" alt="Blood Camp 1">
+                            <div class="text-area">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <div class="date mb-0">
+                                        17 Feb, 2026
+                                    </div>
+                                    <span><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</span>
+                                </div>
+                                <a href="#"></a>
+                                <h4>Donation - Feel Real Peace</h4>
+                                <p>You're the real hero because you can gift a new life for patient.So donate your blood and
+                                    enjoy a precious life. Don't fear, it's really easy.</p>
+                                <div class="event-latest-details">
+                                    <a class="comments" href="#"> <i class="fa-solid fa-location-dot"></i> Pure
+                                        Life Hospital</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="swiper-slide"><img src="{{ asset('assets/img/camp1.jpg') }}" alt="Blood Camp 1">
+                            <div class="text-area">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <div class="date mb-0">
+                                        17 Feb, 2026
+                                    </div>
+                                    <span><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</span>
+                                </div>
+                                <a href="#">
+                                    <h4>A Campus Blood Mission</h4>
+                                </a>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec
+                                    ullamcorper mattis, pulvinar dapibus leo.</p>
+                                <div class="event-latest-details">
+                                    <a class="comments" href="#"> <i class="fa-solid fa-location-dot"></i> Pure
+                                        Life Hospital</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="swiper-slide"><img src="{{ asset('assets/img/camp1.jpg') }}" alt="Blood Camp 1">
+                            <div class="text-area">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <div class="date mb-0">
+                                        17 Feb, 2026
+                                    </div>
+                                    <span><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</span>
+                                </div>
+                                <h4>A Campus Blood Mission</h4>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec
+                                    ullamcorper mattis, pulvinar dapibus leo.</p>
+                                <div class="event-latest-details">
+                                    <a class="comments" href="#"> <i class="fa-solid fa-location-dot"></i> Pure
+                                        Life Hospital</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="swiper-slide"><img src="{{ asset('assets/img/camp2.jpg') }}" alt="Blood Camp 1">
-                        <div class="text-area">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <div class="date mb-0">
-                                    17 Feb, 2026
-                                </div>
-                                <span><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</span>
-                            </div>
-                            <a href="#"></a><h4>Donation - Feel Real Peace</h4>
-                            <p>You're the real hero because you can gift a new life for patient.So donate your blood and
-                                enjoy a precious life. Don't fear, it's really easy.</p>
-                                <div class="event-latest-details">
-                                    <a class="comments" href="#"> <i class="fa-solid fa-location-dot"></i> Pure Life Hospital</a>
-                                </div>    
-                        </div>
-                    </div>
-                    <div class="swiper-slide"><img src="{{ asset('assets/img/camp1.jpg') }}" alt="Blood Camp 1">
-                        <div class="text-area">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <div class="date mb-0">
-                                    17 Feb, 2026
-                                </div>
-                                <span><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</span>
-                            </div>
-                            <a href="#"><h4>A Campus Blood Mission</h4></a>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.</p>
-                                <div class="event-latest-details">
-                                    <a class="comments" href="#"> <i class="fa-solid fa-location-dot"></i> Pure Life Hospital</a>
-                                </div>    
-                        </div>
-                    </div>
-                    <div class="swiper-slide"><img src="{{ asset('assets/img/camp1.jpg') }}" alt="Blood Camp 1">
-                        <div class="text-area">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <div class="date mb-0">
-                                    17 Feb, 2026
-                                </div>
-                                <span><i class="fa-regular fa-clock"></i> 10.00am - 3.00pm</span>
-                            </div>
-                            <h4>A Campus Blood Mission</h4>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.</p>
-                                <div class="event-latest-details">
-                                    <a class="comments" href="#"> <i class="fa-solid fa-location-dot"></i> Pure Life Hospital</a>
-                                </div>    
-                        </div>
-                    </div>
+                    <!-- If we need pagination -->
+                    <div class="swiper-pagination"></div>
+                    <!-- If we need scrollbar -->
+                    {{-- <div class="swiper-scrollbar"></div> --}}
                 </div>
-                <!-- If we need pagination -->
-                <div class="swiper-pagination"></div>
-                <!-- If we need scrollbar -->
-                {{-- <div class="swiper-scrollbar"></div> --}}
-            </div>
-            <!-- If we need navigation buttons -->
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-button-next"></div>
+                <!-- If we need navigation buttons -->
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
             </div>
         </div>
     </section>
@@ -966,7 +1119,7 @@
                     </h2>
 
                     <form method="POST" action="{{ route('support.store') }}" enctype="multipart/form-data"
-                        class="support-form p-4 p-md-5 rounded-4 shadow-lg bg-white">
+                        class="support-form p-4 p-md-5 rounded-4 shadow-lg bg-white" id="accidental_support">
                         @csrf
 
                         <div class="text-center mb-4">
@@ -987,16 +1140,18 @@
                                 <input type="text" id="locationInput" name="location" class="form-control"
                                     placeholder="Select your location" readonly required>
 
-                                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
-                                    data-bs-target="#locationModal">
+                                <button type="button" class="btn btn-outline-danger open-location-modal"
+                                    data-bs-toggle="modal" data-bs-target="#locationModal"
+                                    data-location-input="locationInput" data-lat="support_latitude"
+                                    data-lng="support_longitude">
                                     Change
                                 </button>
                             </div>
                         </div>
 
                         <!-- Hidden Lat/Lng -->
-                        <input type="hidden" id="latitude" name="latitude">
-                        <input type="hidden" id="longitude" name="longitude">
+                        <input type="hidden" id="support_latitude" name="latitude">
+                        <input type="hidden" id="support_longitude" name="longitude">
 
                         <!-- Map -->
                         {{-- <div id="map" class="mb-4 rounded" style="height: 350px;"></div> --}}
@@ -1313,7 +1468,8 @@
                     <div class="contact-info">
                         <h3>Contact Information</h3>
                         <a href="#" target="">
-                            <div class="item"><i class="fa-solid fa-location-dot"></i><span>Sai Plaza Ground Floor, Police Chowki, Bishnupur, Bankura, West Bengal, India 722122</span></div>
+                            <div class="item"><i class="fa-solid fa-location-dot"></i><span>Sai Plaza Ground Floor,
+                                    Police Chowki, Bishnupur, Bankura, West Bengal, India 722122</span></div>
                         </a>
                         <a href="mailto:info@asrij.com">
                             <div class="item"><i class="fa-solid fa-envelope"></i><span>info@asrij.com</span></div>
@@ -1344,51 +1500,153 @@
         </div>
     </div>
     {{-- @include('partials.home-content') --}}
-    <div class="modal fade" id="locationModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content rounded-4">
 
-                <div class="modal-header">
-                    <h5 class="modal-title fw-semibold">
-                        <i class="bi bi-geo-alt-fill me-1"></i> Select Location
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body">
-                    <!-- Search -->
-                    <div class="mb-3">
-                        <div class="position-relative">
-                            <input type="text" id="mapSearchInput" class="form-control" placeholder="Search location"
-                                style="padding-right: 32px">
-                            <i class="fa fa-times-circle clear-location" id="clearLocationBtn"></i>
-                        </div>
-                    </div>
-
-                    <!-- Map -->
-                    <div id="map" class="rounded" style="height: 350px;"></div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-
-                    <button type="button" class="btn btn-danger" id="confirmLocation">
-                        Confirm Location
-                    </button>
-                </div>
-
-            </div>
-        </div>
-    </div>
 
 @section('scripts')
     <script>
-            document.getElementById("requestForSelf").addEventListener('change', function () {
-                
-                const form = this.closest('form'); // ✅ get current form
-                
-                if (this.checked) {
-                    fetch(`{{url('/')}}/api/v1/user`, {
+        const container = document.getElementById("requestContainer");
+        function render(data) {
+            container.innerHTML = "";
+
+            data.forEach(req => {
+                container.innerHTML += `
+      <div class="col-md-6 col-lg-4 col-xl-3">
+        <div class="request-card ${req.urgency === 'urgent' ? 'urgent-card' : ''}">
+          
+          ${req.urgency === 'urgent' 
+            ? '<span class="badge bg-danger urgent-tag">URGENT</span>' 
+            : ''}
+
+          <div class="blood-group">${req.blood_group}</div>
+
+          <div class="meta"><strong>Hospital Name</strong> : ${req.hospital_name}</div>
+          <div class="meta mb-1"><strong>Address</strong> : ${req.address}</div>
+          <div class="meta mb-2"><strong>Units</strong> : ${req.unit}</div>
+          ${req?.distance   ? `<div class="meta mb-3"><strong>Distance</strong> : ${req.distance_text} from your registered address</div>` : ''}
+          <button class="btn btn-sm btn-danger w-100 donate-btn" data-id="${req.id}" data-blood_group="${req?.blood_group}">
+            Donate
+          </button>
+        </div>
+      </div>
+    `;
+            });
+
+            attachEvents();
+        }
+
+        function attachEvents() {
+            document.querySelectorAll(".donate-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    let token = localStorage.getItem("token");
+                if (!token) {
+                    console.log("No Token found");
+                    let loginModalEl = document.getElementById('loginModal');
+                    let loginModal = bootstrap.Modal.getOrCreateInstance(loginModalEl);
+                    loginModal.show();
+                    return;
+                }
+                if(userData && userData.blood_group && userData.blood_group !== btn.dataset.blood_group){
+                    showAlert( "warning","Your registered blood group does not match the required blood group for this request. Please update your profile or choose a different request to donate.");
+                    return;
+                };
+                const modal = new bootstrap.Modal(document.getElementById('donateModal'));
+                    modal.show();
+            });
+            });
+        }
+
+        function filterData() {
+            const blood = document.getElementById("bloodFilter").value;
+            const urgency = document.getElementById("urgencyFilter").value;
+            const search = document.getElementById("searchInput").value.toLowerCase();
+
+            const filtered = requests.filter(r => {
+                return (
+                    (!blood || r.blood === blood) &&
+                    (!urgency || r.urgency === urgency) &&
+                    (
+                        r.location.toLowerCase().includes(search) ||
+                        r.hospital.toLowerCase().includes(search)
+                    )
+                );
+            });
+
+            render(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById("bloodFilter").value = "";
+            document.getElementById("urgencyFilter").value = "";
+            document.getElementById("searchInput").value = "";
+            render(requests);
+        }
+
+        /* Event Listeners */
+        document.getElementById("bloodFilter").addEventListener("change", filterData);
+        document.getElementById("urgencyFilter").addEventListener("change", filterData);
+        document.getElementById("searchInput").addEventListener("input", filterData);
+
+        /* Init */
+        // render(requests);
+        const API_URL = "{{route('blood-requests.index')}}";
+        let allRequests = [];
+
+        async function fetchRequests() {
+            showLoader();
+            try {
+                const token = localStorage.getItem("token");
+                let option = {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                };
+                if(token){
+                    option = {
+                        headers: {
+                            'Accept': 'application/json',
+                            Authorization: 'Bearer ' + token
+                        }
+                    }
+                }
+                const res = await fetch(API_URL,option);
+                const data = await res.json();
+
+                allRequests = data?.data;
+                if(!allRequests || allRequests.length === 0){
+                    document.getElementById("blood_requests_section").style.display = 'none';
+                    return;
+                }
+                // Show only first 4
+                render(allRequests.slice(0, 4));
+
+                toggleViewAll(allRequests.length);
+
+            } catch (err) {
+                console.error("Error loading requests", err);
+            }
+            hideLoader();
+        }
+
+        function toggleViewAll(count) {
+            const btn = document.getElementById("viewAllWrapper");
+
+            if (count > 4) {
+                btn.style.display = "block";
+            } else {
+                btn.style.display = "none";
+            }
+        }
+        document.addEventListener('DOMContentLoaded', fetchRequests);
+    </script>
+    {{-- Request for Blood --}}
+    <script>
+        document.getElementById("requestForSelf").addEventListener('change', function() {
+
+            const form = this.closest('form'); // ✅ get current form
+
+            if (this.checked) {
+                showLoader();
+                fetch(`{{ url('/') }}/api/v1/user`, {
                         headers: {
                             'Authorization': 'Bearer ' + localStorage.getItem('token'),
                             'Accept': 'application/json'
@@ -1398,65 +1656,138 @@
                     .then(data => {
                         fillForm(form, data);
                         disableFields(form, true);
+                    })
+                    .catch(err => {
+                        console.error("Error fetching user data", err);
+                        alert("Failed to auto-fill data. Please try again.");
+                        this.checked = false; // uncheck on error
+                    })
+                    .finally(() => {
+                        hideLoader();
                     });
-                } else {
-                    clearForm(form);
-                    disableFields(form, false);
-                }
-            });
+            } else {
+                clearForm(form);
+                disableFields(form, false);
+            }
+        });
 
         function fillForm(form, data) {
             form.querySelector('[name="name"]').value = data.name || '';
             form.querySelector('[name="email"]').value = data.email || '';
             form.querySelector('[name="mobile"]').value = data.mobile || '';
             form.querySelector('[name="whatsapp_number"]').value = data.whatsapp_number || '';
+            form.querySelector('[name="blood_group"]').value = data.blood_group || '';
             form.querySelector('[name="address"]').value = data.address || '';
             form.querySelector('[name="pin_code"]').value = data.pin_code || '';
+            form.querySelector('[name="patient_latitude"]').value = data.latitude || '';
+            form.querySelector('[name="patient_longitude"]').value = data.longitude || '';
         }
 
         function disableFields(form, state) {
-            const fields = ['name','email','mobile','whatsapp_number','address','pin_code'];
+            const fields = ['name', 'email', 'mobile', 'whatsapp_number', 'address', 'pin_code','blood_group'];
             fields.forEach(field => {
                 const el = form.querySelector(`[name="${field}"]`);
-                if (el && el.value) el.readOnly = state;
+                el.readOnly = state ? el.value ? true : false : state;
             });
         }
 
         function clearForm(form) {
-            const fields = ['name','email','mobile','whatsapp_number','address','pin_code'];
+            const fields = ['name', 'email', 'mobile', 'whatsapp_number', 'address', 'pin_code'];
             fields.forEach(field => {
                 const el = form.querySelector(`[name="${field}"]`);
                 if (el) el.value = '';
             });
         }
+
+        // Implemented api for blood request
+document.querySelector('#request_blood .registration-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+
+    // Handle checkbox logic
+    // if (document.getElementById('requestForSelf').checked) {
+    //     formData.set('request_for', 'self');
+    // } else {
+    //     formData.set('request_for', 'other');
+    // }
+
+    try {
+        const validPin = await validatePincode(formData.get('address'), formData.get("pin_code"));
+        if(!validPin){
+            return;
+        }
+        if(!formData.get('request_for')){
+          
+        }
+        const token = localStorage.getItem('token');
+        const response = await fetch("{{ route('blood-requests.store') }}", {
+            method: "POST",
+            headers: {
+                Authorization: 'Bearer ' + token,
+                // "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value,
+                "Accept": "application/json"
+            },
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            showAlert("error", data.message || "Failed to submit request. Please check your input.");
+            return;
+        }
+        if(response.status === 201){
+            // Optionally, you can add the new request to the list without reloading
+            // allRequests.unshift(data);
+            // render(allRequests.slice(0, 4));
+            showAlert("success","Blood request submitted successfully!");
+        form.reset();
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert("Something went wrong!");
+    }
+});
     </script>
     <script>
         document.querySelectorAll('.autofill-user').forEach(checkbox => {
-            checkbox.addEventListener('change', function () {
-        
+            checkbox.addEventListener('change', function() {
+
                 const form = this.closest('form');
-        
+
                 if (this.checked) {
-                    fetch(`{{url('/')}}/api/v1/user`, {
-                        headers: {
-                            'Authorization': 'Bearer ' + localStorage.getItem('token'),
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        autoFill(form, data);
-                        toggleFields(form, true);
-                    });
+                    showLoader();
+                    fetch(`{{ url('/') }}/api/v1/user`, {
+                            headers: {
+                                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            autoFill(form, data);
+                            toggleFields(form, true);
+                        })
+                        .catch(err => {
+                            console.error("Error fetching user data", err);
+                            alert("Failed to auto-fill data. Please try again.");
+                            this.checked = false;
+                        })
+                        .finally(() => {
+                            hideLoader();
+                        });
                 } else {
                     clearForm(form);
                     toggleFields(form, false);
                 }
             });
         });
-        
+
         function autoFill(form, data) {
-        
+
             const fieldMap = {
                 name: 'name',
                 email: 'email',
@@ -1467,46 +1798,44 @@
                 blood_group: 'blood_group',
                 year_of_birth: 'year_of_birth'
             };
-        
+
             Object.keys(fieldMap).forEach(key => {
                 const input = form.querySelector(`[name="${fieldMap[key]}"]`);
                 if (input && data[key]) {
                     input.value = data[key];
                 }
             });
-        
+
             // Special case: WhatsApp same as contact checkbox (if exists)
             const sameCheckbox = form.querySelector('#sameAsContact');
             if (sameCheckbox && data.mobile === data.whatsapp_number) {
                 sameCheckbox.checked = true;
             }
         }
-        
+
         function toggleFields(form, state) {
-            const fields = ['name','email','mobile','whatsapp_number','address','pin_code'];
-        
+            const fields = ['name', 'email', 'mobile', 'whatsapp_number', 'address', 'pin_code'];
+
             fields.forEach(field => {
                 const el = form.querySelector(`[name="${field}"]`);
                 if (el && el.value) {
                     el.readOnly = state;
-                }
-                else{
+                } else {
                     el.readOnly = false;
                 };
             });
-        
+
             // Disable selects too (like blood group, year)
             ['blood_group', 'year_of_birth'].forEach(field => {
                 const el = form.querySelector(`[name="${field}"]`);
                 if (el && el.value) {
                     el.disabled = state;
-                }
-                else{
+                } else {
                     el.disabled = false;
                 }
             });
         }
-        
+
         function clearForm(form) {
             form.querySelectorAll('input, textarea, select').forEach(el => {
                 if (el.type !== 'hidden' && el.type !== 'checkbox') {
@@ -1515,7 +1844,7 @@
             });
             form.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
         }
-        </script>
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const counters = document.querySelectorAll(".count");
@@ -1558,12 +1887,12 @@
 
         tabBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                let token =  localStorage.getItem("token");
-                if(!token){
-                    console.log("No Token found");        
-            let loginModalEl = document.getElementById('loginModal');            
-            let loginModal = bootstrap.Modal.getOrCreateInstance(loginModalEl);
-            loginModal.show();
+                let token = localStorage.getItem("token");
+                if (!token) {
+                    console.log("No Token found");
+                    let loginModalEl = document.getElementById('loginModal');
+                    let loginModal = bootstrap.Modal.getOrCreateInstance(loginModalEl);
+                    loginModal.show();
                     return;
                 }
                 let checkClass = document.getElementById(btn.dataset.tab).classList;
@@ -1576,6 +1905,28 @@
                 btn.classList.add('active');
                 tabContents.forEach(content => content.classList.remove('active'));
                 checkClass.add('active');
+                console.log("btn", btn.dataset.tab);
+                switch (btn.dataset.tab) {
+                    case "donor":
+                        autoDetectLocation({
+                            locationInputId: "donor_address",
+                            latInputId: "donor_latitude",
+                            lngInputId: "donor_longitude"
+                        });
+                        break;
+                    case "request_blood":
+                    autoDetectLocation({
+                            locationInputId: "patient_address",
+                            latInputId: "patient_latitude",
+                            lngInputId: "patient_longitude"
+                        });
+                        break;
+                    case "volunteer":
+                        
+                        break;
+                    default:
+                        break;
+                }
             });
         });
 
@@ -1640,186 +1991,187 @@
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFkLT1PNls0HcQ6eb2ARdlj5SvsVMyQqk&libraries=places">
     </script>
-
     <script>
-        let map, marker, selectedLocation = {};
+        // let map, marker, selectedLocation = {};
 
-        const modalEl = document.getElementById('locationModal');
-        const clearBtn = document.getElementById("clearLocationBtn");
+        // const modalEl = document.getElementById('locationModal');
+        // const clearBtn = document.getElementById("clearLocationBtn");
 
-        modalEl.addEventListener('shown.bs.modal', () => {
-            initMap();
-        });
+        // modalEl.addEventListener('shown.bs.modal', () => {
+        //     initMap();
+        // });
 
-        function initMap() {
-            if (map) {
-                google.maps.event.trigger(map, "resize");
-                return;
-            }
+        // function initMap() {
+        //     if (map) {
+        //         google.maps.event.trigger(map, "resize");
+        //         return;
+        //     }
 
-            const defaultLocation = {
-                lat: 20.5937,
-                lng: 78.9629
-            };
+        //     const defaultLocation = {
+        //         lat: 20.5937,
+        //         lng: 78.9629
+        //     };
 
-            map = new google.maps.Map(document.getElementById("map"), {
-                center: defaultLocation,
-                zoom: 15,
-            });
+        //     map = new google.maps.Map(document.getElementById("map"), {
+        //         center: defaultLocation,
+        //         zoom: 15,
+        //     });
 
-            marker = new google.maps.Marker({
-                map,
-                draggable: true,
-                position: defaultLocation,
-            });
+        //     marker = new google.maps.Marker({
+        //         map,
+        //         draggable: true,
+        //         position: defaultLocation,
+        //     });
 
-            selectedLocation = defaultLocation;
+        //     selectedLocation = defaultLocation;
 
-            // Get current location
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    const loc = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
-                    map.setCenter(loc);
-                    marker.setPosition(loc);
-                    updateSelected(loc);
-                    reverseGeocode(loc);
-                });
-            }
+        //     // Get current location
+        //     if (navigator.geolocation) {
+        //         navigator.geolocation.getCurrentPosition(position => {
+        //             const loc = {
+        //                 lat: position.coords.latitude,
+        //                 lng: position.coords.longitude
+        //             };
+        //             map.setCenter(loc);
+        //             marker.setPosition(loc);
+        //             updateSelected(loc);
+        //             reverseGeocode(loc);
+        //         });
+        //     }
 
-            // Autocomplete search
-            const input = document.getElementById("mapSearchInput");
-            const autocomplete = new google.maps.places.Autocomplete(input);
+        //     // Autocomplete search
+        //     const input = document.getElementById("mapSearchInput");
+        //     const autocomplete = new google.maps.places.Autocomplete(input);
 
-            autocomplete.addListener("place_changed", () => {
-                const place = autocomplete.getPlace();
-                if (!place.geometry) return;
+        //     autocomplete.addListener("place_changed", () => {
+        //         const place = autocomplete.getPlace();
+        //         if (!place.geometry) return;
 
-                const loc = {
-                    lat: place.geometry.location.lat(),
-                    lng: place.geometry.location.lng()
-                };
+        //         const loc = {
+        //             lat: place.geometry.location.lat(),
+        //             lng: place.geometry.location.lng()
+        //         };
 
-                map.setCenter(loc);
-                marker.setPosition(loc);
-                updateSelected(loc);
-            });
+        //         map.setCenter(loc);
+        //         marker.setPosition(loc);
+        //         updateSelected(loc);
+        //     });
 
-            // Marker drag
-            marker.addListener("dragend", () => {
-                const pos = marker.getPosition();
-                const loc = {
-                    lat: pos.lat(),
-                    lng: pos.lng()
-                };
-                updateSelected(loc);
-                reverseGeocode(loc);
-            });
-            map.addListener("click", (event) => {
-                const loc = {
-                    lat: event.latLng.lat(),
-                    lng: event.latLng.lng()
-                };
+        //     // Marker drag
+        //     marker.addListener("dragend", () => {
+        //         const pos = marker.getPosition();
+        //         const loc = {
+        //             lat: pos.lat(),
+        //             lng: pos.lng()
+        //         };
+        //         updateSelected(loc);
+        //         reverseGeocode(loc);
+        //     });
+        //     map.addListener("click", (event) => {
+        //         const loc = {
+        //             lat: event.latLng.lat(),
+        //             lng: event.latLng.lng()
+        //         };
 
-                marker.setPosition(loc);
-                updateSelected(loc);
-                reverseGeocode(loc);
-            });
-        }
+        //         marker.setPosition(loc);
+        //         updateSelected(loc);
+        //         reverseGeocode(loc);
+        //     });
+        // }
 
-        function updateSelected(loc) {
-            selectedLocation = loc;
-            document.getElementById("latitude").value = loc.lat;
-            document.getElementById("longitude").value = loc.lng;
-            clearBtn.style.display = "block";
-        }
+        // function updateSelected(loc) {
+        //     selectedLocation = loc;
+        //     document.getElementById("latitude").value = loc.lat;
+        //     document.getElementById("longitude").value = loc.lng;
+        //     clearBtn.style.display = "block";
+        // }
 
-        function reverseGeocode(loc) {
-            const geocoder = new google.maps.Geocoder();
-            geocoder.geocode({
-                location: loc
-            }, (results, status) => {
-                if (status === "OK" && results[0]) {
-                    document.getElementById("mapSearchInput").value = results[0].formatted_address;
-                    document.getElementById("locationInput").value =
-                        results[0].formatted_address;
-                    clearBtn.style.display = "block";
-                }
-            });
-        }
+        // function reverseGeocode(loc) {
+        //     const geocoder = new google.maps.Geocoder();
+        //     geocoder.geocode({
+        //         location: loc
+        //     }, (results, status) => {
+        //         if (status === "OK" && results[0]) {
+        //             document.getElementById("mapSearchInput").value = results[0].formatted_address;
+        //             document.getElementById("locationInput").value =
+        //                 results[0].formatted_address;
+        //             clearBtn.style.display = "block";
+        //         }
+        //     });
+        // }
 
-        // Confirm button
-        document.getElementById("confirmLocation").addEventListener("click", () => {
-            document.getElementById("locationInput").value = document.getElementById("mapSearchInput").value;
-            const modal = bootstrap.Modal.getInstance(modalEl);
-            modal.hide();
-        });
-        document.addEventListener("DOMContentLoaded", () => {
-            if (!navigator.geolocation) {
-                document.getElementById("locationInput").value =
-                    "Location access not supported";
-                return;
-            }
+        // // Confirm button
+        // document.getElementById("confirmLocation").addEventListener("click", () => {
+        //     document.getElementById("locationInput").value = document.getElementById("mapSearchInput").value;
+        //     const modal = bootstrap.Modal.getInstance(modalEl);
+        //     modal.hide();
+        // });
+        // document.addEventListener("DOMContentLoaded", () => {
+        //     if (!navigator.geolocation) {
+        //         document.getElementById("locationInput").value =
+        //             "Location access not supported";
+        //         return;
+        //     }
 
-            navigator.geolocation.getCurrentPosition(
-                position => {
-                    const loc = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
+        //     navigator.geolocation.getCurrentPosition(
+        //         position => {
+        //             const loc = {
+        //                 lat: position.coords.latitude,
+        //                 lng: position.coords.longitude
+        //             };
 
-                    document.getElementById("latitude").value = loc.lat;
-                    document.getElementById("longitude").value = loc.lng;
+        //             document.getElementById("latitude").value = loc.lat;
+        //             document.getElementById("longitude").value = loc.lng;
 
-                    reverseGeocodeMain(loc);
-                },
-                () => {
-                    document.getElementById("locationInput").value =
-                        "Unable to fetch current location";
-                }
-            );
-        });
+        //             reverseGeocodeMain(loc);
+        //         },
+        //         () => {
+        //             document.getElementById("locationInput").value =
+        //                 "Unable to fetch current location";
+        //         }
+        //     );
+        // });
 
-        function reverseGeocodeMain(loc) {
-            const geocoder = new google.maps.Geocoder();
-            geocoder.geocode({
-                location: loc
-            }, (results, status) => {
-                if (status === "OK" && results[0]) {
-                    document.getElementById("locationInput").value =
-                        results[0].formatted_address;
-                    clearBtn.style.display = "block";
-                }
-            });
-        }
+        // function reverseGeocodeMain(loc) {
+        //     const geocoder = new google.maps.Geocoder();
+        //     geocoder.geocode({
+        //         location: loc
+        //     }, (results, status) => {
+        //         if (status === "OK" && results[0]) {
+        //             document.getElementById("locationInput").value =
+        //                 results[0].formatted_address;
+        //             clearBtn.style.display = "block";
+        //         }
+        //     });
+        // }
 
-        clearBtn.addEventListener("click", () => {
-            // Clear inputs
-            document.getElementById("locationInput").value = "";
-            document.getElementById("mapSearchInput").value = "";
-            document.getElementById("latitude").value = "";
-            document.getElementById("longitude").value = "";
+        // clearBtn.addEventListener("click", () => {
+        //     // Clear inputs
+        //     document.getElementById("locationInput").value = "";
+        //     document.getElementById("mapSearchInput").value = "";
+        //     document.getElementById("latitude").value = "";
+        //     document.getElementById("longitude").value = "";
 
-            // Hide marker if map exists
-            if (marker) {
-                marker.setPosition(null);
-            }
+        //     // Hide marker if map exists
+        //     if (marker) {
+        //         marker.setPosition(null);
+        //     }
 
-            selectedLocation = {};
-            clearBtn.style.display = "none";
-        });
+        //     selectedLocation = {};
+        //     clearBtn.style.display = "none";
+        // });
         //
         document.querySelectorAll(".registration-section .form-check-input").forEach(function(item) {
             item.addEventListener("change", function(elm) {
+                console.log("elm",elm);
                 const checkbox = elm.target;
                 // closest parent container
                 const parent = checkbox.closest("form");
                 // find input inside that parent
-                const input = parent.querySelector("input[type='checkbox']");
+                const input = parent.querySelector("input[name='whatsapp_checkbox']");
                 const contact = parent.querySelector("input[name='mobile']");
                 const whatsapp = parent.querySelector("input[name='whatsapp_number']");
+                console.log(input.checked,contact.value,whatsapp.value);
                 if (input.checked) {
                     whatsapp.value = contact.value;
                     whatsapp.setAttribute('readonly', true);

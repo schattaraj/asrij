@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\ApiRegisterController;
 use App\Http\Controllers\Api\ApiLoginController;
 use App\Http\Controllers\API\AuthController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Api\RequestController;
+use App\Http\Controllers\Api\RegistrationController;
 
 Route::get('/register', function(){
     return "Hello";
@@ -30,5 +32,15 @@ Route::prefix('v1')->group(function () {
             return response()->json($request->user());
         });
         Route::post('/logout', [AuthController::class, 'logout']);
+        Route::prefix('blood-requests')->group(function () {
+
+            Route::post('/', [RequestController::class, 'store'])->name('blood-requests.store');
+            Route::get('/{id}', [RequestController::class, 'show']);
+            Route::put('/{id}', [RequestController::class, 'update']);
+            Route::delete('/{id}', [RequestController::class, 'destroy']);
+        
+        });
+        Route::post('/donor-registration', [RegistrationController::class, 'store'])->name('donor.registration');
     });
+    Route::get('/blood-requests', [RequestController::class, 'index'])->name('blood-requests.index');
 });

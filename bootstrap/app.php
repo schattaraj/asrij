@@ -19,5 +19,34 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn () => route('home'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (Throwable $e, $request) {
+
+            if ($request->is('api/*')) {
+    
+                // Validation errors
+                if ($e instanceof ValidationException) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Validation failed',
+                        'errors' => $e->errors(),
+                    ], 422);
+                }
+    
+                // HTTP exceptions (404, 403, etc.)
+                if ($e instanceof HttpExceptionInterface) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => $e->getMessage() ?: 'HTTP error',
+                    ], $e->getStatusCode());
+                }
+    
+                // Default exception
+                return response()->json([
+                    'status' => false,
+                    'message' => config('app.debug')
+                        ? $e->getMessage()
+                        : 'Server Error',
+                ], 500);
+            }
+        });
     })->create();

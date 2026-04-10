@@ -199,8 +199,8 @@
                                 <i class="fa-solid fa-phone"></i> <a href="tel:917048115559">+917048115559</a>
                             </li>
                             <li>
-                                <a href="https://www.facebook.com/profile.php?id=61586204187656&mibextid=rS40aB7S9Ucbxw6v" class="text-white fs-4 social-link"><i
-                                        class="fab fa-facebook-f"></i></a>
+                                <a href="https://www.facebook.com/profile.php?id=61586204187656&mibextid=rS40aB7S9Ucbxw6v"
+                                    class="text-white fs-4 social-link"><i class="fab fa-facebook-f"></i></a>
                                 <a href="#" class="text-white fs-4 social-link"><i
                                         class="fab fa-instagram"></i></a>
                             </li>
@@ -250,6 +250,8 @@
                     <!-- Login Form -->
                     <form autocomplete="off" id="register" action="" method="post">
                         @csrf
+                        <input type="hidden" id="register_latitude" class="latitude" name="latitude">
+                        <input type="hidden" id="register_longitude" class="longitude" name="longitude">
                         <div class="mb-3">
                             <div class="form-floating">
                                 <input type="text" class="form-control" name="mobile" autocomplete="off"
@@ -265,13 +267,6 @@
                             <button type="button" id="sendOtpBtn" class="btn btn-primary w-100"
                                 onclick="sendRegisterOtp(this)">Send OTP</button>
                         </div>
-                        <div class="mb-3">
-                            <div class="form-floating">
-                                <input type="text" class="form-control" name="name" autocomplete="off"
-                                    id="name" placeholder="Name" required>
-                                <label for="email">Name</label>
-                            </div>
-                        </div>
                         <div class="mb-3 d-none" id="otpRegistraionSection">
                             <div class="form-floating">
                                 <input type="text" class="form-control" id="otp" placeholder="Enter OTP">
@@ -282,32 +277,47 @@
                         </div>
                         <div class="mb-3">
                             <div class="form-floating">
+                                <input type="text" class="form-control" name="name" autocomplete="off"
+                                    id="name" placeholder="Name" required>
+                                <label for="email">Name</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-floating">
                                 <input type="date" class="form-control" name="dob" autocomplete="off"
                                     id="dob" placeholder="Date of Birth" required>
                                 <label for="dob">Date of Birth</label>
                             </div>
                         </div>
-                      <div class="mb-3">
-                             <div class="form-floating">
-                                 <select class="form-control" name="blood_group" id="blood_group" required>
-                                     <option value="" disabled selected>Select Your Blood Group</option>
-                                     <option value="A+">A+</option>
-                                     <option value="A-">A-</option>
-                                     <option value="B+">B+</option>
-                                     <option value="B-">B-</option>
-                                     <option value="AB+">AB+</option>
-                                     <option value="AB-">AB-</option>
-                                     <option value="O+">O+</option>
-                                     <option value="O-">O-</option>
-                                 </select>
-                                 <label for="blood_group">Blood Group</label>
-                             </div>
-                         </div>
                         <div class="mb-3">
                             <div class="form-floating">
-                                <input type="text" class="form-control" name="address" autocomplete="off"
-                                    id="address" placeholder="Address" required>
-                                <label for="address">Address</label>
+                                <select class="form-control" name="blood_group" id="blood_group" required>
+                                    <option value="" disabled selected>Select Your Blood Group</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                </select>
+                                <label for="blood_group">Blood Group</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <div class="form-floating flex-grow-1">
+                                    <input type="text" class="form-control" name="address" autocomplete="off"
+                                        id="register_address" placeholder="Address" readonly required>
+                                    <label for="address">Address</label>
+                                </div>
+                                <button type="button" class="btn btn-outline-danger open-location-modal"
+                                    data-bs-toggle="modal" data-bs-target="#locationModal"
+                                    data-location-input="register_address" data-lat="register_latitude"
+                                    data-lng="register_longitude">
+                                    Change
+                                </button>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -560,22 +570,44 @@
         </div>
     </div>
 
+    <div class="modal fade" id="locationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content rounded-4">
 
-    <script>
-        function login() {
-            // document.getElementById('login').submit();
-            //   const email = document.getElementById('email').value;
-            //   const password = document.getElementById('password').value;
-            //   const rememberMe = document.getElementById('rememberMe').checked;
+                <div class="modal-header">
+                    <h5 class="modal-title fw-semibold">
+                        <i class="bi bi-geo-alt-fill me-1"></i> Select Location
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
 
-            //   // Simple form validation
-            //   if (email && password) {
-            //     alert(`Logged in with: ${email}\nRemember me: ${rememberMe ? 'Yes' : 'No'}`);
-            //   } else {
-            //     alert('Please enter both email and password.');
-            //   }
-        }
-    </script>
+                <div class="modal-body">
+                    <!-- Search -->
+                    <div class="mb-3">
+                        <div class="position-relative">
+                            <input type="text" id="mapSearchInput" class="form-control"
+                                placeholder="Search location" style="padding-right: 32px">
+                            <i class="fa fa-times-circle clear-location" id="clearLocationBtn"></i>
+                        </div>
+                        <input type="hidden" name="map_latitude" value="" id="map_latitude">
+                        <input type="hidden" name="map_longitude" value="" id="map_longitude">
+                    </div>
+
+                    <!-- Map -->
+                    <div id="map" class="rounded" style="height: 350px;"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+
+                    <button type="button" class="btn btn-danger" id="confirmLocation">
+                        Confirm Location
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
@@ -587,13 +619,318 @@
     <script src="{{ asset('js/custom.js') }}"></script>
     @yield('scripts')
     <script>
-        const loader = document.getElementById("loader");
+        // ALl Map Related Codes..........................Start__________________________________
+        let map, marker;
+        let selectedLocation = {};
+        let activeTrigger = null;
+
+        const modalEl = document.getElementById("locationModal");
+        const clearBtn = document.getElementById("clearLocationBtn");
+
+        /* =========================
+           TRACK WHICH BUTTON OPENS MODAL
+        ========================= */
+        document.querySelectorAll(".open-location-modal").forEach(btn => {
+            btn.addEventListener("click", function() {
+                activeTrigger = this;
+            });
+        });
+
+        /* =========================
+           AUTO FETCH LOCATION ON PAGE LOAD
+        ========================= */
+        function autoDetectLocation({
+            locationInputId,
+            latInputId,
+            lngInputId
+        }) {
+
+            const locationInput = document.getElementById(locationInputId);
+            const latInput = document.getElementById(latInputId);
+            const lngInput = document.getElementById(lngInputId);
+
+            if (!locationInput || !navigator.geolocation) return;
+
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    const loc = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    if (latInput) latInput.value = loc.lat;
+                    if (lngInput) lngInput.value = loc.lng;
+
+                    reverseGeocodeToInput(loc, locationInput);
+
+                    // keep global state in sync
+                    selectedLocation = loc;
+                },
+                () => {
+                    locationInput.value = "Unable to fetch location";
+                }
+            );
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            autoDetectLocation({
+                locationInputId: "locationInput",
+                latInputId: "support_latitude",
+                lngInputId: "support_longitude"
+            });
+        });
+        const registerModal = document.getElementById("registerModal");
+        registerModal.addEventListener("shown.bs.modal", () => {
+            autoDetectLocation({
+                locationInputId: "register_address",
+                latInputId: "register_latitude",
+                lngInputId: "register_longitude"
+            });
+        });
+        /* =========================
+           MODAL OPEN → INIT MAP
+        ========================= */
+        modalEl.addEventListener("shown.bs.modal", () => {
+            initMap();
+
+            if (selectedLocation.lat) {
+                map.setCenter(selectedLocation);
+                marker.setPosition(selectedLocation);
+            }
+        });
+
+        /* =========================
+           INIT MAP
+        ========================= */
+        function initMap() {
+            if (map) {
+                google.maps.event.trigger(map, "resize");
+                return;
+            }
+
+            const defaultLocation = {
+                lat: 20.5937,
+                lng: 78.9629
+            };
+
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: defaultLocation,
+                zoom: 15,
+            });
+
+            marker = new google.maps.Marker({
+                map,
+                draggable: true,
+                position: defaultLocation,
+            });
+
+            selectedLocation = defaultLocation;
+
+            // Autocomplete
+            const input = document.getElementById("mapSearchInput");
+            const autocomplete = new google.maps.places.Autocomplete(input);
+
+            autocomplete.addListener("place_changed", () => {
+                const place = autocomplete.getPlace();
+                if (!place.geometry) return;
+
+                const loc = {
+                    lat: place.geometry.location.lat(),
+                    lng: place.geometry.location.lng()
+                };
+
+                map.setCenter(loc);
+                marker.setPosition(loc);
+                updateSelected(loc, false);
+            });
+
+            // Marker drag
+            marker.addListener("dragend", () => {
+                const pos = marker.getPosition();
+                const loc = {
+                    lat: pos.lat(),
+                    lng: pos.lng()
+                };
+
+                updateSelected(loc, false);
+                reverseGeocode(loc);
+            });
+
+            // Map click
+            map.addListener("click", (event) => {
+                const loc = {
+                    lat: event.latLng.lat(),
+                    lng: event.latLng.lng()
+                };
+
+                marker.setPosition(loc);
+                updateSelected(loc, false);
+                reverseGeocode(loc);
+            });
+
+            // Detect current location inside modal
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const loc = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    map.setCenter(loc);
+                    marker.setPosition(loc);
+                    updateSelected(loc);
+                    reverseGeocode(loc);
+                });
+            }
+        }
+
+        /* =========================
+           UPDATE SELECTED LOCATION
+        ========================= */
+        function updateSelected(loc, select = true) {
+            selectedLocation = loc;
+
+            if (!activeTrigger) return;
+
+            const latInput = document.getElementById(activeTrigger.dataset.lat);
+            const lngInput = document.getElementById(activeTrigger.dataset.lng);
+            const map_lat = document.getElementById("map_latitude");
+            const map_long = document.getElementById("map_longitude");
+            if (map_lat) map_lat.value = loc.lat;
+            if (map_long) map_long.value = loc.lng;
+            if (select) {
+                if (latInput) latInput.value = loc.lat;
+                if (lngInput) lngInput.value = loc.lng;
+            }
+
+            clearBtn.style.display = "block";
+        }
+
+        /* =========================
+           REVERSE GEOCODE (MODAL)
+        ========================= */
+        function reverseGeocode(loc) {
+            const geocoder = new google.maps.Geocoder();
+
+            geocoder.geocode({
+                location: loc
+            }, (results, status) => {
+                if (status === "OK" && results[0]) {
+                    document.getElementById("mapSearchInput").value =
+                        results[0].formatted_address;
+
+                    clearBtn.style.display = "block";
+                }
+            });
+        }
+
+        /* =========================
+           REVERSE GEOCODE (PAGE LOAD)
+        ========================= */
+        function reverseGeocodeToInput(loc, inputElement) {
+            const geocoder = new google.maps.Geocoder();
+
+            geocoder.geocode({
+                location: loc
+            }, (results, status) => {
+                if (status === "OK" && results[0]) {
+                    inputElement.value = results[0].formatted_address;
+                }
+            });
+        }
+
+        /* =========================
+           CONFIRM LOCATION BUTTON
+        ========================= */
+        document.getElementById("confirmLocation").addEventListener("click", () => {
+
+            if (!activeTrigger) return;
+
+            const address = document.getElementById("mapSearchInput").value;
+            const map_lat = document.getElementById("map_latitude").value;
+            const map_long = document.getElementById("map_longitude").value;
+            const locationInput = document.getElementById(
+                activeTrigger.dataset.locationInput
+            );
+            const latInput = document.getElementById(activeTrigger.dataset.lat);
+            if (locationInput) {
+                locationInput.value = address;
+            }
+            if (latInput) {
+                latInput.value = map_lat;
+            }
+            const lngInput = document.getElementById(activeTrigger.dataset.lng);
+            if (lngInput) {
+                lngInput.value = map_long;
+            }
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            modal.hide();
+        });
+
+        /* =========================
+           CLEAR BUTTON
+        ========================= */
+        clearBtn.addEventListener("click", () => {
+
+            document.getElementById("mapSearchInput").value = "";
+
+            if (marker) {
+                marker.setPosition(null);
+            }
+
+            selectedLocation = {};
+            clearBtn.style.display = "none";
+        });
+// ALl Map Related Codes..........................Ends__________________________________
+
         document.addEventListener("DOMContentLoaded", function() {
             setTimeout(() => {
-                loader.style.display = "none";
+                hideLoader();
             }, 1000);
             getUser();
         });
+
+        function getUserLocation() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject("Geolocation not supported");
+                }
+                const form = document.getElementById('register');
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+
+                        form.querySelector('.latitude').value = lat;
+                        form.querySelector('.longitude').value = lng;
+
+                        resolve({
+                            lat,
+                            lng
+                        });
+                    },
+                    error => {
+                        reject("Location permission denied");
+                    }
+                );
+            });
+        }
+
+        function getAddressFromLatLng(lat, lng) {
+            const apiKey = "AIzaSyAFkLT1PNls0HcQ6eb2ARdlj5SvsVMyQqk";
+
+            return fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "OK") {
+                        const address = data.results[0].formatted_address;
+                        document.getElementById('map_address').value = address;
+                        return address;
+                    } else {
+                        throw "Unable to fetch address";
+                    }
+                });
+        }
+
 
         function getUser() {
             const token = localStorage.getItem("token");
@@ -602,7 +939,7 @@
             const profileBtn = document.getElementById("profileBtn");
 
             if (token) {
-                loader.style.display = "flex";
+                showLoader();
                 // Fetch user info
                 fetch("{{ url('/') }}/api/v1/user", {
                         method: "GET",
@@ -619,12 +956,20 @@
                                 title: "Error",
                                 text: data.message || "Something went wrong"
                             });
+                            localStorage.removeItem("token");
+                            if (!loginBtn.classList.contains("d-md-block")) {
+                                loginBtn.classList.add("d-md-block");
+                            }
+
+                            if (profileBtn.classList.contains("d-md-block")) {
+                                profileBtn.classList.remove("d-md-block");
+                            }
                             throw new Error("Request failed");
                         }
                         return data;
                     })
                     .then(data => {
-
+                        userData = data;
                         // Hide login button
                         if (loginBtn.classList.contains("d-md-block")) {
                             loginBtn.classList.remove("d-md-block");
@@ -634,10 +979,17 @@
                         if (!profileBtn.classList.contains("d-md-block")) {
                             profileBtn.classList.add("d-md-block");
                         }
-                        if (data.roles && data.roles.includes("admin")) {
+                        let userRoles = data?.roles;
+                        if (userRoles && userRoles.includes("admin")) {
                             profileBtn.href = "{{ route('admin.dashboard') }}";
                         } else {
                             profileBtn.href = "{{ route('profile') }}";
+                        }
+                        if (userRoles.includes("volunteer")) {
+                            toggleRole(userRoles, "volunteer", "volunteer");
+                        }
+                        if (userRoles.includes("donor")) {
+                            toggleRole(userRoles, "donor", "donor");
                         }
 
                     })
@@ -645,7 +997,7 @@
                         console.log(err);
                     })
                     .finally(() => {
-                        loader.style.display = "none";
+                        hideLoader();
                     });
 
             } else {
@@ -660,6 +1012,20 @@
             }
         }
 
+        function toggleRole(userRoles, sectionId, roleName) {
+            const section = document.getElementById(sectionId);
+            const form = section.querySelector(".registration-form");
+            const message = section.querySelector(".role-message");
+
+            if (userRoles.includes(roleName)) {
+                form.classList.add("d-none");
+                message.classList.remove("d-none");
+            } else {
+                form.classList.remove("d-none");
+                message.classList.add("d-none");
+            }
+        }
+
         function sendOtp() {
             const mobile = document.getElementById("mobileNumber").value;
 
@@ -671,7 +1037,7 @@
                 });
                 return;
             }
-            loader.style.display = "flex";
+            showLoader();
             fetch('{{ url('/') }}/api/v1/send-otp', {
                     method: 'POST',
                     headers: {
@@ -707,7 +1073,7 @@
                     document.querySelector(".otp-box").focus();
                 })
                 .finally(() => {
-                    loader.style.display = "none";
+                    hideLoader();
                 });
 
         }
@@ -999,14 +1365,7 @@
         });
 
         let registerOtpVerified = false;
-        // ✅ SweetAlert helper
-        function showAlert(type, message) {
-            Swal.fire({
-                icon: type, // success | error | warning | info
-                text: message,
-                confirmButtonColor: '#3085d6'
-            });
-        }
+
         // ✅ Send OTP (Registration)
         function sendRegisterOtp(elm) {
             const mobile = document.getElementById('mobile').value;
@@ -1015,7 +1374,7 @@
                 showAlert('warning', 'Enter valid mobile number');
                 return;
             }
-            loader.style.display="flex";
+            loader.style.display = "flex";
             fetch('{{ url('/') }}/api/v1/send-registration-otp', {
                     method: 'POST',
                     headers: {
@@ -1050,8 +1409,8 @@
                     showAlert('error', err.message || 'Error sending OTP');
                     console.error(err);
                 })
-                .finally(()=>{
-                    loader.style.display="none";
+                .finally(() => {
+                    loader.style.display = "none";
                 });
         }
 
@@ -1064,7 +1423,7 @@
                 showAlert('warning', 'Enter OTP');
                 return;
             }
-            loader.style.display="flex";
+            loader.style.display = "flex";
             fetch('{{ url('/') }}/api/v1/verify-registration-otp', {
                     method: 'POST',
                     headers: {
@@ -1104,25 +1463,33 @@
                     showAlert('error', err.message || 'Invalid OTP');
                     console.error(err);
                 })
-                .finally(()=>{
-                    loader.style.display="none";
+                .finally(() => {
+                    loader.style.display = "none";
                 });
         }
 
         // ✅ Register User
-        function registerUser() {
-
+        async function registerUser() {
+            const form = document.getElementById('register');
+            try {                
+                if(!form.querySelector('.latitude').value && !form.querySelector('.longitude').value){
+                    const location = await getUserLocation();
+                }
+                
+            } catch (error) {
+                showAlert('error', 'Location permission is required for registration');
+                return;
+            }
             if (!registerOtpVerified) {
                 showAlert('warning', 'Please verify OTP first');
                 return;
             }
 
-            const form = document.getElementById('register');
             const formData = new FormData(form);
 
             // Convert FormData to plain object
             const data = Object.fromEntries(formData.entries());
-            loader.style.display="flex";
+            loader.style.display = "flex";
             fetch('{{ url('/') }}/api/v1/register', {
                     method: 'POST',
                     headers: {
@@ -1133,8 +1500,16 @@
                 })
                 .then(async res => {
                     const response = await res.json();
-
                     if (!res.ok) {
+                        if (res.status === 403 && response.errors) {
+                            let errorMessages = Object.values(response.errors)
+                                .flat()
+                                .join('\n');
+
+                            showAlert('error', errorMessages);
+                        } else {
+                            showAlert('error', response.message || 'Registration failed');
+                        }
                         throw response;
                     }
 
@@ -1157,8 +1532,8 @@
                     }
                     console.error(err);
                 })
-                .finally(()=>{
-                    loader.style.display="none";
+                .finally(() => {
+                    loader.style.display = "none";
                 });
         }
     </script>

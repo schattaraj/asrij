@@ -100,3 +100,9 @@ Route::get('/users/update/{id}', [RegistrationController::class, 'index'])
     ->name('users.update');
 Route::post('/users/{id}/update-role', [RegistrationController::class, 'updateUserRole'])
     ->name('users.update.role');
+
+
+Route::get('/requests', function () {
+    $requests = Request::latest()->get();
+    return view('requests.index', compact('requests'));
+});

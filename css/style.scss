@@ -2128,3 +2128,91 @@ body.design2 {
     66%  {background-position: -100%  66%,0%   66% ,100% 66% }
     100% {background-position:    0% 100%,100% 100%,200% 100%}
 }
+
+.filter-bar {
+  border-radius: 12px;
+}
+
+// .request-card {
+//   border-radius: 14px;
+//   padding: 15px;
+//   background: #fff;
+//   transition: all 0.25s ease;
+//   position: relative;
+//   border: 1px solid #eee;
+
+//   &:hover {
+//     transform: translateY(-4px);
+//     box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+//   }
+
+//   .blood-group {
+//     font-size: 22px;
+//     font-weight: 700;
+//     color: #e63946;
+//   }
+
+//   .meta {
+//     font-size: 13px;
+//     color: #6c757d;
+//   }
+
+//   .urgent-tag {
+//     position: absolute;
+//     top: 10px;
+//     right: 10px;
+//     font-size: 11px;
+//   }
+// }
+.request-card {
+  width: 100%;
+  border-radius: 14px;
+  padding: 15px;
+  background: #fff;
+  border: 1px solid #eee;
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  /* Better modern shadow */
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+
+  transition: all 0.25s ease;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .blood-group {
+    font-size: 22px;
+    font-weight: 700;
+    color: #e63946;
+  }
+
+  .meta {
+    font-size: 13px;
+    color: #6c757d;
+  }
+
+  /* Push button to bottom */
+  .donate-btn {
+    margin-top: auto;
+  }
+}
+
+/* Make all columns stretch equally */
+#requestContainer > div {
+  display: flex;
+}
+/* Urgent Styling */
+.urgent-card {
+  border-left: 4px solid #e63946;
+  background: linear-gradient(to right, #fff5f5, #ffffff);
+}
+
+/* Button polish */
+.btn-danger {
+  border-radius: 8px;
+}

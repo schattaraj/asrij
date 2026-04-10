@@ -1164,14 +1164,18 @@ nav ul li a.active {
   display: block;
 }
 
-.registration-form input,
-.registration-form select,
+.registration-form input.form-control,
+.registration-form select.form-select,
 .registration-form textarea {
   width: 100%;
   margin-bottom: 15px;
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
+}
+
+.registration-form select.form-select{
+padding-top: 24px;
 }
 
 .registration-form button {

@@ -36,7 +36,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'pin_code',
         'blood_group',
         'latitude',
-        'longitude'
+        'longitude',
+        'referred_by',
+        'is_verified',
     ];
 
     /**

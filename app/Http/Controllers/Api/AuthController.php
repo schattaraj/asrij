@@ -25,10 +25,10 @@ class AuthController extends Controller
             'name'      => 'required|string|max:255',
             // 'email'     => 'nullable|email|unique:users,email',
             'mobile'    => 'required|digits:10|unique:users,mobile',
-            'dob'       => 'nullable|date',
+            'dob'       => 'required|date',
             'address'   => 'nullable|string',
-            'pin_code'  => 'nullable|string|max:10',
-            'blood_group' => 'nullable|string|max:3',
+            'pin_code'  => 'required|string|max:10',
+            'blood_group' => 'required|string|max:3',
             'latitude'  => 'nullable|string|max:20',
             'longitude' => 'nullable|string|max:20',
             // 'password'  => 'nullable|min:6'
@@ -41,6 +41,7 @@ class AuthController extends Controller
     // ✅ Check OTP verified
     if (!Cache::get('otp_verified_' . $request->mobile)) {
         return response()->json([
+            'status' => false,
             'message' => 'Please verify OTP first'
         ], 403);
     }
