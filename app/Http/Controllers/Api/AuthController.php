@@ -57,6 +57,7 @@ class AuthController extends Controller
             'longitude' => $request->longitude,
 
             'roles'     => ['user'],
+            'is_verified' => 1
             // 'password'  => $request->password ? Hash::make($request->password) : null,
         ]);
 

@@ -195,7 +195,8 @@
                         </div>
 
                         <div class="form-check mb-3">
-                            <input class="form-check-input" style="width: 16px" type="checkbox" name="whatsapp_checkbox" id="sameAsContact">
+                            <input class="form-check-input" style="width: 16px" type="checkbox" name="whatsapp_checkbox"
+                                id="sameAsContact">
                             <label class="form-check-label" for="sameAsContact">
                                 WhatsApp number same as contact number
                             </label>
@@ -307,7 +308,8 @@
                         <div class="input-group mb-3">
                             <div class="form-floating flex-grow-1">
                                 <input type="number" class="form-control mb-0" name="required_before"
-                                    placeholder="Required Within" min="1" style="border-top-right-radius: 0;border-bottom-right-radius:0;" required>
+                                    placeholder="Required Within" min="1"
+                                    style="border-top-right-radius: 0;border-bottom-right-radius:0;" required>
                                 <label>Required Within</label>
                             </div>
                             <select class="form-select mb-0" name="required_before_unit" style="max-width: 120px;">
@@ -321,7 +323,8 @@
                             <label for="contact">Contact Number</label>
                         </div>
                         <div class="form-check mb-3">
-                            <input class="form-check-input" style="width: 16px" type="checkbox" name="whatsapp_checkbox" id="recieverWhatsapp">
+                            <input class="form-check-input" style="width: 16px" type="checkbox" name="whatsapp_checkbox"
+                                id="recieverWhatsapp">
                             <label class="form-check-label" for="recieverWhatsapp">
                                 WhatsApp number same as contact number
                             </label>
@@ -369,7 +372,7 @@
                         <div class="form-group">
                             <label for="" class="form-label">Upload Prescriotion</label>
                             <input type="file" id="prescription" class="form-control" name="prescription"
-                            placeholder="Prescription" required>
+                                placeholder="Prescription" required>
                         </div>
                         <div class="form-floating">
                             <input type="text" id="receiver_pin_code" class="form-control" name="pin_code"
@@ -922,16 +925,36 @@
         </div>
 
         <!-- Modal -->
-        <div class="modal fade" id="donateModal">
-            <div class="modal-dialog">
-                <div class="modal-content p-3">
-                    <h5 class="fw-bold">Donate Blood</h5>
-                    <p class="text-muted">Confirm your availability</p>
-
-                    <input type="text" class="form-control mb-2" placeholder="Your Name">
-                    <input type="tel" class="form-control mb-3" placeholder="Phone Number">
-
-                    <button class="btn btn-danger w-100">Confirm Donation</button>
+        <div class="modal fade" id="confirmDonationModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-light">
+                        <h5 class="modal-title">Confirm Your Response</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="donationForm">
+                            <input type="hidden" id="request_id" name="request_id">
+                            
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">Your Name</label>
+                                <input type="text" id="donor_name" class="form-control bg-light" readonly>
+                            </div>
+        
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Contact Number</label>
+                                <input type="text" id="donor_phone" class="form-control" required>
+                                <div class="form-text text-info">
+                                    <i class="fas fa-info-circle me-1"></i> Is this number currently reachable? Update it if needed.
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-secondary w-100" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-danger w-100">Confirm & Respond</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1505,6 +1528,7 @@
 @section('scripts')
     <script>
         const container = document.getElementById("requestContainer");
+
         function render(data) {
             container.innerHTML = "";
 
@@ -1523,7 +1547,7 @@
           <div class="meta mb-1"><strong>Address</strong> : ${req.address}</div>
           <div class="meta mb-2"><strong>Units</strong> : ${req.unit}</div>
           ${req?.distance   ? `<div class="meta mb-3"><strong>Distance</strong> : ${req.distance_text} from your registered address</div>` : ''}
-          <button class="btn btn-sm btn-danger w-100 donate-btn" data-id="${req.id}" data-blood_group="${req?.blood_group}">
+          <button class="btn btn-sm btn-danger w-100 donate-btn" data-request_id="${req.id}" data-blood_group="${req?.blood_group}">
             Donate
           </button>
         </div>
@@ -1536,25 +1560,74 @@
 
         function attachEvents() {
             document.querySelectorAll(".donate-btn").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    let token = localStorage.getItem("token");
-                if (!token) {
-                    console.log("No Token found");
-                    let loginModalEl = document.getElementById('loginModal');
-                    let loginModal = bootstrap.Modal.getOrCreateInstance(loginModalEl);
-                    loginModal.show();
-                    return;
-                }
-                if(userData && userData.blood_group && userData.blood_group !== btn.dataset.blood_group){
-                    showAlert( "warning","Your registered blood group does not match the required blood group for this request. Please update your profile or choose a different request to donate.");
-                    return;
-                };
-                const modal = new bootstrap.Modal(document.getElementById('donateModal'));
-                    modal.show();
-            });
-            });
+    btn.addEventListener("click", () => {
+        let token = localStorage.getItem("token");
+
+        // 1. Auth & Validation
+        if (!token) {
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('loginModal')).show();
+            return;
         }
 
+        if (userData && userData.blood_group && userData.blood_group !== btn.dataset.blood_group) {
+            showAlert("warning", "Blood group mismatch. Please check the request requirements.");
+            return;
+        }
+
+        // 2. Populate Modal Data
+        const modalEl = document.getElementById('confirmDonationModal');
+        
+        // Pass the request ID from the clicked button
+        modalEl.querySelector('#request_id').value = btn.dataset.request_id;
+        
+        // Pre-fill from your global userData object
+        modalEl.querySelector('#donor_name').value = userData.name || "User";
+        modalEl.querySelector('#donor_phone').value = userData.mobile || "";
+
+        // 3. Show the Modal
+        bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    });
+});
+
+// 3. Submit handling
+document.getElementById('donationForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Processing...`;
+
+    const payload = {
+        request_id: document.getElementById('request_id').value,
+        contact_number: document.getElementById('donor_phone').value // This takes the (possibly edited) number
+    };
+
+    try {
+        const response = await fetch('api/respond-to-request.php', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem("token")}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            showAlert("success", "Thank you! Your response has been sent to the requester.");
+            bootstrap.Modal.getInstance(document.getElementById('confirmDonationModal')).hide();
+        } else {
+            showAlert("danger", result.message || "Something went wrong.");
+        }
+    } catch (error) {
+        showAlert("danger", "Connection error. Please try again.");
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Confirm & Respond";
+    }
+});
+        }
         function filterData() {
             const blood = document.getElementById("bloodFilter").value;
             const urgency = document.getElementById("urgencyFilter").value;
@@ -1588,7 +1661,7 @@
 
         /* Init */
         // render(requests);
-        const API_URL = "{{route('blood-requests.index')}}";
+        const API_URL = "{{ route('blood-requests.index') }}";
         let allRequests = [];
 
         async function fetchRequests() {
@@ -1600,7 +1673,7 @@
                         'Accept': 'application/json'
                     }
                 };
-                if(token){
+                if (token) {
                     option = {
                         headers: {
                             'Accept': 'application/json',
@@ -1608,11 +1681,11 @@
                         }
                     }
                 }
-                const res = await fetch(API_URL,option);
+                const res = await fetch(API_URL, option);
                 const data = await res.json();
 
                 allRequests = data?.data;
-                if(!allRequests || allRequests.length === 0){
+                if (!allRequests || allRequests.length === 0) {
                     document.getElementById("blood_requests_section").style.display = 'none';
                     return;
                 }
@@ -1684,7 +1757,7 @@
         }
 
         function disableFields(form, state) {
-            const fields = ['name', 'email', 'mobile', 'whatsapp_number', 'address', 'pin_code','blood_group'];
+            const fields = ['name', 'email', 'mobile', 'whatsapp_number', 'address', 'pin_code', 'blood_group'];
             fields.forEach(field => {
                 const el = form.querySelector(`[name="${field}"]`);
                 el.readOnly = state ? el.value ? true : false : state;
@@ -1700,57 +1773,57 @@
         }
 
         // Implemented api for blood request
-document.querySelector('#request_blood .registration-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
+        document.querySelector('#request_blood .registration-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
 
-    const form = e.target;
-    const formData = new FormData(form);
+            const form = e.target;
+            const formData = new FormData(form);
 
-    // Handle checkbox logic
-    // if (document.getElementById('requestForSelf').checked) {
-    //     formData.set('request_for', 'self');
-    // } else {
-    //     formData.set('request_for', 'other');
-    // }
+            // Handle checkbox logic
+            // if (document.getElementById('requestForSelf').checked) {
+            //     formData.set('request_for', 'self');
+            // } else {
+            //     formData.set('request_for', 'other');
+            // }
 
-    try {
-        const validPin = await validatePincode(formData.get('address'), formData.get("pin_code"));
-        if(!validPin){
-            return;
-        }
-        if(!formData.get('request_for')){
-          
-        }
-        const token = localStorage.getItem('token');
-        const response = await fetch("{{ route('blood-requests.store') }}", {
-            method: "POST",
-            headers: {
-                Authorization: 'Bearer ' + token,
-                // "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value,
-                "Accept": "application/json"
-            },
-            body: formData
+            try {
+                const validPin = await validatePincode(formData.get('address'), formData.get("pin_code"));
+                if (!validPin) {
+                    return;
+                }
+                if (!formData.get('request_for')) {
+
+                }
+                const token = localStorage.getItem('token');
+                const response = await fetch("{{ route('blood-requests.store') }}", {
+                    method: "POST",
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        // "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value,
+                        "Accept": "application/json"
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    showAlert("error", data.message || "Failed to submit request. Please check your input.");
+                    return;
+                }
+                if (response.status === 201) {
+                    // Optionally, you can add the new request to the list without reloading
+                    // allRequests.unshift(data);
+                    // render(allRequests.slice(0, 4));
+                    showAlert("success", "Blood request submitted successfully!");
+                    form.reset();
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert("Something went wrong!");
+            }
         });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            showAlert("error", data.message || "Failed to submit request. Please check your input.");
-            return;
-        }
-        if(response.status === 201){
-            // Optionally, you can add the new request to the list without reloading
-            // allRequests.unshift(data);
-            // render(allRequests.slice(0, 4));
-            showAlert("success","Blood request submitted successfully!");
-        form.reset();
-        }
-
-    } catch (error) {
-        console.error(error);
-        alert("Something went wrong!");
-    }
-});
     </script>
     <script>
         document.querySelectorAll('.autofill-user').forEach(checkbox => {
@@ -1915,14 +1988,14 @@ document.querySelector('#request_blood .registration-form').addEventListener('su
                         });
                         break;
                     case "request_blood":
-                    autoDetectLocation({
+                        autoDetectLocation({
                             locationInputId: "patient_address",
                             latInputId: "patient_latitude",
                             lngInputId: "patient_longitude"
                         });
                         break;
                     case "volunteer":
-                        
+
                         break;
                     default:
                         break;
@@ -2163,7 +2236,7 @@ document.querySelector('#request_blood .registration-form').addEventListener('su
         //
         document.querySelectorAll(".registration-section .form-check-input").forEach(function(item) {
             item.addEventListener("change", function(elm) {
-                console.log("elm",elm);
+                console.log("elm", elm);
                 const checkbox = elm.target;
                 // closest parent container
                 const parent = checkbox.closest("form");
@@ -2171,7 +2244,7 @@ document.querySelector('#request_blood .registration-form').addEventListener('su
                 const input = parent.querySelector("input[name='whatsapp_checkbox']");
                 const contact = parent.querySelector("input[name='mobile']");
                 const whatsapp = parent.querySelector("input[name='whatsapp_number']");
-                console.log(input.checked,contact.value,whatsapp.value);
+                console.log(input.checked, contact.value, whatsapp.value);
                 if (input.checked) {
                     whatsapp.value = contact.value;
                     whatsapp.setAttribute('readonly', true);
