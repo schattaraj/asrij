@@ -16,57 +16,80 @@
                     </div>
 
                     <div class="card-body">
+                        <nav class="mb-3">
+                            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                              <button class="nav-link active" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="true">Profile</button>
+                              <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#password" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Change Password</button>
+                            </div>
+                          </nav>
                         <div class="tab-content">
                             <!-- Profile -->
-                            <div class="tab-pane fade show active" id="profile">
-                                <h5 class="border-bottom pb-2">Basic Information</h5>
-
-                                {{-- <p><strong>Name:</strong> {{ $user->name }}</p>
-                                <p><strong>Email:</strong> {{ $user->email }}</p>
-                                <p><strong>Contact:</strong> {{ $user->mobile ?? '-' }}</p>
-                                <p><strong>Pin Code:</strong> {{ $user->pin_code ?? '-' }}</p>
-                                <p><strong>Address:</strong> {{ $user->address }}</p> --}}
-
-                                {{-- Role Specific --}}
-                                {{-- @if (in_array('donor', $user->roles ?? []))
-                                @include('profile.partials.donor', ['donor' => $donor])
-                            @endif
+                            <div class="tab-pane fade show active" id="profile">                            
+                                <form id="profileForm">
+                                    @csrf
                             
-                            @if (in_array('receiver', $user->roles ?? []))
-                                @include('profile.partials.receiver', ['receiver' => $receiver])
-                            @endif
+                                    <div class="mb-3">
+                                        <label class="form-label">Name</label>
+                                        <input type="text" id="userName" name="name" class="form-control">
+                                    </div>
                             
-                            @if (in_array('volunteer', $user->roles ?? []))
-                                @include('profile.partials.volunteer', [
-                                    'volunteer' => $volunteer,
-                                    'extra' => $extra,
-                                ])
-                            @endif --}}
+                                    <div class="mb-3">
+                                        <label class="form-label">Mobile</label>
+                                        <input type="text" id="userMobile" name="mobile" class="form-control" readonly>
+                                    </div>
+                            
+                                    <div class="mb-3">
+                                        <label class="form-label">Blood Group</label>
+                                        <select id="userBlood" name="blood_group" class="form-control">
+                                            <option value="">Select Blood Group</option>
+                                            <option value="A+">A+</option>
+                                            <option value="A-">A-</option>
+                                            <option value="B+">B+</option>
+                                            <option value="B-">B-</option>
+                                            <option value="O+">O+</option>
+                                            <option value="O-">O-</option>
+                                            <option value="AB+">AB+</option>
+                                            <option value="AB-">AB-</option>
+                                        </select>
+                                    </div>
+                            
+                                    <div class="mb-3">
+                                        <label class="form-label">DOB</label>
+                                        <input type="date" id="userDOB" name="dob" class="form-control">
+                                    </div>
+                            
+                                    <div class="mb-3">
+                                        <label class="form-label">Address</label>
+                                    
+                                        <div class="input-group">
+                                            <input type="text"
+                                                   id="userAddress"
+                                                   name="address"
+                                                   class="form-control"
+                                                   readonly>
+                                    
+                                            <button type="button"
+                                                    class="btn btn-outline-danger open-location-modal"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#locationModal"
+                                                    data-location-input="userAddress"
+                                                    data-lat="userLat"
+                                                    data-lng="userLng">
+                                                Change
+                                            </button>
+                                        </div>
+                                    
+                                        <input type="hidden" id="userLat" name="latitude">
+                                        <input type="hidden" id="userLng" name="longitude">
+                                    </div>
+                            
+                                    <button type="button" class="btn btn-primary" onclick="updateProfile()">
+                                        Update Profile
+                                    </button>
+                                </form>
                             </div>
-
-                            <!-- Notifications -->
-                            <div class="tab-pane fade" id="notifications">
-                                <h5 class="border-bottom pb-2">Notification Settings</h5>
-
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" checked>
-                                    <label class="form-check-label">Email Notifications</label>
-                                </div>
-
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox">
-                                    <label class="form-check-label">SMS Notifications</label>
-                                </div>
-
-                                <button class="btn btn-primary mt-3">
-                                    Save Preferences
-                                </button>
-                            </div>
-
                             <!-- Password -->
                             <div class="tab-pane fade" id="password">
-                                <h5 class="border-bottom pb-2">Change Password</h5>
-
                                 <form method="POST" action="{{ route('profile.password.update') }}">
                                     @csrf
 
@@ -96,15 +119,6 @@
                                         Update Password
                                     </button>
                                 </form>
-                            </div>
-
-                            <!-- Chat -->
-                            <div class="tab-pane fade" id="chat">
-                                <h5 class="border-bottom pb-2">Chat</h5>
-
-                                <div class="alert alert-info">
-                                    Chat module coming soon 🚀
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -147,14 +161,44 @@
             });
         @endif
         document.addEventListener('DOMContentLoaded', function() {
-            let activeTab = "{{ session('active_tab', 'profile') }}";
+            // let activeTab = "{{ session('active_tab', 'profile') }}";
 
-            let trigger = document.querySelector('#tab-' + activeTab);
+            // let trigger = document.querySelector('#tab-' + activeTab);
 
-            if (trigger) {
-                new bootstrap.Tab(trigger).show();
-            }
+            // if (trigger) {
+            //     new bootstrap.Tab(trigger).show();
+            // }
+            loadUserProfile();
         });
+
+        function loadUserProfile(retryCount = 0) {
+           showLoader();
+            if (userData && userData !== null) {
+                displayUserProfile(userData);
+                hideLoader();
+            } else {
+                if (retryCount < 5) { // retry max 5 times
+                    console.log("userData not available, retrying...");
+                    setTimeout(() => {
+                        loadUserProfile(retryCount + 1);
+                    }, 2000); // retry after 2 seconds
+                } else {
+                    console.error("Failed to load userData");
+                }
+            }
+        }
+
+        function displayUserProfile(user) {
+            document.getElementById("userName").value = user.name || "";
+    document.getElementById("userMobile").value = user.mobile || "";
+
+    document.getElementById("userBlood").value = user.blood_group || "";
+    document.getElementById("userDOB").value = user.dob || "";
+
+    document.getElementById("userAddress").value = user.address || "";
+    document.getElementById("userLat").value = user.latitude || "";
+    document.getElementById("userLng").value = user.longitude || "";
+        }
     </script>
 @endsection
 @endsection

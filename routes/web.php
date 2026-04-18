@@ -48,6 +48,8 @@ Route::middleware(['auth','role:admin'])->group(function () {
   
 });
 Route::get('/profile', [PageController::class, 'profile'])->name('profile');
+Route::get('/blood-donations', [PageController::class, 'bloodDonations'])->name('bloodDonations');
+Route::get('/blood-request', [PageController::class, 'bloodRequests'])->name('bloodRequests');
 Route::middleware(['auth','role:donor|receiver|volunteer'])->group(function () {
 
   Route::post('/change-password', [ProfileController::class, 'updatePassword'])

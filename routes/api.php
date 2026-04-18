@@ -1,30 +1,21 @@
 <?php
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\ApiRegisterController;
-use App\Http\Controllers\Api\ApiLoginController;
 use App\Http\Controllers\API\AuthController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\RequestController;
 use App\Http\Controllers\Api\RegistrationController;
+use App\Http\Controllers\Api\RespondOnRequestController;
 
 Route::get('/register', function(){
     return "Hello";
 });
-// Route::post('/register', [ApiRegisterController::class, 'register']);
-// Route::post('/login', [ApiLoginController::class, 'login']);
-
-// Authenticated routes
-// Route::middleware('auth:sanctum')->group(function () {
-//     Route::get('/user', [ApiRegisterController::class, 'userProfile']);
-//     Route::post('/logout', [ApiLoginController::class, 'logout']);
-// });
 Route::prefix('v1')->group(function () {
 
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/verify-registration-otp', [AuthController::class, 'verifyRegistrationOtp']);
     Route::post('/send-registration-otp', [AuthController::class, 'sendRegistartionOtp']);
     Route::post('/send-otp', [AuthController::class, 'sendOtp']);
-    Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
+    Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('verifyOtp');
     Route::post('/login', [AuthController::class, 'login']);
 
     Route::middleware('auth:sanctum')->group(function () {
@@ -41,6 +32,12 @@ Route::prefix('v1')->group(function () {
         
         });
         Route::post('/donor-registration', [RegistrationController::class, 'store'])->name('donor.registration');
+        Route::post('/donor-verifyRegistrationOtp', [RegistrationController::class, 'verifyRegistrationOtp'])->name('donor.verifyRegistrationOtp');
+        Route::post('/respond-on-request', [RespondOnRequestController::class, 'store'])->name('blood-requests.respond');
+        Route::get('/respond-on-request', [RespondOnRequestController::class, 'index'])->name('blood-donations.respond');
+        Route::get('/respones-on-request', [RespondOnRequestController::class, 'fetchResponses'])->name('fetchResponses');
+        Route::put('/update-response',[RespondOnRequestController::class,'update'])->name('updateResponse');
+        Route::get('/my-blood-donations', [RequestController::class, 'myBloodDonation'])->name('myBloodDonations');
     });
     Route::get('/blood-requests', [RequestController::class, 'index'])->name('blood-requests.index');
 });

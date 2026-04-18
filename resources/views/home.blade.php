@@ -97,15 +97,62 @@
                     <form action="{{ route('registration') }}" class="registration-form" method="post">
                         @csrf
                         <input type="hidden" name="role" value="donor">
-                        <div class="form-check mb-3">
-                            <input class="form-check-input autofill-user" type="checkbox" id="autofill-user">
+                        {{-- <div class="mb-3">
+                            <label class="form-label fw-semibold">Who is this request for?</label>
+
+                            <div class="d-flex gap-3">
+                                <!-- Other -->
+                                <input type="radio" class="btn-check" name="request_for" id="other" value="other"
+                                    autocomplete="off" checked>
+                                <label class="btn btn-outline-primary d-flex align-items-center gap-2 px-4 py-2 rounded-pill"
+                                    for="other">
+                                    <i class="bi bi-person-plus-fill"></i>
+                                    Someone Else
+                                </label>
+
+                                <!-- Self -->
+                                <input type="radio" class="btn-check" name="request_for" id="self" value="self"
+                                    autocomplete="off">
+                                <label class="btn btn-outline-primary d-flex align-items-center gap-2 px-4 py-2 rounded-pill"
+                                    for="self">
+                                    <i class="bi bi-person-fill"></i>
+                                    Myself
+                                </label>
+
+                            </div>
+                        </div> --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold mb-2">This registration is for -</label>
+
+                            <div class="d-flex gap-2">
+
+                                <!-- Someone Else (FIRST + DEFAULT) -->
+                                <input type="radio" class="btn-check" name="request_for" id="other" value="other"
+                                    checked>
+                                <label class="option-card" for="other">
+                                    <i class="bi bi-people-fill option-icon"></i>
+                                    Someone Else
+                                </label>
+
+                                <!-- Myself -->
+                                <input type="radio" class="btn-check" name="request_for" id="self" value="self">
+                                <label class="option-card" for="self">
+                                    <i class="bi bi-person-circle option-icon"></i>
+                                    Myself
+                                </label>
+
+                            </div>
+                        </div>
+                        {{-- <div class="form-check mb-3">
+                            <input class="form-check-input autofill-user" type="checkbox" name="request_for" id="autofill-user">
                             <label class="form-check-label" for="autofill-user">
                                 Use my profile details
                             </label>
-                        </div>
+                        </div> --}}
                         <div class="form-floating">
-                            <input type="text" class="form-control @error('name') is-invalid mb-0 @enderror" name="name"
-                                id="donor_full_name" placeholder="Full Name" value="{{ old('name') }}" required>
+                            <input type="text" class="form-control @error('name') is-invalid mb-0 @enderror"
+                                name="name" id="donor_full_name" placeholder="Full Name" value="{{ old('name') }}"
+                                required>
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -121,21 +168,6 @@
                             <label for="donor_email">Email</label>
                         </div>
 
-                        {{-- <div class="form-floating">
-                        <select class="form-select @error('type') is-invalid @enderror" name="type" id="donorType"
-                            required>
-                            <option value="">Select Option</option>
-                            <option value="Individual" {{ old('type') == 'Individual' ? 'selected' : '' }}>Individual
-                            </option>
-                            <option value="NGO" {{ old('type') == 'NGO' ? 'selected' : '' }}>NGO</option>
-                            <option value="Charity" {{ old('type') == 'Charity' ? 'selected' : '' }}>Charity</option>
-                        </select>
-                        @error('type')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <label for="donorType">Type</label>
-                    </div> --}}
-
                         <div class="form-floating">
                             <select class="form-select @error('blood_group') is-invalid @enderror" name="blood_group"
                                 id="donor_floating_blood_select" required>
@@ -146,34 +178,31 @@
                                     </option>
                                 @endforeach
                             </select>
-                            @error('blood_group')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
                             <label for="donor_floating_blood_select">Blood Group</label>
                         </div>
 
                         <div class="form-floating">
-                            <select class="form-select @error('year_of_birth') is-invalid @enderror" name="year_of_birth"
-                                id="donor_year_of_birth" required>
-                                <option value="">Select Year</option>
-                                @php
-                                    $currentYear = now()->year;
-                                    $minYear = $currentYear - 65;
-                                    $maxYear = $currentYear - 18;
-                                @endphp
-                                @for ($year = $maxYear; $year >= $minYear; $year--)
-                                    <option value="{{ $year }}"
-                                        {{ old('year_of_birth') == $year ? 'selected' : '' }}>
-                                        {{ $year }}
-                                    </option>
-                                @endfor
-                            </select>
-                            @error('year_of_birth')
+                            <input type="date" class="form-control @error('date_of_birth') is-invalid @enderror"
+                                name="dob" id="donor_date_of_birth" value="{{ old('date_of_birth') }}" required
+                                max="{{ \Carbon\Carbon::now()->subYears(18)->format('Y-m-d') }}">
+
+                            @error('date_of_birth')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <label for="donor_year_of_birth">Year of Birth</label>
-                        </div>
 
+                            <label for="donor_date_of_birth">Date of Birth</label>
+                        </div>
+                        <div class="form-floating">
+                            <select class="form-select" name="gender" id="donor_floating_gender" required>
+                                <option value="">Select Gender</option>
+                                @foreach (['Male', 'Female', 'Other'] as $group)
+                                    <option value="{{ $group }}" {{ old('gender') == $group ? 'selected' : '' }}>
+                                        {{ $group }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <label for="donor_floating_gender">Gender</label>
+                        </div>
                         <div class="form-floating">
                             <input type="date" id="date"
                                 class="form-control @error('last_donation') is-invalid @enderror" name="last_donation"
@@ -253,6 +282,29 @@
                         @csrf
                         <input type="hidden" name="role" value="receiver">
                         <!-- Receiver Type -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold mb-2">This request is for -</label>
+
+                            <div class="d-flex gap-2">
+
+                                <!-- Someone Else (FIRST + DEFAULT) -->
+                                <input type="radio" class="btn-check" name="request_for" id="requestFor_other"
+                                    value="other" checked>
+                                <label class="option-card" for="requestFor_other">
+                                    <i class="bi bi-people-fill option-icon"></i>
+                                    Someone Else
+                                </label>
+
+                                <!-- Myself -->
+                                <input type="radio" class="btn-check" name="request_for" id="requestFor_self"
+                                    value="self">
+                                <label class="option-card" for="requestFor_self">
+                                    <i class="bi bi-person-circle option-icon"></i>
+                                    Myself
+                                </label>
+
+                            </div>
+                        </div>
                         <div class="form-floating mb-3">
                             <select class="form-select" name="patient_type" id="patient_type" required>
                                 <option value="">Select Medicine Condition</option>
@@ -263,12 +315,12 @@
                             </select>
                             <label for="patient_type">Medical Condition</label>
                         </div>
-                        <div class="form-check mb-3">
+                        {{-- <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" id="requestForSelf" name="request_for">
                             <label class="form-check-label" for="requestForSelf">
                                 Request for myself
                             </label>
-                        </div>
+                        </div> --}}
                         <!-- Patient Name -->
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control" name="name" id="name"
@@ -293,6 +345,28 @@
                                 <option>O-</option>
                             </select>
                             <label for="receiver_floating_blood_select">Blood Group</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="date" class="form-control @error('date_of_birth') is-invalid @enderror"
+                                name="dob" id="donor_date_of_birth" value="{{ old('date_of_birth') }}" required
+                                max="{{ \Carbon\Carbon::now()->subYears(18)->format('Y-m-d') }}">
+
+                            @error('date_of_birth')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+
+                            <label for="donor_date_of_birth">Date of Birth</label>
+                        </div>
+                        <div class="form-floating">
+                            <select class="form-select" name="gender" id="donor_floating_gender" required>
+                                <option value="">Select Gender</option>
+                                @foreach (['Male', 'Female', 'Other'] as $group)
+                                    <option value="{{ $group }}" {{ old('gender') == $group ? 'selected' : '' }}>
+                                        {{ $group }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <label for="donor_floating_gender">Gender</label>
                         </div>
                         <!-- Hospital Name -->
                         <div class="form-floating mb-3">
@@ -883,10 +957,10 @@
                     <div class="col-md-3">
                         <select class="form-select" id="bloodFilter">
                             <option value="">All Blood Groups</option>
-                            <option>O+</option>
-                            <option>A+</option>
-                            <option>B+</option>
-                            <option>AB+</option>
+                            <option value="O+">O+</option>
+                            <option value="A+">A+</option>
+                            <option value="B+">B+</option>
+                            <option value="AB+">AB+</option>
                         </select>
                     </div>
 
@@ -935,22 +1009,24 @@
                     <div class="modal-body">
                         <form id="donationForm">
                             <input type="hidden" id="request_id" name="request_id">
-                            
+
                             <div class="mb-3">
                                 <label class="form-label text-muted small">Your Name</label>
                                 <input type="text" id="donor_name" class="form-control bg-light" readonly>
                             </div>
-        
+
                             <div class="mb-4">
                                 <label class="form-label fw-bold">Contact Number</label>
                                 <input type="text" id="donor_phone" class="form-control" required>
                                 <div class="form-text text-info">
-                                    <i class="fas fa-info-circle me-1"></i> Is this number currently reachable? Update it if needed.
+                                    <i class="fas fa-info-circle me-1"></i> Is this number currently reachable? Update it
+                                    if needed.
                                 </div>
                             </div>
-                            
+
                             <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-outline-secondary w-100" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-outline-secondary w-100"
+                                    data-bs-dismiss="modal">Cancel</button>
                                 <button type="submit" class="btn btn-danger w-100">Confirm & Respond</button>
                             </div>
                         </form>
@@ -1503,8 +1579,8 @@
                     </div>
                     <div class="social-links">
                         <h3>Follow Us</h3>
-                        <a href="https://www.instagram.com/fullstop.pvt.ltd?igsh=MWRiNXJ4OXkydmRmcw==" target="_blank"><i
-                                class="fa-brands fa-instagram"></i></a>
+                        <a href="https://www.instagram.com/fullstop.pvt.ltd?igsh=MWRiNXJ4OXkydmRmcw=="
+                            target="_blank"><i class="fa-brands fa-instagram"></i></a>
                         <a href="https://www.facebook.com/profile.php?id=61572378570370&mibextid=ZbWKwL"
                             target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
                         <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
@@ -1523,7 +1599,29 @@
         </div>
     </div>
     {{-- @include('partials.home-content') --}}
-
+    <!-- OTP Modal -->
+    <div class="modal fade" id="otpModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="otpModalLabel">Enter OTP</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="otpMessage">Please enter the OTP you received.</p>
+                    <div class="mb-3">
+                        <label for="otpInput" class="form-label">OTP</label>
+                        <input type="text" class="form-control" id="otpInput" maxlength="6"
+                            placeholder="Enter 6-digit OTP">
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-secondary" id="resendOtpBtn">Resend OTP</button>
+                        <button type="button" class="btn btn-primary" id="verifyOtpBtn">Verify</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 @section('scripts')
     <script>
@@ -1547,9 +1645,14 @@
           <div class="meta mb-1"><strong>Address</strong> : ${req.address}</div>
           <div class="meta mb-2"><strong>Units</strong> : ${req.unit}</div>
           ${req?.distance   ? `<div class="meta mb-3"><strong>Distance</strong> : ${req.distance_text} from your registered address</div>` : ''}
-          <button class="btn btn-sm btn-danger w-100 donate-btn" data-request_id="${req.id}" data-blood_group="${req?.blood_group}">
-            Donate
-          </button>
+            <button 
+              class="btn btn-sm ${req.has_responded ? 'btn-secondary' : 'btn-danger'} w-100 donate-btn"
+              data-request_id="${req.id}"
+              data-blood_group="${req?.blood_group}"
+              ${req.has_responded ? 'disabled' : ''}
+            >
+              ${req.has_responded ? 'Already Responded' : 'Donate'}
+            </button>
         </div>
       </div>
     `;
@@ -1560,86 +1663,91 @@
 
         function attachEvents() {
             document.querySelectorAll(".donate-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-        let token = localStorage.getItem("token");
+                btn.addEventListener("click", () => {
+                    if (btn.disabled) return;
+                    let token = localStorage.getItem("token");
 
-        // 1. Auth & Validation
-        if (!token) {
-            bootstrap.Modal.getOrCreateInstance(document.getElementById('loginModal')).show();
-            return;
+                    // 1. Auth & Validation
+                    if (!token) {
+                        bootstrap.Modal.getOrCreateInstance(document.getElementById('loginModal')).show();
+                        return;
+                    }
+
+                    if (userData && userData.blood_group && userData.blood_group !== btn.dataset
+                        .blood_group) {
+                        showAlert("warning",
+                            "Blood group mismatch. Please check the request requirements.");
+                        return;
+                    }
+
+                    // 2. Populate Modal Data
+                    const modalEl = document.getElementById('confirmDonationModal');
+
+                    // Pass the request ID from the clicked button
+                    modalEl.querySelector('#request_id').value = btn.dataset.request_id;
+
+                    // Pre-fill from your global userData object
+                    modalEl.querySelector('#donor_name').value = userData.name || "User";
+                    modalEl.querySelector('#donor_phone').value = userData.mobile || "";
+
+                    // 3. Show the Modal
+                    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+                });
+            });
+
+            // 3. Submit handling
+            document.getElementById('donationForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Processing...`;
+
+                const payload = {
+                    request_id: document.getElementById('request_id').value,
+                    contact_number: document.getElementById('donor_phone')
+                        .value // This takes the (possibly edited) number
+                };
+
+                try {
+                    const response = await fetch('{{ route('blood-requests.respond') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem("token")}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.status) {
+                        showAlert("success", "Thank you! Your response has been sent to the requester.");
+                        bootstrap.Modal.getInstance(document.getElementById('confirmDonationModal')).hide();
+                    } else {
+                        showAlert("error", result.message || "Something went wrong.");
+                    }
+                } catch (error) {
+                    showAlert("danger", "Connection error. Please try again.");
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Confirm & Respond";
+                }
+            });
         }
 
-        if (userData && userData.blood_group && userData.blood_group !== btn.dataset.blood_group) {
-            showAlert("warning", "Blood group mismatch. Please check the request requirements.");
-            return;
-        }
-
-        // 2. Populate Modal Data
-        const modalEl = document.getElementById('confirmDonationModal');
-        
-        // Pass the request ID from the clicked button
-        modalEl.querySelector('#request_id').value = btn.dataset.request_id;
-        
-        // Pre-fill from your global userData object
-        modalEl.querySelector('#donor_name').value = userData.name || "User";
-        modalEl.querySelector('#donor_phone').value = userData.mobile || "";
-
-        // 3. Show the Modal
-        bootstrap.Modal.getOrCreateInstance(modalEl).show();
-    });
-});
-
-// 3. Submit handling
-document.getElementById('donationForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Processing...`;
-
-    const payload = {
-        request_id: document.getElementById('request_id').value,
-        contact_number: document.getElementById('donor_phone').value // This takes the (possibly edited) number
-    };
-
-    try {
-        const response = await fetch('api/respond-to-request.php', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem("token")}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            showAlert("success", "Thank you! Your response has been sent to the requester.");
-            bootstrap.Modal.getInstance(document.getElementById('confirmDonationModal')).hide();
-        } else {
-            showAlert("danger", result.message || "Something went wrong.");
-        }
-    } catch (error) {
-        showAlert("danger", "Connection error. Please try again.");
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerText = "Confirm & Respond";
-    }
-});
-        }
         function filterData() {
             const blood = document.getElementById("bloodFilter").value;
             const urgency = document.getElementById("urgencyFilter").value;
             const search = document.getElementById("searchInput").value.toLowerCase();
 
-            const filtered = requests.filter(r => {
+            const filtered = allRequests.filter(r => {
                 return (
-                    (!blood || r.blood === blood) &&
+                    (!blood || r.blood_group === blood) &&
                     (!urgency || r.urgency === urgency) &&
                     (
-                        r.location.toLowerCase().includes(search) ||
-                        r.hospital.toLowerCase().includes(search)
+                        r.address.toLowerCase().includes(search) ||
+                        r.hospital_name.toLowerCase().includes(search)
                     )
                 );
             });
@@ -1651,7 +1759,7 @@ document.getElementById('donationForm').addEventListener('submit', async (e) => 
             document.getElementById("bloodFilter").value = "";
             document.getElementById("urgencyFilter").value = "";
             document.getElementById("searchInput").value = "";
-            render(requests);
+            render(allRequests);
         }
 
         /* Event Listeners */
@@ -1713,7 +1821,8 @@ document.getElementById('donationForm').addEventListener('submit', async (e) => 
     </script>
     {{-- Request for Blood --}}
     <script>
-        document.getElementById("requestForSelf").addEventListener('change', function() {
+        // Request Blood Starts here................................
+        document.getElementById("requestFor_self").addEventListener('change', function() {
 
             const form = this.closest('form'); // ✅ get current form
 
@@ -1743,6 +1852,11 @@ document.getElementById('donationForm').addEventListener('submit', async (e) => 
                 disableFields(form, false);
             }
         });
+        document.getElementById("requestFor_other").addEventListener('change', function() {
+            const form = this.closest('form');
+            clearForm(form);
+            disableFields(form, false);
+        });
 
         function fillForm(form, data) {
             form.querySelector('[name="name"]').value = data.name || '';
@@ -1750,6 +1864,8 @@ document.getElementById('donationForm').addEventListener('submit', async (e) => 
             form.querySelector('[name="mobile"]').value = data.mobile || '';
             form.querySelector('[name="whatsapp_number"]').value = data.whatsapp_number || '';
             form.querySelector('[name="blood_group"]').value = data.blood_group || '';
+            form.querySelector('[name="dob"]').value = data.dob || '';
+            form.querySelector('[name="gender"]').value = data.gender || '';
             form.querySelector('[name="address"]').value = data.address || '';
             form.querySelector('[name="pin_code"]').value = data.pin_code || '';
             form.querySelector('[name="patient_latitude"]').value = data.latitude || '';
@@ -1757,34 +1873,43 @@ document.getElementById('donationForm').addEventListener('submit', async (e) => 
         }
 
         function disableFields(form, state) {
-            const fields = ['name', 'email', 'mobile', 'whatsapp_number', 'address', 'pin_code', 'blood_group'];
+            const fields = ['name', 'email', 'mobile', 'whatsapp_number', 'address', 'pin_code'];
             fields.forEach(field => {
                 const el = form.querySelector(`[name="${field}"]`);
                 el.readOnly = state ? el.value ? true : false : state;
             });
-        }
-
-        function clearForm(form) {
-            const fields = ['name', 'email', 'mobile', 'whatsapp_number', 'address', 'pin_code'];
-            fields.forEach(field => {
+            // Disable selects too (like blood group, year)
+            ['blood_group', 'dob', 'gender'].forEach(field => {
                 const el = form.querySelector(`[name="${field}"]`);
-                if (el) el.value = '';
+                if (el && el.value) {
+                    el.style.pointerEvents = state ? 'none' : 'auto';
+                    el.style.backgroundColor = state ? '#e9ecef' : '';
+                    el.setAttribute('data-readonly', state);
+                } else {
+                    el.style.pointerEvents = 'auto';
+                    el.style.backgroundColor = '';
+                    el.setAttribute('data-readonly', false);
+                }
             });
         }
 
-        // Implemented api for blood request
+        function clearForm(form) {
+            const fields = ['name', 'email', 'mobile', 'whatsapp_number', 'address', 'pin_code', 'blood_group', 'dob',
+                'gender'
+            ];
+            fields.forEach(field => {
+                const el = form.querySelector(`[name="${field}"]`);
+                if (el.type !== 'hidden' && el.type !== 'checkbox' && el.type !== 'radio') {
+                    el.value = '';
+                }
+            });
+        }
+
         document.querySelector('#request_blood .registration-form').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const form = e.target;
             const formData = new FormData(form);
-
-            // Handle checkbox logic
-            // if (document.getElementById('requestForSelf').checked) {
-            //     formData.set('request_for', 'self');
-            // } else {
-            //     formData.set('request_for', 'other');
-            // }
 
             try {
                 const validPin = await validatePincode(formData.get('address'), formData.get("pin_code"));
@@ -1795,11 +1920,164 @@ document.getElementById('donationForm').addEventListener('submit', async (e) => 
 
                 }
                 const token = localStorage.getItem('token');
+                showLoader();
                 const response = await fetch("{{ route('blood-requests.store') }}", {
                     method: "POST",
                     headers: {
                         Authorization: 'Bearer ' + token,
-                        // "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value,
+                        "Accept": "application/json"
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    showAlert("error", data.message || "Failed to submit request. Please check your input.");
+                    hideLoader();
+                    return;
+                }
+                if (response.status === 201) {
+                    if (checkMessageForOTP(data?.message)) {
+                        // Store the mobile number for later use
+                        window.currentMobileForOTP = mobileNumber;
+                        // Show the modal
+                        const otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
+                        otpModal.show();
+                    }
+                    else{
+                        showAlert("success", data?.message || "Blood request submitted successfully!");
+                        form.reset();
+                    }
+                    // showAlert("success", data?.message);
+                    // Optionally, you can add the new request to the list without reloading
+                    // allRequests.unshift(data);
+                    // render(allRequests.slice(0, 4));
+                    // showAlert("success", "Blood request submitted successfully!");
+                }
+
+            } catch (error) {
+                console.error(error);
+            }
+            finally {
+                hideLoader();
+            }
+        });
+        // Function to verify OTP
+        async function verifyOTP() {
+            const otp = document.getElementById('otpInput').value;
+            const mobile = window.currentMobileForOTP;
+
+            if (!otp || otp.length !== 6) {
+                alert('Please enter a valid 6-digit OTP');
+                return;
+            }
+
+            try {
+                const response = await fetch(`{{route('verifyOtp')}}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        mobile: mobile,
+                        otp: otp
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('success','OTP verified successfully!');
+                    // Close the modal
+                    const otpModal = bootstrap.Modal.getInstance(document.getElementById('otpModal'));
+                    otpModal.hide();
+                    // Handle successful verification (e.g., redirect or update UI)
+                    console.log('Login successful:', data);
+                    // You might want to store the token: localStorage.setItem('token', data.token);
+                } else {
+                    alert(data.message || 'OTP verification failed');
+                }
+            } catch (error) {
+                console.error('Error verifying OTP:', error);
+                alert('An error occurred while verifying OTP');
+            }
+        }
+
+        // Function to resend OTP
+        async function resendOTP() {
+            const mobile = window.currentMobileForOTP;
+
+            if (!mobile) {
+                alert('Mobile number not available');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/v1/send-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        mobile: mobile
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('OTP sent successfully!');
+                    document.getElementById('otpMessage').textContent =
+                    'A new OTP has been sent to your mobile number.';
+                } else {
+                    alert(data.message || 'Failed to send OTP');
+                }
+            } catch (error) {
+                console.error('Error sending OTP:', error);
+                alert('An error occurred while sending OTP');
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verify OTP button
+            document.getElementById('verifyOtpBtn').addEventListener('click', verifyOTP);
+
+            // Resend OTP button
+            document.getElementById('resendOtpBtn').addEventListener('click', resendOTP);
+
+            // Allow Enter key to verify OTP
+            document.getElementById('otpInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    verifyOTP();
+                }
+            });
+        });
+        // Request Blood Ends here................................
+
+        // Donor Registration Form Starts here................................
+        document.querySelector('#donor .registration-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const formData = new FormData(form);
+
+            try {
+                const validPin = await validatePincode(formData.get('address'), formData.get("pin_code"));
+                if (!validPin) {
+                    return;
+                }
+                if (!formData.get('request_for')) {
+
+                }
+                const token = localStorage.getItem('token');
+                const response = await fetch("{{ route('donor.registration') }}", {
+                    method: "POST",
+                    headers: {
+                        Authorization: 'Bearer ' + token,
                         "Accept": "application/json"
                     },
                     body: formData
@@ -1811,21 +2089,58 @@ document.getElementById('donationForm').addEventListener('submit', async (e) => 
                     showAlert("error", data.message || "Failed to submit request. Please check your input.");
                     return;
                 }
-                if (response.status === 201) {
-                    // Optionally, you can add the new request to the list without reloading
-                    // allRequests.unshift(data);
-                    // render(allRequests.slice(0, 4));
-                    showAlert("success", "Blood request submitted successfully!");
-                    form.reset();
+                if (response.status === 200) {
+                    showAlert("success", "You are successfully registered as a donor!");
                 }
+                if (response.status === 201) {
+                    showAlert("success", data.message || "");
+                }
+                toggleFields(form, false);
+                form.reset();
 
             } catch (error) {
                 console.error(error);
                 alert("Something went wrong!");
             }
         });
-    </script>
-    <script>
+        document.getElementById("self").addEventListener("change", function() {
+            const form = this.closest('form');
+            if (this.checked) {
+                showLoader();
+                fetch(`{{ url('/') }}/api/v1/user`, {
+                        headers: {
+                            'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.roles.includes('donor')) {
+                            showAlert('warning', 'You are already registered as donor');
+                            checkbox.checked = false;
+                            return;
+                        }
+                        autoFill(form, data);
+                        toggleFields(form, true);
+                    })
+                    .catch(err => {
+                        console.error("Error fetching user data", err);
+                        showAlert('error', "Failed to auto-fill data. Please try again.");
+                        this.checked = false;
+                    })
+                    .finally(() => {
+                        hideLoader();
+                    });
+            } else {
+                clearForm(form);
+                toggleFields(form, false);
+            }
+        });
+        document.getElementById("other").addEventListener("change", function() {
+            const form = this.closest('form');
+            clearForm(form);
+            toggleFields(form, false);
+        });
         document.querySelectorAll('.autofill-user').forEach(checkbox => {
             checkbox.addEventListener('change', function() {
 
@@ -1841,12 +2156,17 @@ document.getElementById('donationForm').addEventListener('submit', async (e) => 
                         })
                         .then(res => res.json())
                         .then(data => {
+                            if (data.roles.includes('donor')) {
+                                showAlert('warning', 'You are already registered as donor');
+                                checkbox.checked = false;
+                                return;
+                            }
                             autoFill(form, data);
                             toggleFields(form, true);
                         })
                         .catch(err => {
                             console.error("Error fetching user data", err);
-                            alert("Failed to auto-fill data. Please try again.");
+                            showAlert('error', "Failed to auto-fill data. Please try again.");
                             this.checked = false;
                         })
                         .finally(() => {
@@ -1864,12 +2184,13 @@ document.getElementById('donationForm').addEventListener('submit', async (e) => 
             const fieldMap = {
                 name: 'name',
                 email: 'email',
-                contact: 'mobile',
-                whatsapp: 'whatsapp_number',
+                mobile: 'mobile',
+                whatsapp_number: 'whatsapp_number',
                 address: 'address',
                 pin_code: 'pin_code',
                 blood_group: 'blood_group',
-                year_of_birth: 'year_of_birth'
+                dob: 'dob',
+                gender: 'gender'
             };
 
             Object.keys(fieldMap).forEach(key => {
@@ -1899,24 +2220,29 @@ document.getElementById('donationForm').addEventListener('submit', async (e) => 
             });
 
             // Disable selects too (like blood group, year)
-            ['blood_group', 'year_of_birth'].forEach(field => {
+            ['blood_group', 'dob', 'gender'].forEach(field => {
                 const el = form.querySelector(`[name="${field}"]`);
                 if (el && el.value) {
-                    el.disabled = state;
+                    el.style.pointerEvents = state ? 'none' : 'auto';
+                    el.style.backgroundColor = state ? '#e9ecef' : '';
+                    el.setAttribute('data-readonly', state);
                 } else {
-                    el.disabled = false;
+                    el.style.pointerEvents = 'auto';
+                    el.style.backgroundColor = '';
+                    el.setAttribute('data-readonly', false);
                 }
             });
         }
 
         function clearForm(form) {
             form.querySelectorAll('input, textarea, select').forEach(el => {
-                if (el.type !== 'hidden' && el.type !== 'checkbox') {
+                if (el.type !== 'hidden' && el.type !== 'checkbox' && el.type !== 'radio') {
                     el.value = '';
                 }
             });
             form.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
         }
+        // Donor Registration Form Ends here................................
     </script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -2003,15 +2329,6 @@ document.getElementById('donationForm').addEventListener('submit', async (e) => 
             });
         });
 
-        // Optional mock submission
-        // document.querySelectorAll('.registration-form').forEach(form => {
-        //     form.addEventListener('submit', e => {
-        //         e.preventDefault();
-        //         alert('Registration submitted successfully!');
-        //         form.reset();
-        //     });
-        // });
-
         function volunteerFields(elm) {
             let volunteer = document.getElementById('volunteer');
             const types = ['individual', 'ngo', 'charity'];
@@ -2062,181 +2379,9 @@ document.getElementById('donationForm').addEventListener('submit', async (e) => 
         }
     </script>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFkLT1PNls0HcQ6eb2ARdlj5SvsVMyQqk&libraries=places">
-    </script>
     <script>
-        // let map, marker, selectedLocation = {};
-
-        // const modalEl = document.getElementById('locationModal');
-        // const clearBtn = document.getElementById("clearLocationBtn");
-
-        // modalEl.addEventListener('shown.bs.modal', () => {
-        //     initMap();
-        // });
-
-        // function initMap() {
-        //     if (map) {
-        //         google.maps.event.trigger(map, "resize");
-        //         return;
-        //     }
-
-        //     const defaultLocation = {
-        //         lat: 20.5937,
-        //         lng: 78.9629
-        //     };
-
-        //     map = new google.maps.Map(document.getElementById("map"), {
-        //         center: defaultLocation,
-        //         zoom: 15,
-        //     });
-
-        //     marker = new google.maps.Marker({
-        //         map,
-        //         draggable: true,
-        //         position: defaultLocation,
-        //     });
-
-        //     selectedLocation = defaultLocation;
-
-        //     // Get current location
-        //     if (navigator.geolocation) {
-        //         navigator.geolocation.getCurrentPosition(position => {
-        //             const loc = {
-        //                 lat: position.coords.latitude,
-        //                 lng: position.coords.longitude
-        //             };
-        //             map.setCenter(loc);
-        //             marker.setPosition(loc);
-        //             updateSelected(loc);
-        //             reverseGeocode(loc);
-        //         });
-        //     }
-
-        //     // Autocomplete search
-        //     const input = document.getElementById("mapSearchInput");
-        //     const autocomplete = new google.maps.places.Autocomplete(input);
-
-        //     autocomplete.addListener("place_changed", () => {
-        //         const place = autocomplete.getPlace();
-        //         if (!place.geometry) return;
-
-        //         const loc = {
-        //             lat: place.geometry.location.lat(),
-        //             lng: place.geometry.location.lng()
-        //         };
-
-        //         map.setCenter(loc);
-        //         marker.setPosition(loc);
-        //         updateSelected(loc);
-        //     });
-
-        //     // Marker drag
-        //     marker.addListener("dragend", () => {
-        //         const pos = marker.getPosition();
-        //         const loc = {
-        //             lat: pos.lat(),
-        //             lng: pos.lng()
-        //         };
-        //         updateSelected(loc);
-        //         reverseGeocode(loc);
-        //     });
-        //     map.addListener("click", (event) => {
-        //         const loc = {
-        //             lat: event.latLng.lat(),
-        //             lng: event.latLng.lng()
-        //         };
-
-        //         marker.setPosition(loc);
-        //         updateSelected(loc);
-        //         reverseGeocode(loc);
-        //     });
-        // }
-
-        // function updateSelected(loc) {
-        //     selectedLocation = loc;
-        //     document.getElementById("latitude").value = loc.lat;
-        //     document.getElementById("longitude").value = loc.lng;
-        //     clearBtn.style.display = "block";
-        // }
-
-        // function reverseGeocode(loc) {
-        //     const geocoder = new google.maps.Geocoder();
-        //     geocoder.geocode({
-        //         location: loc
-        //     }, (results, status) => {
-        //         if (status === "OK" && results[0]) {
-        //             document.getElementById("mapSearchInput").value = results[0].formatted_address;
-        //             document.getElementById("locationInput").value =
-        //                 results[0].formatted_address;
-        //             clearBtn.style.display = "block";
-        //         }
-        //     });
-        // }
-
-        // // Confirm button
-        // document.getElementById("confirmLocation").addEventListener("click", () => {
-        //     document.getElementById("locationInput").value = document.getElementById("mapSearchInput").value;
-        //     const modal = bootstrap.Modal.getInstance(modalEl);
-        //     modal.hide();
-        // });
-        // document.addEventListener("DOMContentLoaded", () => {
-        //     if (!navigator.geolocation) {
-        //         document.getElementById("locationInput").value =
-        //             "Location access not supported";
-        //         return;
-        //     }
-
-        //     navigator.geolocation.getCurrentPosition(
-        //         position => {
-        //             const loc = {
-        //                 lat: position.coords.latitude,
-        //                 lng: position.coords.longitude
-        //             };
-
-        //             document.getElementById("latitude").value = loc.lat;
-        //             document.getElementById("longitude").value = loc.lng;
-
-        //             reverseGeocodeMain(loc);
-        //         },
-        //         () => {
-        //             document.getElementById("locationInput").value =
-        //                 "Unable to fetch current location";
-        //         }
-        //     );
-        // });
-
-        // function reverseGeocodeMain(loc) {
-        //     const geocoder = new google.maps.Geocoder();
-        //     geocoder.geocode({
-        //         location: loc
-        //     }, (results, status) => {
-        //         if (status === "OK" && results[0]) {
-        //             document.getElementById("locationInput").value =
-        //                 results[0].formatted_address;
-        //             clearBtn.style.display = "block";
-        //         }
-        //     });
-        // }
-
-        // clearBtn.addEventListener("click", () => {
-        //     // Clear inputs
-        //     document.getElementById("locationInput").value = "";
-        //     document.getElementById("mapSearchInput").value = "";
-        //     document.getElementById("latitude").value = "";
-        //     document.getElementById("longitude").value = "";
-
-        //     // Hide marker if map exists
-        //     if (marker) {
-        //         marker.setPosition(null);
-        //     }
-
-        //     selectedLocation = {};
-        //     clearBtn.style.display = "none";
-        // });
-        //
         document.querySelectorAll(".registration-section .form-check-input").forEach(function(item) {
             item.addEventListener("change", function(elm) {
-                console.log("elm", elm);
                 const checkbox = elm.target;
                 // closest parent container
                 const parent = checkbox.closest("form");

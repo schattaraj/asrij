@@ -92,10 +92,45 @@
                         </a>
 
                         <!-- Profile Button -->
-                        <a href="#" id="profileBtn" class="btn d-none"{{-- d-md-block --}}
+                        {{-- <a href="#" id="profileBtn" class="btn d-none"
                             style="font-size:30px;padding:8px;">
                             <i class="fa-regular fa-circle-user"></i>
-                        </a>
+                        </a> --}}
+                        <div class="dropdown profile-dropdown">
+                            <a href="#" id="profileBtn"
+                               class="btn dropdown-toggle p-0 border-0 d-none"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-regular fa-circle-user" style="font-size:32px;"></i>
+                            </a>
+                        
+                            <div class="dropdown-menu dropdown-menu-end p-0 shadow-lg border-0">
+                        
+                                <!-- Header -->
+                                <div class="dropdown-header py-3 border-bottom">
+                                    <strong id="user_name"></strong><br>
+                                    <small class="text-muted" id="user_mobile"></small>
+                                </div>
+                        
+                                <!-- Menu -->
+                                <a class="dropdown-item d-flex align-items-center" href="{{route('profile')}}">
+                                    <i class="fa-regular fa-user me-2"></i> My Profile
+                                </a>
+                        
+                                <a class="dropdown-item d-flex align-items-center" href="{{route('bloodDonations')}}">
+                                    <i class="fa-solid fa-hand-holding-heart me-2"></i> My Donations
+                                </a>
+                        
+                                <a class="dropdown-item d-flex align-items-center" href="{{route('bloodRequests')}}">
+                                    <i class="fa-solid fa-list me-2"></i> My Requests
+                                </a>
+                        
+                                <div class="dropdown-divider"></div>
+                        
+                                <a class="dropdown-item text-danger d-flex align-items-center" href="#" onclick="logout()">
+                                    <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+                                </a>
+                            </div>
+                        </div>
                         {{-- @guest
                             <a href="#loginModal" data-bs-toggle="modal" data-bs-target="#loginModal"
                                 class="btn btn-primary d-none d-md-block">
@@ -287,6 +322,17 @@
                                 <input type="date" class="form-control" name="dob" autocomplete="off"
                                     id="dob" placeholder="Date of Birth" required>
                                 <label for="dob">Date of Birth</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <select class="form-control" name="gender" id="gender" required>
+                                    <option value="" disabled selected>Select Your Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <label for="gender">Gender</label>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -616,61 +662,10 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@srexi/purecounterjs/dist/purecounter_vanilla.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFkLT1PNls0HcQ6eb2ARdlj5SvsVMyQqk&libraries=places"></script>
     <script src="{{ asset('js/custom.js') }}"></script>
     @yield('scripts')
     <script>
-        // ALl Map Related Codes..........................Start__________________________________
-        let map, marker;
-        let selectedLocation = {};
-        let activeTrigger = null;
-
-        const modalEl = document.getElementById("locationModal");
-        const clearBtn = document.getElementById("clearLocationBtn");
-
-        /* =========================
-           TRACK WHICH BUTTON OPENS MODAL
-        ========================= */
-        document.querySelectorAll(".open-location-modal").forEach(btn => {
-            btn.addEventListener("click", function() {
-                activeTrigger = this;
-            });
-        });
-
-        /* =========================
-           AUTO FETCH LOCATION ON PAGE LOAD
-        ========================= */
-        function autoDetectLocation({
-            locationInputId,
-            latInputId,
-            lngInputId
-        }) {
-
-            const locationInput = document.getElementById(locationInputId);
-            const latInput = document.getElementById(latInputId);
-            const lngInput = document.getElementById(lngInputId);
-
-            if (!locationInput || !navigator.geolocation) return;
-
-            navigator.geolocation.getCurrentPosition(
-                position => {
-                    const loc = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
-
-                    if (latInput) latInput.value = loc.lat;
-                    if (lngInput) lngInput.value = loc.lng;
-
-                    reverseGeocodeToInput(loc, locationInput);
-
-                    // keep global state in sync
-                    selectedLocation = loc;
-                },
-                () => {
-                    locationInput.value = "Unable to fetch location";
-                }
-            );
-        }
         document.addEventListener("DOMContentLoaded", () => {
             autoDetectLocation({
                 locationInputId: "locationInput",
@@ -686,201 +681,6 @@
                 lngInputId: "register_longitude"
             });
         });
-        /* =========================
-           MODAL OPEN → INIT MAP
-        ========================= */
-        modalEl.addEventListener("shown.bs.modal", () => {
-            initMap();
-
-            if (selectedLocation.lat) {
-                map.setCenter(selectedLocation);
-                marker.setPosition(selectedLocation);
-            }
-        });
-
-        /* =========================
-           INIT MAP
-        ========================= */
-        function initMap() {
-            if (map) {
-                google.maps.event.trigger(map, "resize");
-                return;
-            }
-
-            const defaultLocation = {
-                lat: 20.5937,
-                lng: 78.9629
-            };
-
-            map = new google.maps.Map(document.getElementById("map"), {
-                center: defaultLocation,
-                zoom: 15,
-            });
-
-            marker = new google.maps.Marker({
-                map,
-                draggable: true,
-                position: defaultLocation,
-            });
-
-            selectedLocation = defaultLocation;
-
-            // Autocomplete
-            const input = document.getElementById("mapSearchInput");
-            const autocomplete = new google.maps.places.Autocomplete(input);
-
-            autocomplete.addListener("place_changed", () => {
-                const place = autocomplete.getPlace();
-                if (!place.geometry) return;
-
-                const loc = {
-                    lat: place.geometry.location.lat(),
-                    lng: place.geometry.location.lng()
-                };
-
-                map.setCenter(loc);
-                marker.setPosition(loc);
-                updateSelected(loc, false);
-            });
-
-            // Marker drag
-            marker.addListener("dragend", () => {
-                const pos = marker.getPosition();
-                const loc = {
-                    lat: pos.lat(),
-                    lng: pos.lng()
-                };
-
-                updateSelected(loc, false);
-                reverseGeocode(loc);
-            });
-
-            // Map click
-            map.addListener("click", (event) => {
-                const loc = {
-                    lat: event.latLng.lat(),
-                    lng: event.latLng.lng()
-                };
-
-                marker.setPosition(loc);
-                updateSelected(loc, false);
-                reverseGeocode(loc);
-            });
-
-            // Detect current location inside modal
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    const loc = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
-
-                    map.setCenter(loc);
-                    marker.setPosition(loc);
-                    updateSelected(loc);
-                    reverseGeocode(loc);
-                });
-            }
-        }
-
-        /* =========================
-           UPDATE SELECTED LOCATION
-        ========================= */
-        function updateSelected(loc, select = true) {
-            selectedLocation = loc;
-
-            if (!activeTrigger) return;
-
-            const latInput = document.getElementById(activeTrigger.dataset.lat);
-            const lngInput = document.getElementById(activeTrigger.dataset.lng);
-            const map_lat = document.getElementById("map_latitude");
-            const map_long = document.getElementById("map_longitude");
-            if (map_lat) map_lat.value = loc.lat;
-            if (map_long) map_long.value = loc.lng;
-            if (select) {
-                if (latInput) latInput.value = loc.lat;
-                if (lngInput) lngInput.value = loc.lng;
-            }
-
-            clearBtn.style.display = "block";
-        }
-
-        /* =========================
-           REVERSE GEOCODE (MODAL)
-        ========================= */
-        function reverseGeocode(loc) {
-            const geocoder = new google.maps.Geocoder();
-
-            geocoder.geocode({
-                location: loc
-            }, (results, status) => {
-                if (status === "OK" && results[0]) {
-                    document.getElementById("mapSearchInput").value =
-                        results[0].formatted_address;
-
-                    clearBtn.style.display = "block";
-                }
-            });
-        }
-
-        /* =========================
-           REVERSE GEOCODE (PAGE LOAD)
-        ========================= */
-        function reverseGeocodeToInput(loc, inputElement) {
-            const geocoder = new google.maps.Geocoder();
-
-            geocoder.geocode({
-                location: loc
-            }, (results, status) => {
-                if (status === "OK" && results[0]) {
-                    inputElement.value = results[0].formatted_address;
-                }
-            });
-        }
-
-        /* =========================
-           CONFIRM LOCATION BUTTON
-        ========================= */
-        document.getElementById("confirmLocation").addEventListener("click", () => {
-
-            if (!activeTrigger) return;
-
-            const address = document.getElementById("mapSearchInput").value;
-            const map_lat = document.getElementById("map_latitude").value;
-            const map_long = document.getElementById("map_longitude").value;
-            const locationInput = document.getElementById(
-                activeTrigger.dataset.locationInput
-            );
-            const latInput = document.getElementById(activeTrigger.dataset.lat);
-            if (locationInput) {
-                locationInput.value = address;
-            }
-            if (latInput) {
-                latInput.value = map_lat;
-            }
-            const lngInput = document.getElementById(activeTrigger.dataset.lng);
-            if (lngInput) {
-                lngInput.value = map_long;
-            }
-            const modal = bootstrap.Modal.getInstance(modalEl);
-            modal.hide();
-        });
-
-        /* =========================
-           CLEAR BUTTON
-        ========================= */
-        clearBtn.addEventListener("click", () => {
-
-            document.getElementById("mapSearchInput").value = "";
-
-            if (marker) {
-                marker.setPosition(null);
-            }
-
-            selectedLocation = {};
-            clearBtn.style.display = "none";
-        });
-// ALl Map Related Codes..........................Ends__________________________________
 
         document.addEventListener("DOMContentLoaded", function() {
             setTimeout(() => {
@@ -937,7 +737,8 @@
 
             const loginBtn = document.getElementById("loginBtn");
             const profileBtn = document.getElementById("profileBtn");
-
+            const user_name = document.getElementById("user_name");
+            const user_mobile = document.getElementById("user_mobile");
             if (token) {
                 showLoader();
                 // Fetch user info
@@ -991,7 +792,8 @@
                         if (userRoles.includes("donor")) {
                             toggleRole(userRoles, "donor", "donor");
                         }
-
+                        user_name.innerText=userData?.name;
+                        user_mobile.innerText=userData?.mobile;
                     })
                     .catch(err => {
                         console.log(err);
@@ -1272,23 +1074,6 @@
         }
 
 
-
-        function logout() {
-
-            const token = localStorage.getItem("token");
-
-            fetch("{{ url('/') }}/api/v1/logout", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": "Bearer " + token
-                    }
-                })
-                .then(() => {
-                    localStorage.removeItem("token");
-                    location.reload();
-                });
-
-        }
 
         // function logout() {
         //     localStorage.removeItem("token");

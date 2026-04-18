@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class BloodRequestResponse extends Model
 {
+    protected $table = "blood_request_responses";
     protected $fillable = [
         'blood_request_id',
         'donor_id',
-        'status'
+        'status',
+        'contact_number'
     ];
 
     public function request()

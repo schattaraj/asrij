@@ -8,6 +8,7 @@ use App\Models\BloodRequest;
 use App\Models\User;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Support\Facades\DB;
+use App\Models\BloodRequestResponse;
 
 class RequestController extends Controller
 {
@@ -50,13 +51,13 @@ private function formatDistance($distance)
             $accessToken = PersonalAccessToken::findToken($token);
             $user = $accessToken?->tokenable;
         }
-        $requests = BloodRequest::latest()->get();
+        $requests = BloodRequest::where('status','open')->latest()->get();
 
         if ($user) {
             $userLat = $user->latitude;
             $userLng = $user->longitude;
     
-            $requests = $requests->map(function ($req) use ($userLat, $userLng) {
+            $requests = $requests->map(function ($req) use ($userLat, $userLng, $user) {
                 $distance = $this->calculateDistance(
                     $userLat,
                     $userLng,
@@ -65,7 +66,14 @@ private function formatDistance($distance)
                 );
                 $req->setAttribute('distance', $distance);
                 $req->setAttribute('distance_text', $this->formatDistance($distance));
-    
+                $hasResponded = BloodRequestResponse::where('blood_request_id', $req->id)
+                ->where('donor_id', $user->id)
+                ->exists();
+                $response = BloodRequestResponse::where('blood_request_id', $req->id)
+                ->where('donor_id', $user->id)
+                ->first();
+                $req->setAttribute('has_responded', $hasResponded);
+                $req->setAttribute('response_status', $response->status ?? null);
                 return $req;
             });
         }
@@ -85,6 +93,8 @@ private function formatDistance($distance)
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'blood_group' => 'required|string|max:3',
+            'dob' => 'required|date',
+            'gender' => 'required|in:Male,Female,Other',
             'hospital_name' => 'required|string|max:255',
             'unit' => 'required|integer',
             'patient_type' => 'required|string|max:50',
@@ -98,9 +108,9 @@ private function formatDistance($distance)
             'patient_latitude' => 'nullable|string|max:20',
             'patient_longitude' => 'nullable|string|max:20',
             'prescription' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            // 'request_for' => 'required|string|max:255',
+            'request_for' => 'required|string|in:self,other',
         ]);
-        $validated['request_for'] = $request->has('request_for') ? 'self' : 'other';
+        // $validated['request_for'] = $request->has('request_for') ? 'self' : 'other';
         $validated['submitted_by'] = auth()->id();
 
         if ($request->hasFile('prescription')) {
@@ -108,28 +118,9 @@ private function formatDistance($distance)
             $path = $file->store('prescriptions', 'public'); // storage/app/public/prescriptions
             $validated['prescription'] = $path;
         }
-    
-        // $bloodRequest = new BloodRequest;
-        // $bloodRequest->name = $validated['name'];
-        // $bloodRequest->blood_group = $validated['blood_group'];
-        // $bloodRequest->hospital_name = $validated['hospital_name'];
-        // $bloodRequest->unit = $validated['unit'];
-        // $bloodRequest->patient_type = $validated['patient_type'];
-        // $bloodRequest->mobile = $validated['mobile'];
-        // $bloodRequest->whatsapp_number = $validated['whatsapp_number'] ?? null;
-        // $bloodRequest->address = $validated['address'];
-        // $bloodRequest->pin_code = $validated['pin_code'];
-        // $bloodRequest->email = $validated['email'] ?? null;
-        // $bloodRequest->request_for = $validated['request_for'];
-        // $bloodRequest->submitted_by = $validated['submitted_by'];
-        // $bloodRequest->required_before = $validated['required_before'];
-        // $bloodRequest->required_before_unit = $validated['required_before_unit'];
-        // $bloodRequest->patient_latitude = $validated['patient_latitude'] ?? null;
-        // $bloodRequest->patient_longitude = $validated['patient_longitude'] ?? null;
         DB::beginTransaction();
         try {
             $userCreate = null;
-    
             if ($validated['request_for'] === 'other') {
     
                 $userExist = User::where('mobile', $validated['mobile'])->first();
@@ -191,8 +182,12 @@ private function formatDistance($distance)
     
             DB::commit();
     
-            return response()->json($bloodRequest, 201);
-    
+            return response()->json([
+                'status' => true,
+                'data' => $bloodRequest,
+                'message' => $userCreate ? 'Blood request created successfully. OTP sent to patient\'s mobile for verification.' : 'Blood request created successfully.'
+            ], 201);
+
         } catch (\Exception $e) {
     
             DB::rollBack();
@@ -270,5 +265,16 @@ private function formatDistance($distance)
             'status' => true,
             'message' => 'Blood request deleted successfully'
         ]);
+    }
+    public function myBloodDonation(){
+        $data = BloodRequestResponse::where('donor_id', auth()->id())
+        ->with('request')
+        ->latest()
+        ->get();
+
+    return response()->json([
+        'status' => true,
+        'data' => $data
+    ]);
     }
 }

@@ -23,6 +23,12 @@
     <!-- End layout styles -->
     <link rel="shortcut icon" href="assets/img/favicon.png" />
     <style>
+        body {
+  --primary-color: #c70039;
+  --secondary-color: #091019;
+  overflow-x: hidden;
+  padding-right: 0 !important;
+}
         .card .table-responsive td a.btn {
             border-radius: 50%;
             padding: 0;
@@ -38,10 +44,50 @@
         .card .table-responsive td a.btn-danger {
             color: var(--bs-danger);
         }
+/* //loader css */
+.loader-container{
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // background: rgba(255, 255, 255, 0.8);
+  background: rgba(0,0,0, 0.6);
+  z-index: 9999;
+}
+/* HTML: <div class="loader"></div> */
+.loader {    
+  --r1: 154%;
+  --r2: 68.5%;
+  width: 60px;
+  aspect-ratio: 1;
+  border-radius: 50%; 
+  background:
+    radial-gradient(var(--r1) var(--r2) at top   ,#0000 79.5%,var(--primary-color) 80%),
+    radial-gradient(var(--r1) var(--r2) at bottom,var(--primary-color) 79.5%,#0000 80%),
+    radial-gradient(var(--r1) var(--r2) at top   ,#0000 79.5%,var(--primary-color) 80%),
+    #ffffff;
+  background-size: 50.5% 220%;
+  background-position: -100% 0%,0% 0%,100% 0%;
+  background-repeat:no-repeat;
+  animation: l9 2s infinite linear;
+}
+@keyframes l9 {
+    33%  {background-position:    0% 33% ,100% 33% ,200% 33% }
+    66%  {background-position: -100%  66%,0%   66% ,100% 66% }
+    100% {background-position:    0% 100%,100% 100%,200% 100%}
+}
     </style>
 </head>
 
 <body>
+    <div class="loader-container" id="loader">
+        <div class="loader"></div>
+    </div>
     <div class="container-scroller">
         <!-- partial:partials/_navbar.html -->
         <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
@@ -71,7 +117,7 @@
                         <a class="nav-link dropdown-toggle" id="profileDropdown" href="#"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <div class="nav-profile-img">
-                                <img src="dist/assets/images/faces/face1.jpg" alt="image">
+                                <img src="dist/assets/images/faces-clipart/pic-1.png" alt="image">
                                 <span class="availability-status online"></span>
                             </div>
                             <div class="nav-profile-text">
@@ -79,10 +125,10 @@
                             </div>
                         </a>
                         <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
-                            <a class="dropdown-item" href="#">
-                                <i class="mdi mdi-cached me-2 text-success"></i> Activity Log </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ route('logout') }}">
+                            {{-- <a class="dropdown-item" href="#">
+                                <i class="mdi mdi-cached me-2 text-success"></i> Activity Log </a> --}}
+                            {{-- <div class="dropdown-divider"></div> --}}
+                            <a class="dropdown-item" href="#" onclick="logout()">
                                 <i class="mdi mdi-logout me-2 text-primary"></i> Signout </a>
                         </div>
                     </li>
@@ -218,7 +264,7 @@
                     <li class="nav-item nav-profile">
                         <a href="#" class="nav-link">
                             <div class="nav-profile-image">
-                                <img src="dist/assets/images/faces/face1.jpg" alt="profile" />
+                                <img src="dist/assets/images/faces-clipart/pic-1.png" alt="profile" />
                                 <span class="login-status online"></span>
                                 <!--change to offline or busy as needed-->
                             </div>
@@ -241,8 +287,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span class="menu-title">Password</span>
+                        <a class="nav-link" href="{{route('bloodDonations')}}">
+                            <span class="menu-title">My Blood Donations</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{route('bloodRequests')}}">
+                            <span class="menu-title">My Blood Requests</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -298,6 +349,47 @@
         </footer>
         <!-- partial -->
     </div>
+    <div class="modal fade" id="locationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content rounded-4">
+
+                <div class="modal-header">
+                    <h5 class="modal-title fw-semibold">
+                        <i class="bi bi-geo-alt-fill me-1"></i> Select Location
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Search -->
+                    <div class="mb-3">
+                        <div class="position-relative">
+                            <input type="text" id="mapSearchInput" class="form-control"
+                                placeholder="Search location" style="padding-right: 32px">
+                            <i class="fa fa-times-circle clear-location" id="clearLocationBtn"></i>
+                        </div>
+                        <input type="hidden" name="map_latitude" value="" id="map_latitude">
+                        <input type="hidden" name="map_longitude" value="" id="map_longitude">
+                    </div>
+
+                    <!-- Map -->
+                    <div id="map" class="rounded" style="height: 350px;"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+
+                    <button type="button" class="btn btn-danger" id="confirmLocation">
+                        Confirm Location
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFkLT1PNls0HcQ6eb2ARdlj5SvsVMyQqk&libraries=places"></script>
+    <script src="{{ asset('js/custom.js') }}"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             getUser();
@@ -310,14 +402,14 @@
 
             // Pages that require login
             const protectedPages = [
-                "/profile",
-                "/dashboard",
-                "/orders",
-                "/checkout"
+                "profile",
+                "dashboard",
+                "blood-donations",
+                "blood-request"
             ];
 
             const currentPath = window.location.pathname;
-
+            console.log("currentPath",currentPath.split("/")[currentPath.split("/").length - 1]);
             function redirectToHome() {
                 Swal.fire({
                     icon: "warning",
@@ -330,7 +422,7 @@
             }
 
             if (token) {
-
+                showLoader();
                 fetch("{{ url('/') }}/api/v1/user", {
                         method: "GET",
                         headers: {
@@ -344,7 +436,7 @@
                         if (!res.ok) {
 
                             // Token invalid or expired
-                            localStorage.removeItem("token");
+                            // localStorage.removeItem("token");
 
                             if (protectedPages.includes(currentPath)) {
                                 redirectToHome();
@@ -356,25 +448,28 @@
                         return data;
                     })
                     .then(data => {
-                        if (data.roles && data.roles.includes("admin")) {
-                            profileBtn.href = "{{ route('admin.dashboard') }}";
-                        } else {
-                            profileBtn.href = "{{ route('profile') }}";
-                        }
+                        userData = data;
+                        // if (data.roles && data.roles.includes("admin")) {
+                        //     profileBtn.href = "{{ route('admin.dashboard') }}";
+                        // } else {
+                        //     profileBtn.href = "{{ route('profile') }}";
+                        // }
 
                     })
                     .catch(err => {
                         console.log(err);
                     });
+                    hideLoader();
 
             } else {
                 // If user visits protected page without login
-                if (protectedPages.includes(currentPath)) {
+                if (protectedPages.includes(currentPath.split("/")[currentPath.split("/").length - 1])) {
                     redirectToHome();
                 }
             }
         }
     </script>
+    @yield('scripts')
 </body>
 
 </html>

@@ -47,5 +47,10 @@ class PageController extends Controller
 
         return view('profile.index', $data);
     }
-    
+    public function bloodDonations(){
+        return view('blood-donations.index');
+    }
+    public function bloodRequests(){
+        return view('blood-requests.index');
+    }
 }
