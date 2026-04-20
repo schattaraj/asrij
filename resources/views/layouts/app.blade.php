@@ -97,36 +97,38 @@
                             <i class="fa-regular fa-circle-user"></i>
                         </a> --}}
                         <div class="dropdown profile-dropdown">
-                            <a href="#" id="profileBtn"
-                               class="btn dropdown-toggle p-0 border-0 d-none"
-                               data-bs-toggle="dropdown" aria-expanded="false">
+                            <a href="#" id="profileBtn" class="btn dropdown-toggle p-0 border-0 d-none"
+                                data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fa-regular fa-circle-user" style="font-size:32px;"></i>
                             </a>
-                        
+
                             <div class="dropdown-menu dropdown-menu-end p-0 shadow-lg border-0">
-                        
+
                                 <!-- Header -->
                                 <div class="dropdown-header py-3 border-bottom">
                                     <strong id="user_name"></strong><br>
                                     <small class="text-muted" id="user_mobile"></small>
                                 </div>
-                        
+
                                 <!-- Menu -->
-                                <a class="dropdown-item d-flex align-items-center" href="{{route('profile')}}">
+                                <a class="dropdown-item d-flex align-items-center" href="{{ route('profile') }}">
                                     <i class="fa-regular fa-user me-2"></i> My Profile
                                 </a>
-                        
-                                <a class="dropdown-item d-flex align-items-center" href="{{route('bloodDonations')}}">
+
+                                <a class="dropdown-item d-flex align-items-center"
+                                    href="{{ route('bloodDonations') }}">
                                     <i class="fa-solid fa-hand-holding-heart me-2"></i> My Donations
                                 </a>
-                        
-                                <a class="dropdown-item d-flex align-items-center" href="{{route('bloodRequests')}}">
+
+                                <a class="dropdown-item d-flex align-items-center"
+                                    href="{{ route('bloodRequests') }}">
                                     <i class="fa-solid fa-list me-2"></i> My Requests
                                 </a>
-                        
+
                                 <div class="dropdown-divider"></div>
-                        
-                                <a class="dropdown-item text-danger d-flex align-items-center" href="#" onclick="logout()">
+
+                                <a class="dropdown-item text-danger d-flex align-items-center" href="#"
+                                    onclick="logout()">
                                     <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
                                 </a>
                             </div>
@@ -151,9 +153,10 @@
                                 </a>
                             @endif
                         @endauth --}}
-                        <button class="navbar-toggler" onclick="handleMenu()" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
+                        <button class="navbar-toggler" onclick="handleMenu()" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                            aria-controls="navbarSupportedContent" aria-expanded="false"
+                            aria-label="Toggle navigation">
                             <span class=""></span>
                         </button>
                     </div>
@@ -263,8 +266,7 @@
                 <a class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}" href="#">Contact Us</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('registration') ? 'active' : '' }}"
-                    href="{{ route('registration') }}">Register</a>
+                <a class="nav-link openRegister" href="#">Sign Up</a>
             </li>
             <li class="nav-item">
                 <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#donateModal">Donate
@@ -501,7 +503,7 @@
                     {{-- <button type="button" class="btn btn-primary" onclick="login()">Login</button> --}}
                     <div class="text-center w-100">
                         <p class="or">OR</p>
-                        <a href="#" id="openRegister">Create an account</a>
+                        <a href="#" class="openRegister">Create an account</a>
                     </div>
                 </div>
                 {{-- <div class="or">Or</div>
@@ -662,7 +664,8 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@srexi/purecounterjs/dist/purecounter_vanilla.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFkLT1PNls0HcQ6eb2ARdlj5SvsVMyQqk&libraries=places"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFkLT1PNls0HcQ6eb2ARdlj5SvsVMyQqk&libraries=places">
+    </script>
     <script src="{{ asset('js/custom.js') }}"></script>
     @yield('scripts')
     <script>
@@ -762,8 +765,8 @@
                                 loginBtn.classList.add("d-md-block");
                             }
 
-                            if (profileBtn.classList.contains("d-md-block")) {
-                                profileBtn.classList.remove("d-md-block");
+                            if (profileBtn.classList.contains("d-block")) {
+                                profileBtn.classList.remove("d-block");
                             }
                             throw new Error("Request failed");
                         }
@@ -777,8 +780,9 @@
                         }
 
                         // Show profile button
-                        if (!profileBtn.classList.contains("d-md-block")) {
-                            profileBtn.classList.add("d-md-block");
+                        if (!profileBtn.classList.contains("d-block")) {
+                            profileBtn.classList.add("d-block");
+                            profileBtn.classList.remove("d-none");
                         }
                         let userRoles = data?.roles;
                         if (userRoles && userRoles.includes("admin")) {
@@ -792,8 +796,8 @@
                         if (userRoles.includes("donor")) {
                             toggleRole(userRoles, "donor", "donor");
                         }
-                        user_name.innerText=userData?.name;
-                        user_mobile.innerText=userData?.mobile;
+                        user_name.innerText = userData?.name;
+                        user_mobile.innerText = userData?.mobile;
                     })
                     .catch(err => {
                         console.log(err);
@@ -807,8 +811,9 @@
                     loginBtn.classList.add("d-md-block");
                 }
 
-                if (profileBtn.classList.contains("d-md-block")) {
-                    profileBtn.classList.remove("d-md-block");
+                if (profileBtn.classList.contains("d-block")) {
+                    profileBtn.classList.remove("d-block");
+                    profileBtn.classList.add("d-none");
                 }
 
             }
@@ -818,13 +823,16 @@
             const section = document.getElementById(sectionId);
             const form = section.querySelector(".registration-form");
             const message = section.querySelector(".role-message");
-
-            if (userRoles.includes(roleName)) {
-                form.classList.add("d-none");
-                message.classList.remove("d-none");
+            const request_for = section.querySelector("input[value='self'] + label");
+            if (userRoles.includes("donor")) {
+                // form.classList.add("d-none");
+                // message.classList.remove("d-none");
+                message.innerText = "You are already a donor";
+                request_for.style.pointerEvents = "none";
+                request_for.style.opacity = "0.6";
             } else {
-                form.classList.remove("d-none");
-                message.classList.add("d-none");
+                // form.classList.remove("d-none");
+                // message.classList.add("d-none");
             }
         }
 
@@ -1113,22 +1121,28 @@
             forgotModal.show();
         });
 
-        document.getElementById('openRegister').addEventListener('click', function(e) {
-            e.preventDefault();
+        document.querySelectorAll('.openRegister').forEach(function(element) {
+            element.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log("clicked");
+                let loginModalEl = document.getElementById('loginModal');
+                let registerModalEl = document.getElementById('registerModal');
 
-            let loginModalEl = document.getElementById('loginModal');
-            let registerModalEl = document.getElementById('registerModal');
+                let loginModal = bootstrap.Modal.getOrCreateInstance(loginModalEl);
+                let registerModal = bootstrap.Modal.getOrCreateInstance(registerModalEl);
 
-            let loginModal = bootstrap.Modal.getOrCreateInstance(loginModalEl);
-            let registerModal = bootstrap.Modal.getOrCreateInstance(registerModalEl);
+                if (loginModalEl.classList.contains('show')) {
+                    loginModalEl.addEventListener('hidden.bs.modal', function() {
+                        registerModal.show();
+                    }, {
+                        once: true
+                    });
 
-            loginModalEl.addEventListener('hidden.bs.modal', function() {
-                registerModal.show();
-            }, {
-                once: true
+                    loginModal.hide();
+                } else {
+                    registerModal.show();
+                }
             });
-
-            loginModal.hide();
         });
 
         document.getElementById('openLogin').addEventListener('click', function(e) {
@@ -1256,11 +1270,11 @@
         // ✅ Register User
         async function registerUser() {
             const form = document.getElementById('register');
-            try {                
-                if(!form.querySelector('.latitude').value && !form.querySelector('.longitude').value){
+            try {
+                if (!form.querySelector('.latitude').value && !form.querySelector('.longitude').value) {
                     const location = await getUserLocation();
                 }
-                
+
             } catch (error) {
                 showAlert('error', 'Location permission is required for registration');
                 return;

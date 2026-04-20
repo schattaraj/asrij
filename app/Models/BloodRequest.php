@@ -65,4 +65,8 @@ public function donors()
                 ->withPivot('status')
                 ->withTimestamps();
 }
+public function userByMobile()
+{
+    return $this->belongsTo(User::class, 'mobile', 'mobile');
+}
 }

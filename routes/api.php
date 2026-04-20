@@ -1,6 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\Api\AuthController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\RequestController;
 use App\Http\Controllers\Api\RegistrationController;
@@ -14,7 +14,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/verify-registration-otp', [AuthController::class, 'verifyRegistrationOtp']);
     Route::post('/send-registration-otp', [AuthController::class, 'sendRegistartionOtp']);
-    Route::post('/send-otp', [AuthController::class, 'sendOtp']);
+    Route::post('/send-otp', [AuthController::class, 'sendOtp'])->name('sendOtp');
     Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('verifyOtp');
     Route::post('/login', [AuthController::class, 'login']);
 

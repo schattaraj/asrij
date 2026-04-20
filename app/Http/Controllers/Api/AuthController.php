@@ -160,15 +160,24 @@ class AuthController extends Controller
             ->first();
 
         if (!$record) {
-            return response()->json(['message' => 'Invalid OTP'], 400);
+            return response()->json(['status' => false,'message' => 'Invalid OTP'], 400);
         }
 
         if (Carbon::now()->gt($record->expires_at)) {
-            return response()->json(['message' => 'OTP expired'], 400);
+            return response()->json(['status' => false,'message' => 'OTP expired'], 400);
         }
 
         $user = User::where('mobile', $request->mobile)->first();
-
+        if(!$user){
+            return response()->json([
+                'status' => false,
+                'message' => 'User does not exist'
+            ], 400);
+        }
+        $user->update([
+            'status' => 'active',
+            'is_verified' => true
+        ]);
         DB::table('otps')->where('mobile', $request->mobile)->delete();
 
         $token = $user->createToken('auth_token')->plainTextToken;

@@ -18,6 +18,14 @@ class RespondOnRequestController extends Controller
             'contact_number' => 'required|string|max:20',
         ]);
         try {
+            $user = auth()->user();
+            $roles = is_array($user->roles) ? $user->roles : json_decode($user->roles, true);
+            if (!in_array('donor', $roles ?? [])) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'You need to register as a donor first.'
+                ], 403);
+            }    
             $createRespond = BloodRequestResponse::create([
                 'donor_id' => auth()->id(),
                 'blood_request_id' => $validated['request_id'],

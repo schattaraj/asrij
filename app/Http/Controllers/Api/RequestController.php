@@ -51,7 +51,10 @@ private function formatDistance($distance)
             $accessToken = PersonalAccessToken::findToken($token);
             $user = $accessToken?->tokenable;
         }
-        $requests = BloodRequest::where('status','open')->latest()->get();
+        $requests = BloodRequest::where('status','open')
+        ->whereHas('userByMobile', function ($q) {
+            $q->where('is_verified', true);
+        })->latest()->get();
 
         if ($user) {
             $userLat = $user->latitude;
@@ -128,8 +131,8 @@ private function formatDistance($distance)
                 if ($userExist) {
                     return response()->json([
                         'status' => false,
-                        'message' => 'User with this mobile number already exist.'
-                    ], 404);
+                        'message' => 'User with this mobile number already exist. Please login with that number to complete the verification.'
+                    ], 409);
                 }
     
                 $userCreate = User::create([
@@ -139,6 +142,8 @@ private function formatDistance($distance)
                     'pin_code' => $validated['pin_code'],
                     'status' => 'pending',
                     'blood_group' => $validated['blood_group'],
+                    'dob' => $validated['dob'],
+                    'gender'=>$validated['gender'],
                     'whatsapp_number' => $validated['whatsapp_number'] ?? null,
                     'address' => $validated['address'],
                     'latitude' => $validated['patient_latitude'] ?? null,
@@ -172,7 +177,7 @@ private function formatDistance($distance)
                     throw new \Exception('Failed to send OTP. Please try again.');
                 }
             }
-    
+            $validated['submitted_by'] = auth()->id();
             // Create Blood Request
             $bloodRequest = BloodRequest::create($validated);
     
@@ -185,6 +190,7 @@ private function formatDistance($distance)
             return response()->json([
                 'status' => true,
                 'data' => $bloodRequest,
+                'otp' => $userCreate ? $otp : null, // For testing purposes, return OTP in response. Remove in production.
                 'message' => $userCreate ? 'Blood request created successfully. OTP sent to patient\'s mobile for verification.' : 'Blood request created successfully.'
             ], 201);
 

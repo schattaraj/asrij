@@ -91,9 +91,9 @@
                 @endif
                 <!-- Donor Registration -->
                 <div id="donor" class="tab-content">
-                    <div class="role-message alert alert-info d-none">
+                    {{-- <div class="role-message alert alert-info d-none">
                         You are already a donor.
-                    </div>
+                    </div> --}}
                     <form action="{{ route('registration') }}" class="registration-form" method="post">
                         @csrf
                         <input type="hidden" name="role" value="donor">
@@ -138,7 +138,7 @@
                                 <input type="radio" class="btn-check" name="request_for" id="self" value="self">
                                 <label class="option-card" for="self">
                                     <i class="bi bi-person-circle option-icon"></i>
-                                    Myself
+                                    <span class="role-message">Myself</span>
                                 </label>
 
                             </div>
@@ -252,7 +252,7 @@
                         </div>
                         <div class="input-group mb-3">
                             <div class="form-floating flex-grow-1">
-                                <input id="donor_address" class="form-control mb-0 @error('address') is-invalid @enderror"
+                                <input id="donor_address" class="form-control mb-0 readonly @error('address') is-invalid @enderror"
                                     name="address" placeholder="Address"
                                     style="border-top-right-radius: 0;border-bottom-right:0;" required
                                     value="{{ old('address') }}" readonly>
@@ -1931,7 +1931,11 @@
                 });
 
                 const data = await response.json();
-
+                if(response.status == 409){
+                    showAlert("error", data.message || "Failed to submit request. Please check your input.");
+                    hideLoader();
+                    return;
+                }
                 if (!response.ok) {
                     showAlert("error", data.message || "Failed to submit request. Please check your input.");
                     hideLoader();
@@ -1940,7 +1944,9 @@
                 if (response.status === 201) {
                     if (checkMessageForOTP(data?.message)) {
                         // Store the mobile number for later use
-                        window.currentMobileForOTP = mobileNumber;
+                        window.currentMobileForOTP = formData.get('mobile');
+                        const masked = mobile.substring(0, 2) + "******" + formData.get('mobile').substring(8);
+                        document.getElementById("otpMessage").textContent = "OTP sent to +91 " + masked;
                         // Show the modal
                         const otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
                         otpModal.show();
@@ -2015,7 +2021,8 @@
             }
 
             try {
-                const response = await fetch('/api/v1/send-otp', {
+                showLoader();
+                const response = await fetch(`{{route('sendOtp')}}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -2029,15 +2036,17 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert('OTP sent successfully!');
-                    document.getElementById('otpMessage').textContent =
-                    'A new OTP has been sent to your mobile number.';
+                    const masked = mobile.substring(0, 2) + "******" + mobile.substring(8);
+                    document.getElementById("otpMessage").textContent = "A new OTP has been sent to +91 " + masked;
                 } else {
                     alert(data.message || 'Failed to send OTP');
                 }
             } catch (error) {
                 console.error('Error sending OTP:', error);
                 alert('An error occurred while sending OTP');
+            }
+            finally {
+                hideLoader();
             }
         }
 
@@ -2307,6 +2316,7 @@
                 console.log("btn", btn.dataset.tab);
                 switch (btn.dataset.tab) {
                     case "donor":
+                        console.log("test",userData.roles.includes('donor'));
                         autoDetectLocation({
                             locationInputId: "donor_address",
                             latInputId: "donor_latitude",
