@@ -368,13 +368,6 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <div class="form-floating">
-                                <input type="text" class="form-control" name="pin_code" autocomplete="off"
-                                    id="pin_code" placeholder="Pin Code" required>
-                                <label for="address">Pin Code</label>
-                            </div>
-                        </div>
                         {{-- <div class="mb-3">
                             <div class="form-floating">
                                 <input type="password" name="password" class="form-control" autocomplete="off"

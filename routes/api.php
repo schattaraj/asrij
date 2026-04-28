@@ -38,6 +38,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/respones-on-request', [RespondOnRequestController::class, 'fetchResponses'])->name('fetchResponses');
         Route::put('/update-response',[RespondOnRequestController::class,'update'])->name('updateResponse');
         Route::get('/my-blood-donations', [RequestController::class, 'myBloodDonation'])->name('myBloodDonations');
+        Route::post('/volunteer-registration', [RegistrationController::class, 'storeVolunteer'])->name('volunteer.registration');
     });
     Route::get('/blood-requests', [RequestController::class, 'index'])->name('blood-requests.index');
 });
