@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
+use App\Services\SmsService;
 
 class AuthController extends Controller
 {
@@ -71,7 +73,7 @@ class AuthController extends Controller
             'user'    => $user
         ], 201);
     }
-    public function sendRegistartionOtp(Request $request)
+    public function sendRegistartionOtp(Request $request,SmsService $smsService)
     {
         $validator = Validator::make($request->all(), [
             'mobile' => 'required|digits:10|unique:users,mobile'
@@ -96,13 +98,14 @@ class AuthController extends Controller
                 'updated_at' => now()
             ]
         );
-    
         // TODO: Integrate SMS API here
+        $otpRes = $smsService->sendOtpSms($request->mobile, $otp);
         // For testing:
         return response()->json([
             'status' => true,
             'message' => 'OTP sent successfully',
-            'otp' => $otp // remove in production
+            'otp' => $otp, // remove in production
+            'otpRes' => $otpRes
         ]);
     }
     /*
@@ -133,12 +136,13 @@ class AuthController extends Controller
                 'updated_at' => now(),
             ]
         );
-
+        $otpRes = $smsService->sendOtpSms($request->mobile, $otp);
         // TODO: integrate SMS gateway here
 
         return response()->json([
             'message' => 'OTP sent successfully',
-            'otp'     => $otp // remove in production
+            'otp'     => $otp, // remove in production,
+            'otpRes' =>$otpRes
         ]);
     }
 

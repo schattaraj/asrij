@@ -9,6 +9,7 @@ use App\Models\User;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Support\Facades\DB;
 use App\Models\BloodRequestResponse;
+use App\Services\SmsService;
 
 class RequestController extends Controller
 {
@@ -91,7 +92,7 @@ private function formatDistance($distance)
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request,SmsService $smsService)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -176,6 +177,7 @@ private function formatDistance($distance)
     
                     throw new \Exception('Failed to send OTP. Please try again.');
                 }
+                $smsService->sendOtpSms($validated['mobile'], $otp);
             }
             $validated['submitted_by'] = auth()->id();
             // Create Blood Request

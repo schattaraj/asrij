@@ -10,10 +10,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Volunteer;
+use Illuminate\Support\Facades\Http;
+use App\Services\SmsService;
 
 class RegistrationController extends Controller
 {
-    private function handleOtherRegistration($authUser, $validated)
+    private function handleOtherRegistration($authUser, $validated, SmsService $smsService)
     {
         if (User::where('mobile', $validated['mobile'])->exists()) {
             return response()->json([
@@ -41,14 +43,16 @@ class RegistrationController extends Controller
         }
 
         // OTP
-        $this->generateOtp($validated['mobile']);
+       $otp = $this->generateOtp($validated['mobile']);
+       $smsResponse = $smsService->sendOtpSms($validated['mobile'], $otp);
 
         // Donor
         $this->createDonor($user->id, $validated);
 
         return response()->json([
             'status' => true,
-            'message' => 'OTP sent. Please verify.'
+            'message' => 'OTP sent. Please verify.',
+            'otp_response' => $smsResponse
         ], 201);
     }
     private function handleSelfRegistration($authUser, $validated)
@@ -190,7 +194,7 @@ class RegistrationController extends Controller
             'message' => 'OTP verified successfully',
         ]);
     }
-    public function storeVolunteer(Request $request)
+    public function storeVolunteer(Request $request,SmsService $smsService)
 {
     $commonRules = [
         'volunteer_type' => 'required|in:individual,ngo,charity,club',
@@ -272,7 +276,8 @@ class RegistrationController extends Controller
                 'refered_by'      => auth()->id(),   // who created it
                 'is_verified'     => false,
             ]);
-            $this->generateOtp($validated['mobile']);
+            $otp = $this->generateOtp($validated['mobile']);
+            $smsService->sendOtpSms($request->mobile, $otp);
             $otpSent = true;
         }
 
