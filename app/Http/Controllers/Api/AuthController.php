@@ -113,7 +113,7 @@ class AuthController extends Controller
     | SEND OTP
     |--------------------------------------------------------------------------
     */
-    public function sendOtp(Request $request)
+    public function sendOtp(Request $request, SmsService $smsService)
     {
         $request->validate([
             'mobile' => 'required|digits:10'
