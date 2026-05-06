@@ -68,7 +68,7 @@ class RegistrationController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'You are already registered as a donor.'
-            ], 200);
+            ], 409);
         }
 
         $authUser->update([
@@ -82,7 +82,16 @@ class RegistrationController extends Controller
         ]);
 
         $this->createDonor($authUser->id, $validated);
+        
+        $roles = $authUser->roles ?? [];
 
+        if (!in_array('donor', $roles)) {
+            $roles[] = 'donor';
+        
+            $authUser->update([
+                'roles' => $roles
+            ]);
+        }
         return response()->json([
             'status' => true,
             'message' => 'Registered as donor successfully.'
@@ -126,7 +135,7 @@ class RegistrationController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email'  => 'nullable|email|unique:users,email',
+            'email'  => 'nullable|email',
             'blood_group' => 'required|string|max:3',
             'dob'       => 'required|date',
             'last_donation' => 'nullable|date',
@@ -148,6 +157,9 @@ class RegistrationController extends Controller
             if ($validated['request_for'] === 'self') {
                 $response = $this->handleSelfRegistration($authUser, $validated);
             } else {
+                $validated = $request->validate([
+                    'email'  => 'nullable|email|unique:users,email',
+                ]);
                 $response = $this->handleOtherRegistration($authUser, $validated);
             }
 
