@@ -10,6 +10,7 @@ use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Support\Facades\DB;
 use App\Models\BloodRequestResponse;
 use App\Services\SmsService;
+use Illuminate\Support\Facades\Auth;
 
 class RequestController extends Controller
 {
@@ -44,54 +45,227 @@ private function formatDistance($distance)
 
     return round($distance, 1) . ' km'; // kilometers
 }
-    public function index(Request $request)
-    {
-        $user = null;
-        $token = $request->bearerToken();
-        if ($token) {
-            $accessToken = PersonalAccessToken::findToken($token);
-            $user = $accessToken?->tokenable;
-        }
-        $requests = BloodRequest::where('status','open')
-        ->whereHas('userByMobile', function ($q) {
-            $q->where('is_verified', true);
-        })->latest()->get();
+    // public function index(Request $request)
+    // {
+    //     $user = null;
+    //     $token = $request->bearerToken();
+    //     if ($token) {
+    //         $accessToken = PersonalAccessToken::findToken($token);
+    //         $user = $accessToken?->tokenable;
+    //     }
+    //     $query = BloodRequest::where('status', 'open')
+    //         ->whereHas('userByMobile', function ($q) {
+    //             $q->where('is_verified', true);
+    //         });
+    //     if ($request->filled('urgency')) {
+    //         $query->where('urgency', $request->urgency);
+    //     }
+    //     $query->latest();
+    //     if ($request->filled('limit')) {
+    //         $query->limit((int) $request->limit);
+    //     }
+    //     $requests = $query->get();
 
-        if ($user) {
-            $userLat = $user->latitude;
-            $userLng = $user->longitude;
-    
-            $requests = $requests->map(function ($req) use ($userLat, $userLng, $user) {
-                $distance = $this->calculateDistance(
-                    $userLat,
-                    $userLng,
-                    $req->patient_latitude,
-                    $req->patient_longitude
-                );
-                $req->setAttribute('distance', $distance);
-                $req->setAttribute('distance_text', $this->formatDistance($distance));
-                $hasResponded = BloodRequestResponse::where('blood_request_id', $req->id)
-                ->where('donor_id', $user->id)
-                ->exists();
-                $response = BloodRequestResponse::where('blood_request_id', $req->id)
-                ->where('donor_id', $user->id)
-                ->first();
-                $req->setAttribute('has_responded', $hasResponded);
-                $req->setAttribute('response_status', $response->status ?? null);
-                return $req;
-            });
-        }
-        $requests->makeHidden([
-            'name', 'mobile', 'request_for',
-            'submitted_by', 'created_at', 'updated_at'
-        ]);
-    
-        return response()->json([
-            'status' => true,
-            'data' => $requests
-        ]);
+    //     if ($user) {
+    //         $userLat = $user->latitude;
+    //         $userLng = $user->longitude;
+
+    //         $requests = $requests->map(function ($req) use ($userLat, $userLng, $user) {
+    //             $distance = $this->calculateDistance(
+    //                 $userLat,
+    //                 $userLng,
+    //                 $req->patient_latitude,
+    //                 $req->patient_longitude
+    //             );
+    //             $req->setAttribute('distance', $distance);
+    //             $req->setAttribute('distance_text', $this->formatDistance($distance));
+    //             $hasResponded = BloodRequestResponse::where('blood_request_id', $req->id)
+    //                 ->where('donor_id', $user->id)
+    //                 ->exists();
+    //             $response = BloodRequestResponse::where('blood_request_id', $req->id)
+    //                 ->where('donor_id', $user->id)
+    //                 ->first();
+    //             $req->setAttribute('has_responded', $hasResponded);
+    //             $req->setAttribute('response_status', $response->status ?? null);
+    //             return $req;
+    //         });
+    //     }
+    //     $requests->makeHidden([
+    //         'name',
+    //         'mobile',
+    //         'request_for',
+    //         'submitted_by',
+    //         'created_at',
+    //         'updated_at'
+    //     ]);
+
+    //     return response()->json([
+    //         'status' => true,
+    //         'data' => $requests
+    //     ]);
+    // }
+public function index(Request $request)
+{
+    $user = null;
+    $token = $request->bearerToken();
+
+    if ($token) {
+        $accessToken = PersonalAccessToken::findToken($token);
+        $user = $accessToken?->tokenable;
     }
 
+    $query = BloodRequest::where('status', 'open')
+        ->whereHas('userByMobile', function ($q) {
+            $q->where('is_verified', true);
+        });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Filter by urgency
+    |--------------------------------------------------------------------------
+    | urgent => required within less than 3 days
+    | normal => all others
+    */
+    if ($request->filled('urgency')) {
+
+        if ($request->urgency === 'urgent') {
+            $query->where('required_before_unit', 'days')
+                  ->where('required_before', '<', 3);
+        }
+
+        if ($request->urgency === 'normal') {
+            $query->where(function ($q) {
+                $q->where('required_before_unit', '!=', 'days')
+                  ->orWhere('required_before', '>=', 3);
+            });
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Filter requests within 20 KM
+    |--------------------------------------------------------------------------
+    */
+    if ($user && $user->latitude && $user->longitude) {
+
+        $userLat = $user->latitude;
+        $userLng = $user->longitude;
+        $radius = 20; // KM
+
+        $query->selectRaw("
+            blood_requests.*,
+            (
+                6371 * acos(
+                    cos(radians(?))
+                    * cos(radians(patient_latitude))
+                    * cos(radians(patient_longitude) - radians(?))
+                    + sin(radians(?))
+                    * sin(radians(patient_latitude))
+                )
+            ) AS distance
+        ", [$userLat, $userLng, $userLat])
+        ->having('distance', '<=', $radius)
+        ->orderBy('distance');
+
+    } else {
+        $query->latest();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Limit
+    |--------------------------------------------------------------------------
+    */
+    if ($request->filled('limit')) {
+        $query->limit((int) $request->limit);
+    }
+
+    $requests = $query->get();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Fetch all donor responses in one query
+    |--------------------------------------------------------------------------
+    */
+    $responses = collect();
+
+    if ($user) {
+        $responses = BloodRequestResponse::where('donor_id', $user->id)
+            ->get()
+            ->keyBy('blood_request_id');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Transform response
+    |--------------------------------------------------------------------------
+    */
+    $requests = $requests->map(function ($req) use ($responses) {
+
+        // Use SQL-calculated distance if available
+        $distance = $req->distance ?? null;
+
+        if ($distance !== null) {
+            $req->setAttribute('distance', round($distance, 2));
+
+            $req->setAttribute(
+                'distance_text',
+                $this->formatDistance($distance)
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Dynamic urgency
+        |--------------------------------------------------------------------------
+        */
+        $urgency = 'normal';
+
+        if (
+            $req->required_before_unit === 'days' &&
+            $req->required_before < 3
+        ) {
+            $urgency = 'urgent';
+        }
+
+        $req->setAttribute('urgency', $urgency);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Optimized response lookup
+        |--------------------------------------------------------------------------
+        */
+        $response = $responses[$req->id] ?? null;
+
+        $req->setAttribute('has_responded', !!$response);
+
+        $req->setAttribute(
+            'response_status',
+            $response->status ?? null
+        );
+
+        return $req;
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Hide unnecessary fields
+    |--------------------------------------------------------------------------
+    */
+    $requests->makeHidden([
+        'name',
+        'mobile',
+        'request_for',
+        'submitted_by',
+        'created_at',
+        'updated_at'
+    ]);
+
+    return response()->json([
+        'status' => true,
+        'data' => $requests
+    ]);
+}
     public function store(Request $request,SmsService $smsService)
     {
         $validated = $request->validate([
@@ -115,7 +289,7 @@ private function formatDistance($distance)
             'request_for' => 'required|string|in:self,other',
         ]);
         // $validated['request_for'] = $request->has('request_for') ? 'self' : 'other';
-        $validated['submitted_by'] = auth()->id();
+        $validated['submitted_by'] = Auth::id();
 
         if ($request->hasFile('prescription')) {
             $file = $request->file('prescription');
@@ -179,7 +353,7 @@ private function formatDistance($distance)
                 }
                 $smsService->sendOtpSms($validated['mobile'], $otp);
             }
-            $validated['submitted_by'] = auth()->id();
+            $validated['submitted_by'] = Auth::id();
             // Create Blood Request
             $bloodRequest = BloodRequest::create($validated);
     
@@ -275,7 +449,7 @@ private function formatDistance($distance)
         ]);
     }
     public function myBloodDonation(){
-        $data = BloodRequestResponse::where('donor_id', auth()->id())
+        $data = BloodRequestResponse::where('donor_id', Auth::id())
         ->with('request')
         ->latest()
         ->get();
