@@ -23,55 +23,62 @@ class AuthController extends Controller
     */
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name'      => 'required|string|max:255',
-            // 'email'     => 'nullable|email|unique:users,email',
-            'mobile'    => 'required|digits:10|unique:users,mobile',
-            'dob'       => 'required|date',
-            'gender'       => 'required|in:Male,Female,Other',
-            'address'   => 'nullable|string',
-            // 'pin_code'  => 'required|string|max:10',
-            'blood_group' => 'required|string|max:3',
-            'latitude'  => 'nullable|string|max:20',
-            'longitude' => 'nullable|string|max:20',
-            // 'password'  => 'nullable|min:6'
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'name'      => 'required|string|max:255',
+                // 'email'     => 'nullable|email|unique:users,email',
+                'mobile'    => 'required|digits:10|unique:users,mobile',
+                'dob'       => 'required|date',
+                'gender'       => 'required|in:Male,Female,Other',
+                'address'   => 'nullable|string',
+                // 'pin_code'  => 'required|string|max:10',
+                'blood_group' => 'required|string|max:3',
+                'latitude'  => 'nullable|numeric',
+                'longitude' => 'nullable|numeric',
+                // 'password'  => 'nullable|min:6'
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 422);
+            }
+
+            // ✅ Check OTP verified
+            if (!Cache::get('otp_verified_' . $request->mobile)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Please verify OTP first'
+                ], 403);
+            }
+            $user = User::create([
+                'name'      => $request->name,
+                // 'email'     => $request->email,
+                'mobile'    => $request->mobile,
+                'dob'       => $request->dob,
+                'gender'    => $request->gender,
+                'address'   => $request->address,
+                // 'pin_code'  => $request->pin_code,
+                'blood_group' => $request->blood_group,
+                'latitude'  => $request->latitude,
+                'longitude' => $request->longitude,
+
+                'roles'     => ['user'],
+                'is_verified' => 1
+                // 'password'  => $request->password ? Hash::make($request->password) : null,
+            ]);
+
+            // Optional: clear OTP verification
+            Cache::forget('otp_verified_' . $request->mobile);
+
+            return response()->json([
+                'message' => 'User registered successfully',
+                'user'    => $user
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
         }
-
-    // ✅ Check OTP verified
-    if (!Cache::get('otp_verified_' . $request->mobile)) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Please verify OTP first'
-        ], 403);
-    }
-        $user = User::create([
-            'name'      => $request->name,
-            // 'email'     => $request->email,
-            'mobile'    => $request->mobile,
-            'dob'       => $request->dob,
-            'gender'    => $request->gender,
-            'address'   => $request->address,
-            // 'pin_code'  => $request->pin_code,
-            'blood_group' => $request->blood_group,
-            'latitude'  => $request->latitude,
-            'longitude' => $request->longitude,
-
-            'roles'     => ['user'],
-            'is_verified' => 1
-            // 'password'  => $request->password ? Hash::make($request->password) : null,
-        ]);
-
-    // Optional: clear OTP verification
-    Cache::forget('otp_verified_' . $request->mobile);
-
-        return response()->json([
-            'message' => 'User registered successfully',
-            'user'    => $user
-        ], 201);
     }
     public function sendRegistartionOtp(Request $request,SmsService $smsService)
     {
@@ -187,6 +194,7 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
+            "status" =>true,
             'message' => 'Login successful',
             'token'   => $token,
             'user'    => $user

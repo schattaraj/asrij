@@ -219,9 +219,9 @@
                     <div class="col-md-3">
                         <ul class="links">
                             <li><i class="fa-solid fa-angles-right"></i> <a href="{{ route('home') }}">Home</a></li>
-                            <li><i class="fa-solid fa-angles-right"></i> <a href="#">About Us</a></li>
-                            <li><i class="fa-solid fa-angles-right"></i> <a href="#">Contact Us</a></li>
-                            <li><i class="fa-solid fa-angles-right"></i> <a href="#registration-section">Register</a>
+                            <li><i class="fa-solid fa-angles-right"></i> <a href="{{ route('about') }}">About Us</a></li>
+                            <li><i class="fa-solid fa-angles-right"></i> <a href="{{ route('contact') }}">Contact Us</a></li>
+                            <li><i class="fa-solid fa-angles-right"></i> <a href="{{ route('home') }}#registration-section">Register</a>
                             </li>
                             <li><i class="fa-solid fa-angles-right"></i> <a href="#loginModal" data-bs-toggle="modal"
                                     data-bs-target="#loginModal">Login</a></li>
@@ -260,10 +260,10 @@
                     href="{{ route('home') }}">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}" href="#">About Us</a>
+                <a class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">About Us</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}" href="#">Contact Us</a>
+                <a class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}" href="{{ route('contact') }}">Contact Us</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link openRegister" href="#">Sign Up</a>

@@ -33,6 +33,8 @@ class RegistrationController extends Controller
             'dob' => $validated['dob'],
             'whatsapp_number' => $validated['whatsapp_number'] ?? null,
             'address' => $validated['address'],
+            'latitude' => $validated['donor_latitude'] ?? null,
+            'longitude' => $validated['donor_longitude'] ?? null,
             'referred_by' => $authUser ? $authUser->id : null,
             'roles' => ['user', 'donor'],
             'is_verified' => false,
@@ -78,6 +80,8 @@ class RegistrationController extends Controller
             'dob' => $authUser->dob ?: $validated['dob'],
             'whatsapp_number' => $authUser->whatsapp_number ?: ($validated['whatsapp_number'] ?? null),
             'address' => $authUser->address ?: $validated['address'],
+            'latitude' => $authUser->latitude ?: ($validated['donor_latitude'] ?? null),
+            'longitude' => $authUser->longitude ?: ($validated['donor_longitude'] ?? null),
             // 'pin_code' => $authUser->pin_code ?: $validated['pin_code'],
         ]);
 
@@ -103,7 +107,7 @@ class RegistrationController extends Controller
             'user_id'        => $userId,
             'blood_group'    => $validated['blood_group'],
             'year_of_birth'  => \Carbon\Carbon::parse($validated['dob'])->year,
-            'last_donation'  => $validated['last_donation'],
+            'last_donation'  => $validated['last_donation'] ?? null,
             'address'        => $validated['address']
         ]);
 
@@ -129,7 +133,7 @@ class RegistrationController extends Controller
 
         return $otp;
     }
-    public function store(Request $request)
+    public function store(Request $request, SmsService $smsService)
     {
         $authUser = auth('sanctum')->user();
 
@@ -157,10 +161,10 @@ class RegistrationController extends Controller
             if ($validated['request_for'] === 'self') {
                 $response = $this->handleSelfRegistration($authUser, $validated);
             } else {
-                $validated = $request->validate([
+                $request->validate([
                     'email'  => 'nullable|email|unique:users,email',
                 ]);
-                $response = $this->handleOtherRegistration($authUser, $validated);
+                $response = $this->handleOtherRegistration($authUser, $validated, $smsService);
             }
 
             DB::commit();

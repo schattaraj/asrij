@@ -17,6 +17,9 @@ use App\Http\Controllers\BloodCampController;
 use Illuminate\Http\Request;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
+Route::get('/about', [PageController::class, 'about'])->name('about');
+Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::post('/contact', [PageController::class, 'contactStore'])->name('contact.store');
 Route::get('/registration', [PageController::class, 'registration'])->name('registration');
 Route::get('/login', [PageController::class, 'login'])->name('login');
 // Route::get('/dashboard', [PageController::class, 'dashboard'])->name('dashboard');

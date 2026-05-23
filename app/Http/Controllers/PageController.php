@@ -10,6 +10,28 @@ class PageController extends Controller
         return view('home');
     }
 
+    public function about() {
+        return view('about');
+    }
+
+    public function contact() {
+        return view('contact');
+    }
+
+    public function contactStore(Request $request) {
+        $data = $request->validate([
+            'name'    => 'required|string|max:120',
+            'email'   => 'required|email|max:160',
+            'phone'   => 'nullable|string|max:20',
+            'subject' => 'required|string|max:160',
+            'message' => 'required|string|max:2000',
+        ]);
+
+        \App\Models\ContactMessage::create($data);
+
+        return back()->with('contact_success', 'Thank you! Your message has been sent. We will get back to you soon.');
+    }
+
     public function registration() {
         return view('registration');
     }
