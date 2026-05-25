@@ -481,7 +481,11 @@ public function index(Request $request)
             ->whereNotNull('users.latitude')
             ->whereNotNull('users.longitude')
             ->whereNotNull('fcm_token.fcm_token')
-            ->whereRaw("JSON_CONTAINS(users.roles, '\"donor\"')")
+            ->where(function ($q) {
+                // Notify users whose roles include "donor" OR "volunteer"
+                $q->whereRaw("JSON_CONTAINS(users.roles, '\"donor\"')")
+                  ->orWhereRaw("JSON_CONTAINS(users.roles, '\"volunteer\"')");
+            })
             ->when($bloodRequest->submitted_by, fn ($q) =>
                 $q->where('users.id', '!=', $bloodRequest->submitted_by))
             ->selectRaw(
