@@ -44,6 +44,16 @@ return [
         'phone_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
         'url' => env('WHATSAPP_API_URL', 'https://graph.facebook.com/v19.0'),
     ],
-    
+
+    'fcm' => [
+        // Firebase Cloud Messaging HTTP v1
+        // 1. Put your service-account JSON in storage/app/firebase/credentials.json
+        //    (downloaded from Firebase Console → Project Settings → Service Accounts → Generate new private key)
+        // 2. Set FIREBASE_PROJECT_ID and FIREBASE_CREDENTIALS in .env
+        'project_id'  => env('FIREBASE_PROJECT_ID'),
+        'credentials' => env('FIREBASE_CREDENTIALS', storage_path('app/firebase/credentials.json')),
+        // Donor notification radius in KM (used by RequestController::store)
+        'donor_radius_km' => env('FCM_DONOR_RADIUS_KM', 20),
+    ],
 
 ];

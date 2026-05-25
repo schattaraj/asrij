@@ -5,6 +5,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Api\RequestController;
 use App\Http\Controllers\Api\RegistrationController;
 use App\Http\Controllers\Api\RespondOnRequestController;
+use App\Http\Controllers\Api\SettingsController;
+use App\Http\Controllers\Api\EmergencyContactController;
+use App\Http\Controllers\Api\AccountController;
+use App\Http\Controllers\Api\FcmTokenController;
 
 Route::get('/register', function(){
     return "Hello";
@@ -39,6 +43,34 @@ Route::prefix('v1')->group(function () {
         Route::put('/update-response',[RespondOnRequestController::class,'update'])->name('updateResponse');
         Route::get('/my-blood-donations', [RequestController::class, 'myBloodDonation'])->name('myBloodDonations');
         Route::post('/volunteer-registration', [RegistrationController::class, 'storeVolunteer'])->name('volunteer.registration');
+
+        // ── Settings ─────────────────────────────────────────────────────────
+        Route::prefix('settings')->group(function () {
+            Route::get('/', [SettingsController::class, 'index'])->name('settings.index');
+            Route::put('/notifications', [SettingsController::class, 'updateNotifications']);
+            Route::put('/privacy', [SettingsController::class, 'updatePrivacy']);
+            Route::put('/security', [SettingsController::class, 'updateSecurity']);
+            Route::put('/appearance', [SettingsController::class, 'updateAppearance']);
+            Route::put('/language', [SettingsController::class, 'updateLanguage']);
+            Route::put('/medical-info', [SettingsController::class, 'updateMedicalInfo']);
+            Route::put('/donor', [SettingsController::class, 'updateDonor']);
+            Route::put('/receiver', [SettingsController::class, 'updateReceiver']);
+
+            Route::get('/emergency-contacts', [EmergencyContactController::class, 'index']);
+            Route::post('/emergency-contacts', [EmergencyContactController::class, 'store']);
+            Route::delete('/emergency-contacts/{id}', [EmergencyContactController::class, 'destroy']);
+        });
+
+        // ── FCM token (push notifications) ───────────────────────────────────
+        Route::post('/fcm-token', [FcmTokenController::class, 'store'])->name('fcm-token.store');
+        Route::delete('/fcm-token', [FcmTokenController::class, 'destroy'])->name('fcm-token.destroy');
+
+        // ── Account management ───────────────────────────────────────────────
+        Route::prefix('account')->group(function () {
+            Route::post('/delete-request', [AccountController::class, 'scheduleDeletion']);
+            Route::delete('/delete-request', [AccountController::class, 'cancelDeletion']);
+            Route::post('/data-export', [AccountController::class, 'requestDataExport']);
+        });
     });
     Route::get('/blood-requests', [RequestController::class, 'index'])->name('blood-requests.index');
 });

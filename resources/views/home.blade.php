@@ -1393,7 +1393,7 @@
         </div>
     </section>
     <!-- ===== EMERGENCY AMBULANCE CONTACT ===== -->
-    <section class="emergency py-5 text-center text-white" data-aos="fade-up">
+    <section class="d-none emergency py-5 text-center text-white" data-aos="fade-up">
         <div class="container">
             <h2 class="fw-bold mb-4">Find Emergency Ambulance Contact</h2>
             <form method="post" class="d-flex justify-content-center flex-wrap">
@@ -1437,7 +1437,7 @@
         </div>
     </section> --}}
     <!-- On-Road Accidental Support Section -->
-    <section class="accident-support d-flex align-items-center py-5" data-aos="fade-up">
+    <section class="d-none accident-support d-flex align-items-center py-5" data-aos="fade-up">
         <div class="container">
             <div class="row justify-content-center align-items-center min-vh-100">
                 <div class="col-lg-8">

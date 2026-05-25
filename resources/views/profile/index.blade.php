@@ -19,7 +19,7 @@
                         <nav class="mb-3">
                             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                               <button class="nav-link active" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="true">Profile</button>
-                              <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#password" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Change Password</button>
+                              <!-- <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#password" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Change Password</button> -->
                             </div>
                           </nav>
                         <div class="tab-content">

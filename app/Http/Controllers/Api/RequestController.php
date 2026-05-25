@@ -9,8 +9,11 @@ use App\Models\User;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Support\Facades\DB;
 use App\Models\BloodRequestResponse;
+use App\Models\FcmToken;
 use App\Services\SmsService;
+use App\Services\FcmService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class RequestController extends Controller
 {
@@ -362,7 +365,14 @@ public function index(Request $request)
             }
     
             DB::commit();
-    
+
+            // ── Push notify nearby donors (additive, fail-safe) ────────────────
+            try {
+                $this->notifyNearbyDonors($bloodRequest);
+            } catch (\Throwable $e) {
+                Log::warning('notifyNearbyDonors failed: ' . $e->getMessage());
+            }
+
             return response()->json([
                 'status' => true,
                 'data' => $bloodRequest,
@@ -448,6 +458,95 @@ public function index(Request $request)
             'message' => 'Blood request deleted successfully'
         ]);
     }
+    /**
+     * Push a notification to every user whose roles include "donor" and who
+     * is within the configured radius (default 20 KM) of the patient's
+     * coordinates. Fully additive — does not change any request response.
+     */
+    private function notifyNearbyDonors(BloodRequest $bloodRequest): void
+    {
+        $lat = $bloodRequest->patient_latitude;
+        $lng = $bloodRequest->patient_longitude;
+
+        if (!$lat || !$lng) {
+            return; // no patient coordinates → nothing to do
+        }
+
+        $radius = (float) config('services.fcm.donor_radius_km', 20);
+
+        // Find donor users within radius, excluding the requester themselves,
+        // joined to their FCM token. Uses Haversine in SQL for performance.
+        $rows = DB::table('users')
+            ->join('fcm_token', 'fcm_token.user_id', '=', 'users.id')
+            ->whereNotNull('users.latitude')
+            ->whereNotNull('users.longitude')
+            ->whereNotNull('fcm_token.fcm_token')
+            ->whereRaw("JSON_CONTAINS(users.roles, '\"donor\"')")
+            ->when($bloodRequest->submitted_by, fn ($q) =>
+                $q->where('users.id', '!=', $bloodRequest->submitted_by))
+            ->selectRaw(
+                "fcm_token.fcm_token AS token,
+                 users.id AS user_id,
+                 users.blood_group,
+                 (6371 * acos(
+                     cos(radians(?)) * cos(radians(users.latitude))
+                     * cos(radians(users.longitude) - radians(?))
+                     + sin(radians(?)) * sin(radians(users.latitude))
+                 )) AS distance_km",
+                [$lat, $lng, $lat]
+            )
+            ->havingRaw('distance_km <= ?', [$radius])
+            ->orderBy('distance_km')
+            ->get();
+
+        if ($rows->isEmpty()) {
+            return;
+        }
+
+        $tokens = $rows->pluck('token')->filter()->unique()->values()->all();
+
+        if (empty($tokens)) {
+            return;
+        }
+
+        $title = 'Urgent Blood Request Nearby';
+        $body  = sprintf(
+            'Need %s blood (%d unit%s) at %s. Tap to respond.',
+            $bloodRequest->blood_group,
+            (int) $bloodRequest->unit,
+            ((int) $bloodRequest->unit) === 1 ? '' : 's',
+            $bloodRequest->hospital_name
+        );
+
+        $data = [
+            'type'             => 'blood_request',
+            'request_id'       => (string) $bloodRequest->id,
+            'blood_group'      => (string) $bloodRequest->blood_group,
+            'unit'             => (string) $bloodRequest->unit,
+            'hospital_name'    => (string) $bloodRequest->hospital_name,
+            'address'          => (string) $bloodRequest->address,
+            'patient_latitude' => (string) $lat,
+            'patient_longitude'=> (string) $lng,
+            'urgency'          => (string) ($bloodRequest->urgency ?? 'normal'),
+        ];
+
+        $fcm    = app(FcmService::class);
+        $result = $fcm->sendToMany($tokens, $title, $body, $data);
+
+        // Garbage-collect invalid/unregistered tokens
+        if (!empty($result['invalid_tokens'])) {
+            FcmToken::whereIn('fcm_token', $result['invalid_tokens'])->delete();
+        }
+
+        Log::info('FCM notify nearby donors', [
+            'request_id' => $bloodRequest->id,
+            'tokens'     => count($tokens),
+            'success'    => $result['success'],
+            'failure'    => $result['failure'],
+            'invalid'    => count($result['invalid_tokens']),
+        ]);
+    }
+
     public function myBloodDonation(){
         $data = BloodRequestResponse::where('donor_id', Auth::id())
         ->with('request')
