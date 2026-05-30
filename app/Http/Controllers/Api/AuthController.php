@@ -129,7 +129,7 @@ class AuthController extends Controller
         $user = User::where('mobile', $request->mobile)->first();
 
         if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+            return response()->json(['success' => false,'message' => 'No account found with this mobile number.'], 404);
         }
 
         $otp = rand(100000, 999999);
@@ -147,7 +147,7 @@ class AuthController extends Controller
         // TODO: integrate SMS gateway here
 
         return response()->json([
-            'message' => 'OTP sent successfully',
+            'message' => 'OTP has been sent to your registered mobile number.',
             'otp'     => $otp, // remove in production,
             'otpRes' =>$otpRes
         ]);

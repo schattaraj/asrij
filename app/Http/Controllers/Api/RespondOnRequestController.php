@@ -71,7 +71,12 @@ class RespondOnRequestController extends Controller
     public function fetchResponses()
     {
         $data = BloodRequest::where('submitted_by', auth()->id())
-            ->with(['responses', 'donors'])
+            ->with(['responses',
+            'donors',
+            'submitter:id,name,mobile',
+            'patient:id,name,mobile'
+            ])
+            ->latest()
             ->get();
         return response()->json([
             'status' => true,

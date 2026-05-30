@@ -20,7 +20,7 @@
                             <!-- Profile -->
                             <div class="tab-pane fade show active" id="profile">
                                 <h5 class="border-bottom pb-2">Reponses</h5>
-                                <div class="table-reponsive">
+                                {{-- <div class="table-reponsive">
                                     <table class="table table-bordered table-striped">
                                         <thead>
                                             <tr>
@@ -35,7 +35,8 @@
                                         </thead>
                                         <tbody id="responsesTableBody"></tbody>
                                     </table>
-                                </div>
+                                </div> --}}
+                                <div class="row" id="responsesCardContainer"></div>
                             </div>
                         </div>
                     </div>
@@ -136,58 +137,167 @@
         //get token
         const token = localStorage.getItem("token");
 
+        // function renderTable(data) {
+        //     const tbody = document.getElementById("responsesTableBody");
+        //     tbody.innerHTML = "";
+
+        //     data.forEach(request => {
+        //         const patientLat = parseFloat(request.patient_latitude);
+        //         const patientLng = parseFloat(request.patient_longitude);
+
+        //         request.donors.forEach(donor => {
+        //             const donorLat = parseFloat(donor.latitude);
+        //             const donorLng = parseFloat(donor.longitude);
+
+        //             const distance = calculateDistance(
+        //                 patientLat,
+        //                 patientLng,
+        //                 donorLat,
+        //                 donorLng
+        //             );
+
+        //             tbody.innerHTML += `
+        //         <tr>
+        //             <td><strong>${donor.name || '-'}</strong></td>
+        //             <td>${donor.blood_group}</td>
+        //             <td>${donor.mobile}</td>
+        //             <td style="text-wrap:auto">${donor.address || '-'}</td>
+        //             <td>${distance}</td>
+        //             <td>
+        //                 <span class="badge bg-warning text-dark">
+        //                     ${donor.pivot.status}
+        //                 </span>
+        //             </td>
+        //             <td>
+        //                 <button 
+        //                     class="btn btn-sm btn-info"
+        //                     onclick='viewDetails(${JSON.stringify(donor)}, ${JSON.stringify(request)}, "${distance}")'
+        //                     data-bs-toggle="modal" 
+        //                     data-bs-target="#donorDetailsModal"
+        //                 >
+        //                     View Details
+        //                 </button>
+        //                 <button 
+        //                     class="btn btn-sm btn-success"
+        //                     onclick="acceptDonor(${request.id}, ${donor.id})"
+        //                 >
+        //                     Accept
+        //                 </button>
+        //             </td>
+        //         </tr>
+        //     `;
+        //         });
+        //     });
+        // }
         function renderTable(data) {
-            const tbody = document.getElementById("responsesTableBody");
-            tbody.innerHTML = "";
+    const container = document.getElementById("responsesCardContainer");
+    container.innerHTML = "";
 
-            data.forEach(request => {
-                const patientLat = parseFloat(request.patient_latitude);
-                const patientLng = parseFloat(request.patient_longitude);
+    data.forEach(request => {
+        const patientLat = parseFloat(request.patient_latitude);
+        const patientLng = parseFloat(request.patient_longitude);
 
-                request.donors.forEach(donor => {
-                    const donorLat = parseFloat(donor.latitude);
-                    const donorLng = parseFloat(donor.longitude);
+        request.donors.forEach(donor => {
+            const donorLat = parseFloat(donor.latitude);
+            const donorLng = parseFloat(donor.longitude);
 
-                    const distance = calculateDistance(
-                        patientLat,
-                        patientLng,
-                        donorLat,
-                        donorLng
-                    );
+            const distance = calculateDistance(
+                patientLat,
+                patientLng,
+                donorLat,
+                donorLng
+            );
 
-                    tbody.innerHTML += `
-                <tr>
-                    <td><strong>${donor.name || '-'}</strong></td>
-                    <td>${donor.blood_group}</td>
-                    <td>${donor.mobile}</td>
-                    <td style="text-wrap:auto">${donor.address || '-'}</td>
-                    <td>${distance}</td>
-                    <td>
-                        <span class="badge bg-warning text-dark">
-                            ${donor.pivot.status}
-                        </span>
-                    </td>
-                    <td>
-                        <button 
-                            class="btn btn-sm btn-info"
-                            onclick='viewDetails(${JSON.stringify(donor)}, ${JSON.stringify(request)}, "${distance}")'
-                            data-bs-toggle="modal" 
-                            data-bs-target="#donorDetailsModal"
-                        >
-                            View Details
-                        </button>
-                        <button 
-                            class="btn btn-sm btn-success"
-                            onclick="acceptDonor(${request.id}, ${donor.id})"
-                        >
-                            Accept
-                        </button>
-                    </td>
-                </tr>
+            let statusClass = "bg-warning text-dark";
+
+            if (donor.pivot.status === "accepted") {
+                statusClass = "bg-success";
+            } else if (donor.pivot.status === "rejected") {
+                statusClass = "bg-danger";
+            }
+
+            container.innerHTML += `
+                <div class="col-lg-6 mb-4">
+                    <div class="card shadow-sm h-100 border-start border-4 border-danger">
+
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-0">${donor.name || '-'}</h5>
+                                <small class="text-muted">${donor.blood_group}</small>
+                            </div>
+
+                            <span class="badge ${statusClass}">
+                                ${donor.pivot.status}
+                            </span>
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <strong>Blood Group</strong><br>
+                                    ${donor.blood_group}
+                                </div>
+
+                                <div class="col-6">
+                                    <strong>Distance</strong><br>
+                                    ${distance}
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <strong>Mobile</strong><br>
+                                <a href="tel:${donor.mobile}">
+                                    ${donor.mobile}
+                                </a>
+                            </div>
+
+                            <div>
+                                <strong>Address</strong>
+                                <p class="mb-0 text-muted">
+                                    ${donor.address || '-'}
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <div class="card-footer d-flex flex-wrap gap-2">
+
+                            <button
+                                class="btn btn-info btn-sm"
+                                onclick='viewDetails(${JSON.stringify(donor)}, ${JSON.stringify(request)}, "${distance}")'
+                                data-bs-toggle="modal"
+                                data-bs-target="#donorDetailsModal">
+                                View Details
+                            </button>
+
+                            ${
+                                donor.pivot.status === 'pending'
+                                    ? `
+                                <button
+                                    class="btn btn-success btn-sm"
+                                    onclick="acceptDonor(${request.id}, ${donor.id})">
+                                    Accept
+                                </button>
+                            `
+                                    : ''
+                            }
+
+                            <a
+                                href="https://www.google.com/maps?q=${donor.latitude},${donor.longitude}"
+                                target="_blank"
+                                class="btn btn-primary btn-sm">
+                                Open Map
+                            </a>
+
+                        </div>
+
+                    </div>
+                </div>
             `;
-                });
-            });
-        }
+        });
+    });
+}
         const API_URL = "{{ route('fetchResponses') }}";
         let allRequests = [];
 

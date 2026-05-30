@@ -357,6 +357,10 @@ public function index(Request $request)
                 $smsService->sendOtpSms($validated['mobile'], $otp);
             }
             $validated['submitted_by'] = Auth::id();
+            $validated['user_id'] = Auth::id();
+            if ($validated['request_for'] === 'other'){
+            $validated['user_id'] = $userCreate->id;
+            }
             // Create Blood Request
             $bloodRequest = BloodRequest::create($validated);
     
@@ -486,8 +490,15 @@ public function index(Request $request)
                 $q->whereRaw("JSON_CONTAINS(users.roles, '\"donor\"')")
                   ->orWhereRaw("JSON_CONTAINS(users.roles, '\"volunteer\"')");
             })
+            ->where(function ($q) use ($bloodRequest) {
+                $q->whereRaw('LOWER(users.blood_group) = ?', [
+                    strtolower($bloodRequest->blood_group)
+                ])
+                    ->orWhereRaw('LOWER(users.blood_group) = ?', ['any']);
+            })
             ->when($bloodRequest->submitted_by, fn ($q) =>
                 $q->where('users.id', '!=', $bloodRequest->submitted_by))
+
             ->selectRaw(
                 "fcm_token.fcm_token AS token,
                  users.id AS user_id,
@@ -515,7 +526,8 @@ public function index(Request $request)
 
         $title = 'Urgent Blood Request Nearby';
         $body  = sprintf(
-            'Need %s blood (%d unit%s) at %s. Tap to respond.',
+            '[%s] Need %s blood (%d unit%s) at %s. Tap to respond.',
+            $bloodRequest->token,
             $bloodRequest->blood_group,
             (int) $bloodRequest->unit,
             ((int) $bloodRequest->unit) === 1 ? '' : 's',
@@ -525,6 +537,7 @@ public function index(Request $request)
         $data = [
             'type'             => 'blood_request',
             'request_id'       => (string) $bloodRequest->id,
+            'request_token'    => (string) $bloodRequest->token,
             'blood_group'      => (string) $bloodRequest->blood_group,
             'unit'             => (string) $bloodRequest->unit,
             'hospital_name'    => (string) $bloodRequest->hospital_name,

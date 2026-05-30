@@ -19,7 +19,8 @@
                         <div class="tab-content">
                             <!-- Profile -->
                             <div class="tab-pane fade show active" id="profile">
-                                <div style="overflow: auto">
+                                 <div class="row" id="myDonationsCardContainer"></div>
+                                <!-- <div style="overflow: auto">
                                     <table class="table table-bordered table-striped">
                                         <thead>
                                             <tr>
@@ -38,7 +39,7 @@
                                         </thead>
                                         <tbody id="myDonationsTableBody"></tbody>
                                     </table>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -149,67 +150,177 @@
             fetchRequests();
         });
 
-        function renderMyDonations(data) {
-            const tbody = document.getElementById("myDonationsTableBody");
-            tbody.innerHTML = "";
+//         function renderMyDonations(data) {
+//             const tbody = document.getElementById("myDonationsTableBody");
+//             tbody.innerHTML = "";
 
-            data.forEach(item => {
-                const req = item.request;
-                const distance = calculateDistance(
-                    userData?.latitude,
-                    userData?.longitude,
-                    parseFloat(req.patient_latitude),
-                    parseFloat(req.patient_longitude)
-                );
-                tbody.innerHTML += `
-            <tr>
-                <td>${req.name}</td>
-                <td><strong>${req.blood_group}</strong></td>
-                <td>${req.hospital_name}</td>
-                <td>${req.unit}</td>
-                <td>${distance}</td>
-                <td style="text-wrap:auto">${req.address}</td>
-                <td>${req.required_before} ${req.required_before_unit}</td>
-                <td>
-                    <span class="badge ${req.urgency === 'urgent' ? 'bg-danger' : 'bg-info'}">
-                        ${req.urgency}
-                    </span>
-                </td>
-                <td>
-                    <span class="badge 
-                        ${item.status === 'accepted' ? 'bg-success' : 
-                          item.status === 'rejected' ? 'bg-danger' : 'bg-warning text-dark'}">
-                        ${item.status}
-                    </span>
-                </td>
-                <td>
-                    <button 
-                        class="btn btn-sm btn-info"
-                        data-bs-toggle="modal"
-                        data-bs-target="#donationDetailsModal"
-                        onclick='viewDonationDetails(${JSON.stringify(item)}, "${distance}")'
-                    >
-                        View
-                    </button>
+//             data.forEach(item => {
+//                 const req = item.request;
+//                 const distance = calculateDistance(
+//                     userData?.latitude,
+//                     userData?.longitude,
+//                     parseFloat(req.patient_latitude),
+//                     parseFloat(req.patient_longitude)
+//                 );
+//                 tbody.innerHTML += `
+//             <tr>
+//                 <td>${req.name}</td>
+//                 <td><strong>${req.blood_group}</strong></td>
+//                 <td>${req.hospital_name}</td>
+//                 <td>${req.unit}</td>
+//                 <td>${distance}</td>
+//                 <td style="text-wrap:auto">${req.address}</td>
+//                 <td>${req.required_before} ${req.required_before_unit}</td>
+//                 <td>
+//                     <span class="badge ${req.urgency === 'urgent' ? 'bg-danger' : 'bg-info'}">
+//                         ${req.urgency}
+//                     </span>
+//                 </td>
+//                 <td>
+//                     <span class="badge 
+//                         ${item.status === 'accepted' ? 'bg-success' : 
+//                           item.status === 'rejected' ? 'bg-danger' : 'bg-warning text-dark'}">
+//                         ${item.status}
+//                     </span>
+//                 </td>
+//                 <td>
+//                     <button 
+//                         class="btn btn-sm btn-info"
+//                         data-bs-toggle="modal"
+//                         data-bs-target="#donationDetailsModal"
+//                         onclick='viewDonationDetails(${JSON.stringify(item)}, "${distance}")'
+//                     >
+//                         View
+//                     </button>
 
-                    ${item.status === 'pending' ? `
-                                <button 
-                                    class="btn btn-sm btn-danger"
-                                    onclick="cancelResponse(${item.id})"
-                                >
-                                    Cancel
-                                </button>
-                            ` : ''}
-                </td>
-                <td>
-                    <a href="https://www.google.com/maps?q=${req?.patient_latitude},${req?.patient_longitude}" target="_blank" class="btn btn-primary btn-sm">
-    Open in Google Maps
-</a>
-                </td>
-            </tr>
+//                     ${item.status === 'pending' ? `
+//                                 <button 
+//                                     class="btn btn-sm btn-danger"
+//                                     onclick="cancelResponse(${item.id})"
+//                                 >
+//                                     Cancel
+//                                 </button>
+//                             ` : ''}
+//                 </td>
+//                 <td>
+//                     <a href="https://www.google.com/maps?q=${req?.patient_latitude},${req?.patient_longitude}" target="_blank" class="btn btn-primary btn-sm">
+//     Open in Google Maps
+// </a>
+//                 </td>
+//             </tr>
+//         `;
+//             });
+//         }
+
+function renderMyDonations(data) {
+    const container = document.getElementById("myDonationsCardContainer");
+    container.innerHTML = "";
+
+    data.forEach(item => {
+        const req = item.request;
+
+        const distance = calculateDistance(
+            userData?.latitude,
+            userData?.longitude,
+            parseFloat(req.patient_latitude),
+            parseFloat(req.patient_longitude)
+        );
+
+        container.innerHTML += `
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm h-100 border-start border-4 border-danger">
+                    
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">${req.name}</h5>
+                            <small class="text-muted">${req.hospital_name}</small>
+                        </div>
+
+                        <span class="badge ${req.urgency === 'urgent' ? 'bg-danger' : 'bg-info'}">
+                            ${req.urgency}
+                        </span>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <strong>Blood Group</strong><br>
+                                ${req.blood_group}
+                            </div>
+
+                            <div class="col-6">
+                                <strong>Units Required</strong><br>
+                                ${req.unit}
+                            </div>
+
+                            <div class="col-6">
+                                <strong>Distance</strong><br>
+                                ${distance}
+                            </div>
+
+                            <div class="col-6">
+                                <strong>Required Within</strong><br>
+                                ${req.required_before} ${req.required_before_unit}
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div>
+                            <strong>Address</strong>
+                            <p class="mb-0 text-muted">
+                                ${req.address}
+                            </p>
+                        </div>
+
+                        <hr>
+
+                        <div>
+                            <strong>Status</strong><br>
+                            <span class="badge 
+                                ${item.status === 'accepted'
+                                    ? 'bg-success'
+                                    : item.status === 'rejected'
+                                    ? 'bg-danger'
+                                    : 'bg-warning text-dark'}">
+                                ${item.status}
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="card-footer d-flex flex-wrap gap-2">
+
+                        <button 
+                            class="btn btn-info btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#donationDetailsModal"
+                            onclick='viewDonationDetails(${JSON.stringify(item)}, "${distance}")'>
+                            View
+                        </button>
+
+                        ${item.status === 'pending' ? `
+                            <button 
+                                class="btn btn-danger btn-sm"
+                                onclick="cancelResponse(${item.id})">
+                                Cancel
+                            </button>
+                        ` : ''}
+
+                        <a href="https://www.google.com/maps?q=${req.patient_latitude},${req.patient_longitude}"
+                           target="_blank"
+                           class="btn btn-primary btn-sm">
+                            Open Map
+                        </a>
+
+                    </div>
+
+                </div>
+            </div>
         `;
-            });
-        }
+    });
+}
         const API_URL = "{{ route('myBloodDonations') }}";
         let allRequests = [];
 

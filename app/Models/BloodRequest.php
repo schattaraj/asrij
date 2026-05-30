@@ -21,6 +21,7 @@ class BloodRequest extends Model
         'email',
         'request_for',
         'submitted_by',
+        'user_id',
         'required_before',
         'required_before_unit',
         'status',
@@ -35,7 +36,7 @@ class BloodRequest extends Model
         'updated_at' => 'datetime',
     ];
 
-    protected $appends = ['urgency'];
+    protected $appends = ['urgency','token'];
 
     public function user()
     {
@@ -68,5 +69,23 @@ public function donors()
 public function userByMobile()
 {
     return $this->belongsTo(User::class, 'mobile', 'mobile');
+}
+
+public function getTokenAttribute()
+{
+    return 'BR-' .
+        $this->created_at->format('Ymd') .
+        '-' .
+        str_pad($this->id, 5, '0', STR_PAD_LEFT);
+}
+
+public function submitter()
+{
+    return $this->belongsTo(User::class, 'submitted_by');
+}
+
+public function patient()
+{
+    return $this->belongsTo(User::class, 'user_id');
 }
 }

@@ -8390,7 +8390,8 @@
   --bs-danger: #fe7c96;
   --bs-light: #f8f9fa;
   --bs-dark: #3e4b5b;
-  --bs-primary-rgb: 182, 109, 255;
+  /* --bs-primary-rgb: 182, 109, 255; */
+  --bs-primary-rgb:199, 0, 52;
   --bs-secondary-rgb: 195, 189, 189;
   --bs-success-rgb: 27, 207, 180;
   --bs-info-rgb: 25, 138, 227;
@@ -25739,7 +25740,8 @@ dl li {
   background: #ffffff;
 }
 .sidebar .nav .nav-item.active > .nav-link .menu-title {
-  color: #b66dff;
+  /* color: #b66dff; */
+  color: #c70039;
   font-family: "ubuntu-medium", sans-serif;
 }
 .sidebar .nav .nav-item.active > .nav-link i {

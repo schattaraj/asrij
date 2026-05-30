@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\EmergencyContactController;
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\FcmTokenController;
+use App\Http\Controllers\Api\LiveLocationController;
+use App\Http\Controllers\Api\ProfileApiController;
 
 Route::get('/register', function(){
     return "Hello";
@@ -64,6 +66,26 @@ Route::prefix('v1')->group(function () {
         // ── FCM token (push notifications) ───────────────────────────────────
         Route::post('/fcm-token', [FcmTokenController::class, 'store'])->name('fcm-token.store');
         Route::delete('/fcm-token', [FcmTokenController::class, 'destroy'])->name('fcm-token.destroy');
+
+        // ── Profile (used by web profile page + mobile app) ──────────────────
+        Route::prefix('profile')->group(function () {
+            Route::get('/',                     [ProfileApiController::class, 'show'])->name('api.profile.show');
+            Route::patch('/',                   [ProfileApiController::class, 'update'])->name('api.profile.update');
+            Route::post('/avatar',              [ProfileApiController::class, 'uploadAvatar'])->name('api.profile.avatar.upload');
+            Route::delete('/avatar',            [ProfileApiController::class, 'deleteAvatar'])->name('api.profile.avatar.delete');
+            Route::post('/change-password',     [ProfileApiController::class, 'changePassword'])->name('api.profile.password');
+            Route::post('/mobile/send-otp',     [ProfileApiController::class, 'sendMobileChangeOtp'])->name('api.profile.mobile.send-otp');
+            Route::post('/mobile/verify-otp',   [ProfileApiController::class, 'verifyMobileChangeOtp'])->name('api.profile.mobile.verify-otp');
+            Route::get('/devices',              [ProfileApiController::class, 'devices'])->name('api.profile.devices');
+            Route::delete('/devices/{id}',      [ProfileApiController::class, 'revokeDevice'])->name('api.profile.devices.revoke');
+            Route::get('/activity',             [ProfileApiController::class, 'activity'])->name('api.profile.activity');
+        });
+
+        // ── Live location (in-app "track donor") ─────────────────────────────
+        Route::post('/me/live-location', [LiveLocationController::class, 'update'])
+            ->name('live-location.update');
+        Route::get('/blood-requests/{id}/peer-location', [LiveLocationController::class, 'peer'])
+            ->name('live-location.peer');
 
         // ── Account management ───────────────────────────────────────────────
         Route::prefix('account')->group(function () {

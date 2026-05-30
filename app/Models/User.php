@@ -27,6 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'mobile',
+        'avatar',
         'whatsapp_number',
         'password',
         'role',
@@ -38,9 +39,26 @@ class User extends Authenticatable implements MustVerifyEmail
         'blood_group',
         'latitude',
         'longitude',
+        'current_latitude',
+        'current_longitude',
+        'location_updated_at',
         'referred_by',
         'is_verified',
     ];
+
+    protected $appends = ['avatar_url'];
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (empty($this->avatar)) {
+            return null;
+        }
+        // Already an absolute URL? (e.g. social-login imports)
+        if (preg_match('#^https?://#i', $this->avatar)) {
+            return $this->avatar;
+        }
+        return asset('storage/' . ltrim($this->avatar, '/'));
+    }
 
     /**
      * The attributes that should be hidden for serialization.

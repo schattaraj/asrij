@@ -225,11 +225,6 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span class="menu-title">Notification</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="{{route('bloodDonations')}}">
                             <span class="menu-title">My Blood Donations</span>
                         </a>
@@ -240,8 +235,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span class="menu-title">Chat</span>
+                        <a class="nav-link" href="{{ route('home') }}">
+                            <span class="menu-title">Back to Home</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="#" onclick="event.preventDefault(); logout();">
+                            <span class="menu-title">Logout</span>
                         </a>
                     </li>
                     {{-- @if ($user->role == 'volunteer')

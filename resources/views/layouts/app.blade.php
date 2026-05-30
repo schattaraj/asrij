@@ -117,7 +117,7 @@
 
                                 <a class="dropdown-item d-flex align-items-center"
                                     href="{{ route('bloodDonations') }}">
-                                    <i class="fa-solid fa-hand-holding-heart me-2"></i> My Donations
+                                    <i class="fa-solid fa-hand-holding-heart me-2"></i>Donation Activity
                                 </a>
 
                                 <a class="dropdown-item d-flex align-items-center"
@@ -449,7 +449,7 @@
                                 <a href="#" id="resendOtp" class="small d-none">Resend OTP</a>
                             </div>
 
-                            <button class="btn btn-primary w-100" type="button" onclick="verifyOtp()">Verify
+                            <button id="verify" class="btn btn-primary w-100 disabled" type="button" onclick="verifyOtp()">Verify
                                 OTP</button>
                         </div>
                         <!-- PASSWORD SECTION (HIDDEN DEFAULT) -->
@@ -880,7 +880,18 @@
                 });
 
         }
-
+        document.querySelectorAll('.otp-box').forEach(input => {
+            input.addEventListener("input",checkOtpLength);
+            });
+        function checkOtpLength(){
+            let otp = getOtpValue();
+            if (otp.length == 6) {
+                document.querySelector("#verify").classList.remove("disabled");
+            }
+            else{
+                document.querySelector("#verify").classList.add("disabled");
+            }
+        }
         function getOtpValue() {
             let otp = '';
             document.querySelectorAll('.otp-box').forEach(input => {

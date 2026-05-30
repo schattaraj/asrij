@@ -16,6 +16,8 @@ class Volunteer extends Model
         'organization',
         'contact_number',
         'address',
+        'latitude',
+        'longitude',
         'pin_code',
         'registration_number',
         'group_quantity',
@@ -34,5 +36,8 @@ class Volunteer extends Model
     }
     protected $casts = [
         'extra_data' => 'array',
+        'group_quantity' => 'integer',
+        'latitude' => 'decimal:7',
+        'longitude' => 'decimal:7',
     ];
 }
