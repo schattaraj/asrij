@@ -167,10 +167,10 @@ public function index(Request $request)
                 )
             ) AS distance
         ", [$userLat, $userLng, $userLat])
-        ->having('distance', '<=', $radius)
-        ->orderBy('distance');
-
-    } else {
+                ->having('distance', '<=', $radius)
+                ->orderBy('distance')
+                ->orderByDesc('created_at');
+        } else {
         $query->latest();
     }
 
@@ -259,7 +259,7 @@ public function index(Request $request)
         'name',
         'mobile',
         'request_for',
-        'submitted_by',
+        // 'submitted_by',
         'created_at',
         'updated_at'
     ]);
@@ -271,6 +271,8 @@ public function index(Request $request)
 }
     public function store(Request $request,SmsService $smsService)
     {
+        $authUser = auth('sanctum')->user();
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'blood_group' => 'required|string|max:3',
@@ -360,6 +362,17 @@ public function index(Request $request)
             $validated['user_id'] = Auth::id();
             if ($validated['request_for'] === 'other'){
             $validated['user_id'] = $userCreate->id;
+            }
+            if ($validated['request_for'] === 'self') {
+                $authUser->update([
+                    'email' => $authUser->email ?: ($validated['email'] ?? null),
+                    'blood_group' => $authUser->blood_group ?: $validated['blood_group'],
+                    'dob' => $authUser->dob ?: $validated['dob'],
+                    'whatsapp_number' => $authUser->whatsapp_number ?: ($validated['whatsapp_number'] ?? null),
+                    'address' => $authUser->address ?: $validated['address'],
+                    'latitude' => $authUser->latitude ?: ($validated['donor_latitude'] ?? null),
+                    'longitude' => $authUser->longitude ?: ($validated['donor_longitude'] ?? null),
+                ]);
             }
             // Create Blood Request
             $bloodRequest = BloodRequest::create($validated);

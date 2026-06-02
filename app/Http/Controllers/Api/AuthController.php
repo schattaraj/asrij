@@ -68,10 +68,11 @@ class AuthController extends Controller
 
             // Optional: clear OTP verification
             Cache::forget('otp_verified_' . $request->mobile);
-
+        $token = $user->createToken('auth_token')->plainTextToken;
             return response()->json([
                 'message' => 'User registered successfully',
-                'user'    => $user
+                'user'    => $user,
+                'token'   => $token,
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
@@ -111,7 +112,6 @@ class AuthController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'OTP sent successfully',
-            'otp' => $otp, // remove in production
             'otpRes' => $otpRes
         ]);
     }
@@ -148,7 +148,6 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'OTP has been sent to your registered mobile number.',
-            'otp'     => $otp, // remove in production,
             'otpRes' =>$otpRes
         ]);
     }

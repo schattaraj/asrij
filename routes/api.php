@@ -15,6 +15,10 @@ use App\Http\Controllers\Api\ProfileApiController;
 Route::get('/register', function(){
     return "Hello";
 });
+
+Route::middleware('auth:sanctum')->delete('/cancel-response/{id}', [RespondOnRequestController::class, 'destroy'])
+    ->name('cancelResponse');
+
 Route::prefix('v1')->group(function () {
 
     Route::post('/register', [AuthController::class, 'register']);

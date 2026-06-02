@@ -57,7 +57,7 @@ class User extends Authenticatable implements MustVerifyEmail
         if (preg_match('#^https?://#i', $this->avatar)) {
             return $this->avatar;
         }
-        return asset('storage/' . ltrim($this->avatar, '/'));
+        return asset('storage/app/public/' . ltrim($this->avatar, '/'));
     }
 
     /**

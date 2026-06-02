@@ -320,8 +320,9 @@ function renderMyDonations(data) {
             </div>
         `;
     });
-}
+        }
         const API_URL = "{{ route('myBloodDonations') }}";
+        const CANCEL_RESPONSE_URL = "{{ route('cancelResponse', ['id' => '__RESPONSE_ID__']) }}";
         let allRequests = [];
 
         async function fetchRequests() {
@@ -383,20 +384,21 @@ function renderMyDonations(data) {
             document.getElementById("callBtn").href = `tel:${req.mobile}`;
             document.getElementById("waBtn").href = `https://wa.me/${req.mobile}`;
             if (req.prescription) {
-                document.getElementById("m_prescription").src = `{{url('/public')}}/storage/${req.prescription}`;
+                document.getElementById("m_prescription").src = `{{url('/')}}/storage/app/public/${req.prescription}`;
             } else {
                 document.getElementById("m_prescription").src = '';
             }
         }
 
         function cancelResponse(responseId) {
-            const token = localStorage.getItem("auth_token");
+            const token = localStorage.getItem("token") || localStorage.getItem("auth_token");
 
             if (!confirm("Are you sure you want to cancel?")) return;
 
-            fetch(`/api/cancel-response/${responseId}`, {
+            fetch(CANCEL_RESPONSE_URL.replace('__RESPONSE_ID__', responseId), {
                     method: "DELETE",
                     headers: {
+                        "Accept": "application/json",
                         "Authorization": `Bearer ${token}`
                     }
                 })

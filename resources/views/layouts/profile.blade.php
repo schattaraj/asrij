@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Asrij</title>
     <!-- plugins:css -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="dist/assets/vendors/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="dist/assets/vendors/ti-icons/css/themify-icons.css">
     <!-- <link rel="stylesheet" href="dist/assets/vendors/css/vendor.bundle.base.css"> -->
@@ -80,7 +83,7 @@
                             <i class="mdi mdi-fullscreen" id="fullscreen-button"></i>
                         </a>
                     </li>
-                    <li class="nav-item dropdown">
+                    {{-- <li class="nav-item dropdown">
                         <a class="nav-link count-indicator dropdown-toggle" id="messageDropdown" href="#"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="mdi mdi-email-outline"></i>
@@ -181,7 +184,7 @@
                             <div class="dropdown-divider"></div>
                             <h6 class="p-3 mb-0 text-center">See all notifications</h6>
                         </div>
-                    </li>
+                    </li> --}}
                     <li class="nav-item nav-logout d-none d-lg-block">
                         <a class="nav-link" href="#">
                             <i class="mdi mdi-power"></i>
@@ -392,6 +395,9 @@
                     })
                     .then(data => {
                         userData = data;
+                        if(data?.avatar){
+                            document.querySelector("#sidebar .nav-profile-image img").src="{{url('/')}}/storage/app/public/"+data?.avatar;
+                        }
                         // if (data.roles && data.roles.includes("admin")) {
                         //     profileBtn.href = "{{ route('admin.dashboard') }}";
                         // } else {

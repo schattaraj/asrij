@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Services\FcmService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 
 class RespondOnRequestController extends Controller
@@ -88,7 +89,7 @@ class RespondOnRequestController extends Controller
         $validated = $request->validate([
             'request_id' => 'required|exists:blood_requests,id',
             'donor_id' => 'required|exists:users,id',
-            'action' => 'required|in:accepted,rejected'
+            'action' => 'required|in:accepted,rejected,reached_hospital,donated,patient_confirmed'
         ]);
 
         DB::beginTransaction();
@@ -107,39 +108,146 @@ class RespondOnRequestController extends Controller
             $alsoRejectedDonorIds = [];
 
             // ✅ ACCEPT DONOR
-            if ($validated['action'] === 'accepted') {
+            // if ($validated['action'] === 'accepted') {
 
-                // Accept selected donor
+            //     // Accept selected donor
+            //     $response->update([
+            //         'status' => 'accepted'
+            //     ]);
+
+            //     // Capture which other donors are about to be auto-rejected
+            //     $alsoRejectedDonorIds = BloodRequestResponse::where('blood_request_id', $validated['request_id'])
+            //         ->where('donor_id', '!=', $validated['donor_id'])
+            //         ->where('status', '!=', 'rejected')
+            //         ->pluck('donor_id')
+            //         ->all();
+
+            //     // Reject all other donors
+            //     BloodRequestResponse::where('blood_request_id', $validated['request_id'])
+            //         ->where('donor_id', '!=', $validated['donor_id'])
+            //         ->update([
+            //             'status' => 'rejected'
+            //         ]);
+
+            //     // Update main request
+            //     BloodRequest::where('id', $validated['request_id'])
+            //         ->update([
+            //             'status' => 'matched' // or 'fulfilled'
+            //         ]);
+            // }
+
+            // // ❌ REJECT DONOR
+            // if ($validated['action'] === 'rejected') {
+            //     $response->update([
+            //         'status' => 'rejected'
+            //     ]);
+            // }
+   switch ($validated['action']) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Patient accepts donor
+            |--------------------------------------------------------------------------
+            */
+            case 'accepted':
+
                 $response->update([
                     'status' => 'accepted'
                 ]);
 
-                // Capture which other donors are about to be auto-rejected
-                $alsoRejectedDonorIds = BloodRequestResponse::where('blood_request_id', $validated['request_id'])
+                $alsoRejectedDonorIds = BloodRequestResponse::where(
+                        'blood_request_id',
+                        $validated['request_id']
+                    )
                     ->where('donor_id', '!=', $validated['donor_id'])
                     ->where('status', '!=', 'rejected')
                     ->pluck('donor_id')
                     ->all();
 
-                // Reject all other donors
-                BloodRequestResponse::where('blood_request_id', $validated['request_id'])
+                BloodRequestResponse::where(
+                        'blood_request_id',
+                        $validated['request_id']
+                    )
                     ->where('donor_id', '!=', $validated['donor_id'])
                     ->update([
                         'status' => 'rejected'
                     ]);
 
-                // Update main request
                 BloodRequest::where('id', $validated['request_id'])
                     ->update([
-                        'status' => 'fulfilled' // or 'fulfilled'
+                        'status' => 'matched'
                     ]);
-            }
 
-            // ❌ REJECT DONOR
-            if ($validated['action'] === 'rejected') {
+                break;
+
+            /*
+            |--------------------------------------------------------------------------
+            | Patient rejects donor
+            |--------------------------------------------------------------------------
+            */
+            case 'rejected':
+
                 $response->update([
                     'status' => 'rejected'
                 ]);
+
+                break;
+
+            /*
+            |--------------------------------------------------------------------------
+            | Donor reached hospital
+            |--------------------------------------------------------------------------
+            */
+            case 'reached_hospital':
+
+                if ($response->status !== 'accepted') {
+                    throw new \Exception(
+                        'Donor can mark reached hospital only after acceptance.'
+                    );
+                }
+
+                $response->update([
+                    'status' => 'reached_hospital'
+                ]);
+
+                break;
+
+            /*
+            |--------------------------------------------------------------------------
+            | Donor donated blood
+            |--------------------------------------------------------------------------
+            */
+            case 'donated':
+
+                if (!in_array($response->status, [
+                    'reached_hospital',
+                    'donated'
+                ])) {
+                    throw new \Exception(
+                        'Donor must reach hospital before donation.'
+                    );
+                }
+
+                $response->update([
+                    'status' => 'donated'
+                ]);
+
+                BloodRequest::where('id', $validated['request_id'])
+                    ->update([
+                        'status' => 'awaiting_patient_confirmation'
+                    ]);
+
+                break;
+
+                case 'patient_confirmed':
+                    $response->update([
+                        'status' => 'patient_confirmed'
+                    ]);
+                    BloodRequest::where('id', $validated['request_id'])
+                        ->update([
+                            'status' => 'completed'
+                        ]);
+                    break;
             }
 
             DB::commit();
@@ -179,23 +287,66 @@ class RespondOnRequestController extends Controller
     }
     public function destroy($id)
     {
-        $response = BloodRequestResponse::where('id', $id)
-            ->where('donor_id', auth()->id())
-            ->first();
+        $validator = Validator::make(['response_id' => $id], [
+            'response_id' => 'required|integer|exists:blood_request_responses,id',
+        ]);
 
-        if (!$response) {
+        if ($validator->fails()) {
             return response()->json([
                 'status' => false,
-                'message' => 'Not found'
-            ], 404);
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
         }
 
-        $response->delete();
+        DB::beginTransaction();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Response cancelled'
-        ]);
+        try {
+            $response = BloodRequestResponse::where('id', $id)
+                ->where('donor_id', auth()->id())
+                ->lockForUpdate()
+                ->first();
+
+            if (!$response) {
+                DB::rollBack();
+
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Response not found'
+                ], 404);
+            }
+
+            if ($response->status !== 'pending') {
+                DB::rollBack();
+
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Only pending responses can be cancelled'
+                ], 409);
+            }
+
+            $response->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Response cancelled'
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            Log::error('Failed to cancel blood request response', [
+                'response_id' => $id,
+                'donor_id' => auth()->id(),
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to cancel response'
+            ], 500);
+        }
     }
 
     /**

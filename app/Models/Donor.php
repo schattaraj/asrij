@@ -16,7 +16,6 @@ class Donor extends Model
     // Define the fillable fields
     protected $fillable = [
         'user_id',
-        // 'type',
         'blood_group',
         'year_of_birth',
         'last_donation',

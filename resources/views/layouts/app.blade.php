@@ -82,7 +82,7 @@
             <nav class="navbar navbar-light">
                 <div class="container">
                     {{-- <a class="navbar-brand" href="#">Navbar</a> --}}
-                    <div class="logo"><a href="{{ route('home') }}"><img src="{{ asset('assets/img/logo4.png') }}"
+                    <div class="logo"><a href="{{ route('home') }}"><img src="{{ asset('assets/img/logo.png') }}"
                                 alt=""></a></div>
                     <div class="d-flex align-items-center">
                         <!-- Login Button -->

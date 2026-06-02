@@ -32,7 +32,7 @@ class StoreVolunteerRegistrationRequest extends FormRequest
             'volunteer_type' => ['required', Rule::in(['individual', 'student', 'ngo', 'charity', 'club'])],
 
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
+            // 'email' => ['required', 'email', 'max:255'],
             'mobile' => ['required', 'digits_between:10,15'],
             'address' => ['required', 'string', 'max:1000'],
             'volunteer_latitude' => ['nullable', 'numeric', 'between:-90,90'],
