@@ -10,6 +10,8 @@ use App\Models\FcmToken;
 use App\Models\Receiver;
 use App\Models\User;
 use App\Models\Volunteer;
+use App\Models\VolunteerMember;
+use App\Models\VolunteerOrganization;
 use App\Services\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -39,7 +41,11 @@ class ProfileApiController extends Controller
 
         $donor     = in_array('donor', $roles, true)     ? Donor::where('user_id', $user->id)->first()     : null;
         $receiver  = in_array('receiver', $roles, true)  ? Receiver::where('user_id', $user->id)->first()  : null;
-        $volunteer = in_array('volunteer', $roles, true) ? Volunteer::where('user_id', $user->id)->first() : null;
+        $volunteer = in_array('volunteer', $roles, true) ? VolunteerMember::where('user_id', $user->id)->with(['organization'])->first() : null;
+        $members = in_array('volunteer', $roles, true) ? 
+        VolunteerMember::where('volunteer_organization_id',$volunteer->volunteer_organization_id)
+        ->where('user_id','!=',$user->id)->get() : collect();
+
 
         // Activity snapshot
         $donationsCount  = BloodRequestResponse::where('donor_id', $user->id)->where('status', 'accepted')->count();
@@ -50,6 +56,20 @@ class ProfileApiController extends Controller
         // Suggested roles the user hasn't yet adopted
         $allRoles      = ['donor', 'volunteer'];
         $missingRoles  = array_values(array_diff($allRoles, $roles));
+        $shareText = <<<TEXT
+🩸 Blood Donor Profile
+
+Name: {$user->name}
+Blood Group: {$user->blood_group}
+Email: {$user->email}
+
+❤️ Total Donations: {$donationsCount}
+
+Join me in saving lives through blood donation!
+
+Visit ASRIJ:
+https://asrij.org/
+TEXT;
 
         return response()->json([
             'status' => true,
@@ -79,6 +99,7 @@ class ProfileApiController extends Controller
                         $volunteer->toArray(),
                         ['extra' => $volunteer->extra_data ?? []]
                     ) : null,
+                    'members' => $members
                 ],
                 'activity' => [
                     'donations_count' => $donationsCount,
@@ -88,6 +109,7 @@ class ProfileApiController extends Controller
                     'last_donation'   => optional($donor?->last_donation)->toDateString(),
                 ],
                 'suggested_roles' => $missingRoles,
+                'share_text' => trim($shareText),
             ],
         ]);
     }

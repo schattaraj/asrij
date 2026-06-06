@@ -66,7 +66,6 @@ class AdminController extends Controller
         //     'receiverGrowth',
         //     'volunteerGrowth'
         // ));
-        $currentUser = Auth::user();
 
         // Users except admin
         $users = User::whereJsonDoesntContain('roles', 'admin')->get();
@@ -118,7 +117,6 @@ class AdminController extends Controller
     
         return view('admin.index', compact(
             'users',
-            'currentUser',
             'donors',
             'receivers',
             'volunteers',

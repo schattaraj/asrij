@@ -30,7 +30,7 @@ class RespondOnRequestController extends Controller
                     'status' => false,
                     'message' => 'You need to register as a donor first.'
                 ], 403);
-            }    
+            }
             $createRespond = BloodRequestResponse::create([
                 'donor_id' => auth()->id(),
                 'blood_request_id' => $validated['request_id'],
@@ -72,10 +72,11 @@ class RespondOnRequestController extends Controller
     public function fetchResponses()
     {
         $data = BloodRequest::where('submitted_by', auth()->id())
-            ->with(['responses',
-            'donors',
-            'submitter:id,name,mobile',
-            'patient:id,name,mobile'
+            ->with([
+                'responses',
+                'donors',
+                'submitter:id,name,mobile',
+                'patient:id,name,mobile'
             ])
             ->latest()
             ->get();
@@ -91,7 +92,10 @@ class RespondOnRequestController extends Controller
             'donor_id' => 'required|exists:users,id',
             'action' => 'required|in:accepted,rejected,reached_hospital,donated,patient_confirmed'
         ]);
-
+        $user = auth()->user();
+        $details = BloodRequest::where('id', $validated['request_id'])->with('patient')->first();
+        $patient = $details->patient;
+        
         DB::beginTransaction();
 
         try {
@@ -142,102 +146,102 @@ class RespondOnRequestController extends Controller
             //         'status' => 'rejected'
             //     ]);
             // }
-   switch ($validated['action']) {
+            switch ($validated['action']) {
 
-            /*
+                /*
             |--------------------------------------------------------------------------
             | Patient accepts donor
             |--------------------------------------------------------------------------
             */
-            case 'accepted':
+                case 'accepted':
 
-                $response->update([
-                    'status' => 'accepted'
-                ]);
+                    $response->update([
+                        'status' => 'accepted'
+                    ]);
 
-                $alsoRejectedDonorIds = BloodRequestResponse::where(
+                    $alsoRejectedDonorIds = BloodRequestResponse::where(
                         'blood_request_id',
                         $validated['request_id']
                     )
-                    ->where('donor_id', '!=', $validated['donor_id'])
-                    ->where('status', '!=', 'rejected')
-                    ->pluck('donor_id')
-                    ->all();
+                        ->where('donor_id', '!=', $validated['donor_id'])
+                        ->where('status', '!=', 'rejected')
+                        ->pluck('donor_id')
+                        ->all();
 
-                BloodRequestResponse::where(
+                    BloodRequestResponse::where(
                         'blood_request_id',
                         $validated['request_id']
                     )
-                    ->where('donor_id', '!=', $validated['donor_id'])
-                    ->update([
-                        'status' => 'rejected'
-                    ]);
+                        ->where('donor_id', '!=', $validated['donor_id'])
+                        ->update([
+                            'status' => 'rejected'
+                        ]);
 
-                BloodRequest::where('id', $validated['request_id'])
-                    ->update([
-                        'status' => 'matched'
-                    ]);
+                    BloodRequest::where('id', $validated['request_id'])
+                        ->update([
+                            'status' => 'matched'
+                        ]);
 
-                break;
+                    break;
 
-            /*
+                /*
             |--------------------------------------------------------------------------
             | Patient rejects donor
             |--------------------------------------------------------------------------
             */
-            case 'rejected':
+                case 'rejected':
 
-                $response->update([
-                    'status' => 'rejected'
-                ]);
+                    $response->update([
+                        'status' => 'rejected'
+                    ]);
 
-                break;
+                    break;
 
-            /*
+                /*
             |--------------------------------------------------------------------------
             | Donor reached hospital
             |--------------------------------------------------------------------------
             */
-            case 'reached_hospital':
+                case 'reached_hospital':
 
-                if ($response->status !== 'accepted') {
-                    throw new \Exception(
-                        'Donor can mark reached hospital only after acceptance.'
-                    );
-                }
+                    if ($response->status !== 'accepted') {
+                        throw new \Exception(
+                            'Donor can mark reached hospital only after acceptance.'
+                        );
+                    }
 
-                $response->update([
-                    'status' => 'reached_hospital'
-                ]);
+                    $response->update([
+                        'status' => 'reached_hospital'
+                    ]);
+                $this->notifyPatientOfResponse($response, $user,'reached_hospital');
+                    break;
 
-                break;
-
-            /*
+                /*
             |--------------------------------------------------------------------------
             | Donor donated blood
             |--------------------------------------------------------------------------
             */
-            case 'donated':
+                case 'donated':
 
-                if (!in_array($response->status, [
-                    'reached_hospital',
-                    'donated'
-                ])) {
-                    throw new \Exception(
-                        'Donor must reach hospital before donation.'
-                    );
-                }
+                    if (!in_array($response->status, [
+                        'reached_hospital',
+                        'donated'
+                    ])) {
+                        throw new \Exception(
+                            'Donor must reach hospital before donation.'
+                        );
+                    }
 
-                $response->update([
-                    'status' => 'donated'
-                ]);
-
-                BloodRequest::where('id', $validated['request_id'])
-                    ->update([
-                        'status' => 'awaiting_patient_confirmation'
+                    $response->update([
+                        'status' => 'donated'
                     ]);
 
-                break;
+                    BloodRequest::where('id', $validated['request_id'])
+                        ->update([
+                            'status' => 'awaiting_patient_confirmation'
+                        ]);
+                $this->notifyPatientOfResponse($response, $patient,'reached_hospital');
+                    break;
 
                 case 'patient_confirmed':
                     $response->update([
@@ -247,6 +251,7 @@ class RespondOnRequestController extends Controller
                         ->update([
                             'status' => 'completed'
                         ]);
+                    $this->notifyPatientOfResponse($response, $patient,'completed');
                     break;
             }
 
@@ -354,8 +359,12 @@ class RespondOnRequestController extends Controller
      * blood request) telling them that a donor has responded.
      * Fully additive — never throws, never changes the API response.
      */
-    private function notifyPatientOfResponse(BloodRequestResponse $response, $donor): void
+    private function notifyPatientOfResponse(BloodRequestResponse $response, $donor, string $action = 'respond'): void
     {
+        if (!in_array($action, ['respond', 'reached_hospital','completed'], true)) {
+            return;
+        }
+
         $bloodRequest = BloodRequest::find($response->blood_request_id);
         if (!$bloodRequest) {
             return;
@@ -406,7 +415,65 @@ class RespondOnRequestController extends Controller
             'hospital_name'    => (string) $hospital,
             'status'           => (string) ($response->status ?? 'pending'),
         ];
+        if ($action == "reached_hospital") {
+            $title = 'Donor Reached the Hospital';
+            $body  = trim(sprintf(
+                '%s has arrived to donate %s%s. Tap to view details.',
+                $donorName,
+                $bgroup ? $bgroup . ' blood' : 'blood',
+                $hospital ? ' at ' . $hospital : ''
+            ));
 
+            $data = [
+                'type'             => 'blood_request_response',
+                'request_id'       => (string) $bloodRequest->id,
+                'response_id'      => (string) $response->id,
+                'donor_id'         => (string) ($donor->id ?? ''),
+                'donor_name'       => (string) $donorName,
+                'donor_contact'    => (string) ($response->contact_number ?? ''),
+                'blood_group'      => (string) $bgroup,
+                'hospital_name'    => (string) $hospital,
+                'status'           => (string) ($response->status ?? 'pending'),
+            ];
+        }
+        if ($action == "donated") {
+            $title = 'Donor Donated';
+            $body  = trim(sprintf(
+                '%s say donated %s%s. Please Confirm that.',
+                $donorName,
+                $bgroup ? $bgroup . ' blood' : 'blood',
+            ));
+
+            $data = [
+                'type'             => 'blood_request_response',
+                'request_id'       => (string) $bloodRequest->id,
+                'response_id'      => (string) $response->id,
+                'donor_id'         => (string) ($donor->id ?? ''),
+                'donor_name'       => (string) $donorName,
+                'donor_contact'    => (string) ($response->contact_number ?? ''),
+                'blood_group'      => (string) $bgroup,
+                'hospital_name'    => (string) $hospital,
+                'status'           => (string) ($response->status ?? 'pending'),
+            ];
+        }
+        if($action == "completed"){
+           $title = 'Your donation completed';
+            $body  = trim(sprintf(
+                'Patient Confirm your donation.',
+            ));
+
+            $data = [
+                'type'             => 'blood_request_response',
+                'request_id'       => (string) $bloodRequest->id,
+                'response_id'      => (string) $response->id,
+                'donor_id'         => (string) ($donor->id ?? ''),
+                'donor_name'       => (string) $donorName,
+                'donor_contact'    => (string) ($response->contact_number ?? ''),
+                'blood_group'      => (string) $bgroup,
+                'hospital_name'    => (string) $hospital,
+                'status'           => (string) ($response->status ?? 'pending'),
+            ];
+        }
         $fcm    = app(FcmService::class);
         $result = $fcm->sendToMany($tokens, $title, $body, $data);
 

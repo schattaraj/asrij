@@ -2,7 +2,7 @@
 @section('title', 'Home')
 
 @section('content')
-    <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+    {{-- <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-indicators">
             <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active"
                 aria-current="true" aria-label="Slide 1"></button>
@@ -43,7 +43,58 @@
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
         </button>
+    </div> --}}
+    <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+
+    <div class="carousel-indicators">
+        @foreach($banners as $key => $banner)
+            <button type="button"
+                data-bs-target="#carouselExampleCaptions"
+                data-bs-slide-to="{{ $key }}"
+                class="{{ $key == 0 ? 'active' : '' }}">
+            </button>
+        @endforeach
     </div>
+
+    <div class="carousel-inner">
+
+        @foreach($banners as $key => $banner)
+
+            <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                <img src="{{ asset('/public/storage/' . $banner->image) }}"
+                     class="d-block w-100"
+                     alt="{{ $banner->title }}">
+
+                <div class="carousel-caption">
+                    <h3>{{ $banner->title }}</h3>
+                    <p>{{ $banner->description }}</p>
+
+                    @if($banner->button_text)
+                        <a href="{{ $banner->button_link }}"
+                           class="btn btn-primary">
+                            {{ $banner->button_text }}
+                        </a>
+                    @endif
+                </div>
+            </div>
+
+        @endforeach
+
+    </div>
+
+    <button class="carousel-control-prev" type="button"
+        data-bs-target="#carouselExampleCaptions"
+        data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+
+    <button class="carousel-control-next" type="button"
+        data-bs-target="#carouselExampleCaptions"
+        data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
+
+</div>
     <!-- ===== STATS SECTION ===== -->
     <section class="stats">
         <div class="stat-box">
@@ -466,7 +517,7 @@
                         @csrf
                         <input type="hidden" name="role" value="volunteer">
                         <div class="form-floating">
-                            <select class="form-select" onchange="volunteerFields(this)" name="volunteer_type"
+                            <select class="form-select" onchange="volunteerFields(this)" name="type"
                                 id="floatingSelect" required>
                                 <option value="">Select Option</option>
                                 <option value="individual">Individual</option>
@@ -592,26 +643,9 @@
 
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="organization"
+                                        <input type="text" class="form-control" name="organization_name"
                                             placeholder="Organization / Trust Name" required>
                                         <label>Organization / Trust Name</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="number" class="form-control" name="group_quantity"
-                                            placeholder="Group Quantity" required>
-                                        <label>Group Quantity</label>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="contact"
-                                            placeholder="Contact Number" required>
-                                        <label>Contact Number</label>
                                     </div>
                                 </div>
                             </div>
@@ -673,22 +707,20 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="contact_number"
+                                            placeholder="Contact Number" required>
+                                        <label>Contact Number</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
                                         <input type="email" class="form-control" name="email" placeholder="Email ID"
                                             required>
                                         <label>Email</label>
                                     </div>
                                 </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="pincode" placeholder="Pin Code"
-                                            required>
-                                        <label>Pin Code</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="input-group mb-3">
+                                <div class="col-12">
+                                <div class="input-group mb-3">
                                 <div class="form-floating flex-grow-1">
                                     <input id="ngo_volunteer_address" class="form-control mb-0" name="address"
                                         placeholder="Address" style="border-top-right-radius: 0;border-bottom-right:0;"
@@ -704,187 +736,20 @@
                                 <input type="hidden" name="volunteer_latitude" id="ngo_volunteer_latitude">
                                 <input type="hidden" name="volunteer_longitude" id="ngo_volunteer_longitude">
                             </div>
-                            <!-- Members Section -->
-                            <div class="row">
-                                <div class="col-12">
-                                    <h5 class="mt-3">Members</h5>
                                 </div>
-                            </div>
-
-                            <div id="members-area">
-
-                                <!-- Member Row Template -->
-                                <div class="row member-row">
-                                    <div class="col-md-5">
-                                        <div class="form-floating mb-3">
-                                            <input type="text" class="form-control" name="member_name[]"
-                                                placeholder="Member Name">
-                                            <label>Member Name</label>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4">
-                                        <div class="form-floating mb-3">
-                                            <input type="text" class="form-control" name="member_contact_number[]"
-                                                placeholder="Contact Number">
-                                            <label>Contact Number</label>
-                                        </div>
-                                    </div>
-
-                                    <!-- Position dropdown -->
-                                    <div class="col-md-3">
-                                        <div class="form-floating mb-3">
-                                            <select class="form-select" name="member_position[]">
-                                                <option value="Member">Member</option>
-                                                <option value="President">President</option>
-                                                <option value="Secretary">Secretary</option>
-                                                <option value="Treasurer">Treasurer</option>
-                                            </select>
-                                            <label>Position</label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <!-- Add Member Button -->
-                            <div class="row mb-2">
-                                <div class="col-3">
-                                    <button type="button" class="btn btn-primary" onclick="addMember()">Add Member</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="fields" id="charity">
-                            <div class="row">
-                                <div class="col-md-6">
+                                {{-- <div class="col-md-6">
                                     <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="registration_number"
-                                            placeholder="Registration Number" required>
-                                        <label>Registration Number</label>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="organization"
-                                            placeholder="Organization / Trust Name" required>
-                                        <label>Organization / Trust Name</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="number" class="form-control" name="group_quantity"
-                                            placeholder="Group Quantity" required>
-                                        <label>Group Quantity</label>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="contact"
-                                            placeholder="Contact Number" required>
-                                        <label>Contact Number</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="president_name"
-                                            placeholder="President Name">
-                                        <label>President Name</label>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="president_number"
-                                            placeholder="President Number">
-                                        <label>President Number</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Row 6 - Secretary -->
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="secretary_name"
-                                            placeholder="Secretary Name">
-                                        <label>Secretary Name</label>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="secretary_number"
-                                            placeholder="Secretary Number">
-                                        <label>Secretary Number</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Row 7 - Account -->
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="account_name"
-                                            placeholder="Account Name">
-                                        <label>Account Name</label>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="account_number"
-                                            placeholder="Account Number">
-                                        <label>Account Number</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="email" class="form-control" name="email" placeholder="Email ID"
+                                        <input type="text" class="form-control" name="pincode" placeholder="Pin Code"
                                             required>
-                                        <label>Email</label>
+                                        <label>Pin Code</label>
                                     </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="input-group mb-3">
-                                        <div class="form-floating flex-grow-1">
-                                            <input id="charity_volunteer_address" class="form-control mb-0" name="address"
-                                                placeholder="Address"
-                                                style="border-top-right-radius: 0;border-bottom-right:0;" required
-                                                value="" readonly>
-                                            <label>Address</label>
-                                        </div>
-                                        <button type="button"
-                                            class="btn btn-outline-danger rounded-end w-auto open-location-modal"
-                                            data-bs-toggle="modal" data-bs-target="#locationModal"
-                                            data-location-input="charity_volunteer_address"
-                                            data-lat="charity_volunteer_latitude" data-lng="charity_volunteer_longitude">
-                                            Change
-                                        </button>
-                                        <input type="hidden" name="volunteer_latitude" id="charity_volunteer_latitude">
-                                        <input type="hidden" name="volunteer_longitude" id="charity_volunteer_longitude">
-                                    </div>
-                                </div>
+                                </div> --}}
                             </div>
+
+
+                            <!-- Members Section -->
                             {{-- <div class="row">
                                 <div class="col-12">
-                                    <div class="form-floating mb-3">
-                                        <textarea name="address" class="form-control" placeholder="Address" required></textarea>
-                                        <label>Address</label>
-                                    </div>
-                                </div>
-                            </div> --}}
-                            <!-- Members Section -->
-                            <div class="row">
-                                <div class="col-12">
                                     <h5 class="mt-3">Members</h5>
                                 </div>
                             </div>
@@ -920,195 +785,17 @@
                                             </select>
                                             <label>Position</label>
                                         </div>
-
                                     </div>
                                 </div>
 
                             </div>
+
                             <!-- Add Member Button -->
                             <div class="row mb-2">
                                 <div class="col-3">
                                     <button type="button" class="btn btn-primary" onclick="addMember()">Add Member</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="fields" id="club">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="registration_number"
-                                            placeholder="Registration Number" required>
-                                        <label>Registration Number</label>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="organization"
-                                            placeholder="Organization / Trust Name" required>
-                                        <label>Organization / Trust Name</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="number" class="form-control" name="group_quantity"
-                                            placeholder="Group Quantity" required>
-                                        <label>Group Quantity</label>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="contact"
-                                            placeholder="Contact Number" required>
-                                        <label>Contact Number</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="president_name"
-                                            placeholder="President Name">
-                                        <label>President Name</label>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="president_number"
-                                            placeholder="President Number">
-                                        <label>President Number</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Row 6 - Secretary -->
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="secretary_name"
-                                            placeholder="Secretary Name">
-                                        <label>Secretary Name</label>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="secretary_number"
-                                            placeholder="Secretary Number">
-                                        <label>Secretary Number</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Row 7 - Account -->
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="account_name"
-                                            placeholder="Account Name">
-                                        <label>Account Name</label>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="account_number"
-                                            placeholder="Account Number">
-                                        <label>Account Number</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="email" class="form-control" name="email" placeholder="Email ID"
-                                            required>
-                                        <label>Email</label>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="input-group mb-3">
-                                        <div class="form-floating flex-grow-1">
-                                            <input id="club_volunteer_address" class="form-control mb-0" name="address"
-                                                placeholder="Address"
-                                                style="border-top-right-radius: 0;border-bottom-right:0;" required
-                                                value="" readonly>
-                                            <label>Address</label>
-                                        </div>
-                                        <button type="button"
-                                            class="btn btn-outline-danger rounded-end w-auto open-location-modal"
-                                            data-bs-toggle="modal" data-bs-target="#locationModal"
-                                            data-location-input="club_volunteer_address" data-lat="club_volunteer_latitude"
-                                            data-lng="club_volunteer_longitude">
-                                            Change
-                                        </button>
-                                        <input type="hidden" name="volunteer_latitude" id="club_volunteer_latitude">
-                                        <input type="hidden" name="volunteer_longitude" id="club_volunteer_longitude">
-                                    </div>
-                                </div>
-                            </div>
-                            {{-- <div class="row">
-                                <div class="col-12">
-                                    <div class="form-floating mb-3">
-                                        <textarea name="address" class="form-control" placeholder="Address" required></textarea>
-                                        <label>Address</label>
-                                    </div>
                                 </div>
                             </div> --}}
-                            <!-- Members Section -->
-                            <div class="row">
-                                <div class="col-12">
-                                    <h5 class="mt-3">Members</h5>
-                                </div>
-                            </div>
-
-                            <div id="members-area">
-
-                                <!-- Member Row Template -->
-                                <div class="row member-row">
-                                    <div class="col-md-5">
-                                        <div class="form-floating mb-3">
-                                            <input type="text" class="form-control" name="member_name[]"
-                                                placeholder="Member Name">
-                                            <label>Member Name</label>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4">
-                                        <div class="form-floating mb-3">
-                                            <input type="text" class="form-control" name="member_contact_number[]"
-                                                placeholder="Contact Number">
-                                            <label>Contact Number</label>
-                                        </div>
-                                    </div>
-
-                                    <!-- Position dropdown -->
-                                    <div class="col-md-3">
-                                        <div class="form-floating mb-3">
-                                            <select class="form-select" name="member_position[]">
-                                                <option value="Member">Member</option>
-                                                <option value="President">President</option>
-                                                <option value="Secretary">Secretary</option>
-                                                <option value="Treasurer">Treasurer</option>
-                                            </select>
-                                            <label>Position</label>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                            </div>
-                            <!-- Add Member Button -->
-                            <div class="row mb-2">
-                                <div class="col-3">
-                                    <button type="button" class="btn btn-primary" onclick="addMember()">Add Member</button>
-                                </div>
-                            </div>
                         </div>
                         <button type="submit" class="btn-primary">Submit Registration</button>
                     </form>
@@ -1171,7 +858,7 @@
             <!-- Section Header -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h3 class="fw-bold mb-0">🩸 Blood Requests</h3>
+                    <h3 class="fw-bold mb-0 section-title">🩸 Blood Requests</h3>
                     <small class="text-muted">Help save lives by responding to requests</small>
                 </div>
                 <span class="badge bg-danger px-3 py-2">Live</span>
@@ -1717,7 +1404,7 @@
 </section> --}}
     <section class="testimonial-section">
         <div class="container">
-            <h2 class="testimonial-title heading" data-aos="fade-down">Testimonial</h2>
+            <h2 class="testimonial-title section-title heading" data-aos="fade-down">Testimonial</h2>
 
             <!-- Swiper -->
             <div class="swiper mySwiper" data-aos="fade-down">
@@ -1894,6 +1581,16 @@
             container.innerHTML = "";
 
             data.forEach(req => {
+                    const createdDate = req.created_at
+            ? new Date(req.created_at).toLocaleString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      })
+            : "N/A";
                 container.innerHTML += `
       <div class="col-md-6 col-lg-4 col-xl-3">
         <div class="request-card ${req.urgency === 'urgent' ? 'urgent-card' : ''}">
@@ -1907,6 +1604,12 @@
           <div class="meta"><strong>Hospital Name</strong> : ${req.hospital_name}</div>
           <div class="meta mb-1"><strong>Address</strong> : ${req.address}</div>
           <div class="meta mb-2"><strong>Units</strong> : ${req.unit}</div>
+          <div class="meta mb-1">
+            <strong>Token</strong> : ${req.token || 'N/A'}
+            </div>
+        <div class="meta mb-2">
+            <strong>Requested On</strong> : ${createdDate}
+        </div>
           ${req?.distance   ? `<div class="meta mb-3"><strong>Distance</strong> : ${req.distance_text} from your registered address</div>` : ''}
             <button 
               class="btn btn-sm ${req.has_responded ? 'btn-secondary' : 'btn-danger'} w-100 donate-btn"
@@ -2393,6 +2096,8 @@
                 if (response.ok) {
                     const masked = mobile.substring(0, 2) + "******" + mobile.substring(8);
                     document.getElementById("otpMessage").textContent = "A new OTP has been sent to +91 " + masked;
+                    startResendTimer();
+                    document.querySelector(".otp-box").focus();
                 } else {
                     alert(data.message || 'Failed to send OTP');
                 }
@@ -2598,6 +2303,48 @@
 
         // Donor Registration Form Ends here................................
 
+        // function volunteerFields(elm) {
+        //     let volunteer = document.getElementById('volunteer');
+        //     const types = ['individual', 'ngo', 'charity', 'club'];
+        //     volunteer.removeAttribute("style");
+        //     document.querySelectorAll('.fields').forEach(field => {
+        //         field.style.display = 'none';
+        //     });
+        //     switch (elm.value) {
+        //         case "individual":
+        //             document.getElementById('individual').style.display = 'block';
+        //             break;
+        //         case "ngo":
+        //             document.getElementById('ngo').style.display = 'block';
+        //             volunteer.style.maxWidth = '800px';
+        //             break;
+        //         case "charity":
+        //             document.getElementById('charity').style.display = 'block';
+        //             volunteer.style.maxWidth = '800px';
+        //             break;
+        //         case "club":
+        //             document.getElementById('club').style.display = 'block';
+        //             volunteer.style.maxWidth = '800px';
+        //             break;
+        //         default:
+        //             break;
+        //     }
+        //     types.forEach(type => {
+        //         const section = document.getElementById(type);
+        //         const inputs = section.querySelectorAll('input, select, textarea');
+
+        //         if (type === elm.value) {
+        //             section.style.display = 'block';
+        //             inputs.forEach(el => el.disabled = false);
+        //         } else {
+        //             section.style.display = 'none';
+        //             inputs.forEach(el => {
+        //                 el.disabled = true;
+        //                 el.removeAttribute('required');
+        //             });
+        //         }
+        //     });
+        // }
         function volunteerFields(elm) {
             let volunteer = document.getElementById('volunteer');
             const types = ['individual', 'ngo', 'charity', 'club'];
@@ -2614,33 +2361,41 @@
                     volunteer.style.maxWidth = '800px';
                     break;
                 case "charity":
-                    document.getElementById('charity').style.display = 'block';
+                    document.getElementById('ngo').style.display = 'block';
                     volunteer.style.maxWidth = '800px';
                     break;
                 case "club":
-                    document.getElementById('club').style.display = 'block';
+                    document.getElementById('ngo').style.display = 'block';
                     volunteer.style.maxWidth = '800px';
                     break;
                 default:
                     break;
             }
-            types.forEach(type => {
-                const section = document.getElementById(type);
-                const inputs = section.querySelectorAll('input, select, textarea');
+                const sectionMap = {
+                    individual: 'individual',
+                    ngo: 'ngo',
+                    charity: 'ngo',
+                    club: 'ngo'
+                };
 
-                if (type === elm.value) {
-                    section.style.display = 'block';
-                    inputs.forEach(el => el.disabled = false);
-                } else {
-                    section.style.display = 'none';
-                    inputs.forEach(el => {
-                        el.disabled = true;
-                        el.removeAttribute('required');
-                    });
-                }
-            });
+                const activeSection = sectionMap[elm.value];
+
+                ['individual', 'ngo'].forEach(sectionId => {
+                    const section = document.getElementById(sectionId);
+                    const inputs = section.querySelectorAll('input, select, textarea');
+
+                    if (sectionId === activeSection) {
+                        section.style.display = 'block';
+                        inputs.forEach(input => input.disabled = false);
+                    } else {
+                        section.style.display = 'none';
+                        inputs.forEach(input => {
+                            input.disabled = true;
+                            input.removeAttribute('required');
+                        });
+                    }
+                });
         }
-
         function addMember() {
             let memberRow = document.querySelector('.member-row').cloneNode(true);
             memberRow.querySelectorAll('input').forEach(input => input.value = "");
@@ -2696,10 +2451,14 @@
 
         document.querySelector('#volunteer .registration-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-
-            let formData = new FormData(this);
+            const form = this;
+            let formData = new FormData(form);
+            let action = "{{route('volunteer.organization.registration')}}";
+            if(formData.get("type") == "individual"){
+                action = this.action;
+            }
             const token = localStorage.getItem('token');
-            const response = await fetch(this.action, {
+            const response = await fetch(action, {
                 method: 'POST',
                 headers: {
                     Authorization: 'Bearer ' + token,
@@ -2731,7 +2490,7 @@
                 } else {
                     showAlert("success", data?.message || "Volunteer Registered Successfully.");
                     fetchRequests();
-                    formData.reset();
+                    form.reset();
                 }
             }
         });

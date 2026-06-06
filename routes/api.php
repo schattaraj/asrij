@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\FcmTokenController;
 use App\Http\Controllers\Api\LiveLocationController;
 use App\Http\Controllers\Api\ProfileApiController;
+use App\Http\Controllers\Api\VolunteerOrganizationController;
 
 Route::get('/register', function(){
     return "Hello";
@@ -97,6 +98,9 @@ Route::prefix('v1')->group(function () {
             Route::delete('/delete-request', [AccountController::class, 'cancelDeletion']);
             Route::post('/data-export', [AccountController::class, 'requestDataExport']);
         });
+
+        //New Volunteer Routes
+        Route::post('/volunteer-organizations', [VolunteerOrganizationController::class, 'store'])->name('volunteer.organization.registration');
     });
     Route::get('/blood-requests', [RequestController::class, 'index'])->name('blood-requests.index');
 });

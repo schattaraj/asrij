@@ -13,6 +13,7 @@ use App\Models\Volunteer;
 use Illuminate\Support\Facades\Http;
 use App\Services\SmsService;
 use App\Http\Requests\Api\StoreVolunteerRegistrationRequest;
+use App\Models\VolunteerMember;
 use Illuminate\Support\Facades\Hash;
 
 class RegistrationController extends Controller
@@ -216,17 +217,16 @@ class RegistrationController extends Controller
     {
         $authUser = $request->user();
         $validated = $request->validated();
-        $isOrganization = in_array($validated['volunteer_type'], ['ngo', 'charity', 'club'], true);
         $otpSent = false;
         $smsResponse = null;
-
+        $email = $validated['email'] ?? null;
         try {
             DB::beginTransaction();
 
             if ($validated['request_for'] === 'self') {
                 $user = $authUser;
 
-                if (Volunteer::where('user_id', $user->id)->exists()) {
+                if (VolunteerMember::where('user_id', $user->id)->exists()) {
                     DB::rollBack();
 
                     return response()->json([
@@ -250,15 +250,18 @@ class RegistrationController extends Controller
                     ], 409);
                 }
 
-                if (User::where('email', $validated['email'])->where('id', '!=', $user->id)->exists()) {
+                if (
+                    $email &&
+                    User::where('email', $email)
+                    ->where('id', '!=', $user->id)
+                    ->exists()
+                ) {
+
                     DB::rollBack();
 
                     return response()->json([
                         'status' => false,
                         'message' => 'User already exists with this email address.',
-                        'errors' => [
-                            'email' => ['User already exists with this email address.'],
-                        ],
                     ], 409);
                 }
 
@@ -278,6 +281,12 @@ class RegistrationController extends Controller
                     'longitude' => $validated['volunteer_longitude'] ?? $user->longitude,
                     'roles' => $roles,
                 ]);
+            $volunteer = VolunteerMember::create([
+                "volunteer_organization_id" => env('ORGANIZAION_ID') ?? 1,
+                "user_id" => $user->id,
+                "position" => "member",
+                "is_available" => 1
+            ]);
             } else {
                 if (User::where('mobile', $validated['mobile'])->exists()) {
                     DB::rollBack();
@@ -322,42 +331,13 @@ class RegistrationController extends Controller
                 $otp = $this->generateOtp($validated['mobile']);
                 $smsResponse = $smsService->sendOtpSms($validated['mobile'], $otp);
                 $otpSent = true;
-            }
-
-            $members = $this->normalizeVolunteerMembers($request);
-
-            $extraData = [
-                'request_for' => $validated['request_for'],
-                'members' => $members,
-            ];
-
-            if ($validated['volunteer_type'] === 'student') {
-                $extraData['student'] = [
-                    'institution' => $validated['institution'] ?? null,
-                    'student_id' => $validated['student_id'] ?? null,
-                    'course' => $validated['course'] ?? null,
-                    'year_of_study' => $validated['year_of_study'] ?? null,
-                ];
-            }
-
-            $volunteer = Volunteer::create([
-                'user_id' => $user->id,
-                'volunteer_type' => $validated['volunteer_type'],
-                'organization' => $isOrganization ? ($validated['organization'] ?? null) : null,
-                'registration_number' => $isOrganization ? ($validated['registration_number'] ?? null) : null,
-                'group_quantity' => $isOrganization ? ($validated['group_quantity'] ?? null) : null,
-                'president_name' => $validated['president_name'] ?? null,
-                'president_number' => $validated['president_number'] ?? null,
-                'secretary_name' => $validated['secretary_name'] ?? null,
-                'secretary_number' => $validated['secretary_number'] ?? null,
-                'account_name' => $validated['account_name'] ?? null,
-                'account_number' => $validated['account_number'] ?? null,
-                'contact_number' => $validated['mobile'],
-                'address' => $validated['address'],
-                'latitude' => $validated['volunteer_latitude'] ?? null,
-                'longitude' => $validated['volunteer_longitude'] ?? null,
-                'extra_data' => $extraData,
+                $volunteer = VolunteerMember::create([
+                "volunteer_organization_id" => env('ORGANIZAION_ID') ?? 1,
+                "user_id" => $user->id,
+                "position" => "member",
+                "is_available" => 1
             ]);
+            }
 
             DB::commit();
 
@@ -368,7 +348,6 @@ class RegistrationController extends Controller
                     : 'Volunteer registered successfully.',
                 'data' => [
                     'user' => $user->fresh(),
-                    'volunteer' => $volunteer->fresh(),
                     'otp_sent' => $otpSent,
                     'sms_response' => $smsResponse,
                 ],

@@ -29,6 +29,7 @@
         <div class="loader"></div>
     </div>
     <div class="body">
+@unless(Route::is('login'))
         <header>
             {{-- <div class="logo">🩸 BloodConnect</div> --}}
             {{-- <div class="logo"><img src="{{asset('assets/img/logo.png')}}" alt=""></div>
@@ -66,10 +67,10 @@
                                 704 811 5559</a>
                         </div>
                         <div class="right">
-                            <a href="https://www.facebook.com/profile.php?id=61586204187656&mibextid=rS40aB7S9Ucbxw6v">
+                            <a href="https://www.facebook.com/profile.php?id=61586204187656&mibextid=rS40aB7S9Ucbxw6v" target="_blank">
                                 <i class="fa-brands fa-facebook-f"></i>
                             </a>
-                            <a href="#">
+                            <a href="https://www.instagram.com/asrij_foundation/" target="_blank">
                                 <i class="fa-brands fa-instagram"></i>
                             </a>
                             <a href="#">
@@ -182,7 +183,7 @@
                 </div>
             </nav>
         </header>
-
+ @endunless
         <main>
             @yield('content')
         </main>
@@ -195,6 +196,7 @@
       <a href="#"><i class="fab fa-instagram"></i></a>
     </div>
   </footer> --}}
+  @unless(Route::is('login'))
         <!-- ===== FOOTER ===== -->
         <footer class="footer py-4 text-white">
             <div class="container">
@@ -208,7 +210,7 @@
             </div> --}}
                 <div class="row">
                     <div class="col-md-5">
-                        <div class="logo mb-3"><a href="{{ route('home') }}"><img
+                        <div class="logo mb-3"><a href="{{ route('home') }}"><img style="max-width: 100%;height:90px;object-fit:contain"
                                     src="{{ asset('assets/img/logo4.png') }}" alt=""></a></div>
                         <p>
                             Safe and voluntary blood donation.
@@ -238,8 +240,8 @@
                             </li>
                             <li>
                                 <a href="https://www.facebook.com/profile.php?id=61586204187656&mibextid=rS40aB7S9Ucbxw6v"
-                                    class="text-white fs-4 social-link"><i class="fab fa-facebook-f"></i></a>
-                                <a href="#" class="text-white fs-4 social-link"><i
+                                    class="text-white fs-4 social-link" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                                <a href="https://www.instagram.com/asrij_foundation/" class="text-white fs-4 social-link" target="_blank"><i
                                         class="fab fa-instagram"></i></a>
                             </li>
                             <li>
@@ -251,6 +253,7 @@
                 </div>
             </div>
         </footer>
+ @endunless        
     </div>
     <div class="menu">
         <button class="cross" onclick="handleMenu()"><i class="fa-solid fa-xmark"></i></button>
@@ -446,7 +449,7 @@
 
                             <div class="text-end mb-3">
                                 <small id="resendTimer" class="text-muted">Resend OTP in 30s</small>
-                                <a href="#" id="resendOtp" class="small d-none">Resend OTP</a>
+                                <a href="#" id="resendOtp" class="small d-none" onclick="resendOTP()">Resend OTP</a>
                             </div>
 
                             <button id="verify" class="btn btn-primary w-100 disabled" type="button" onclick="verifyOtp()">Verify
@@ -657,7 +660,7 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@srexi/purecounterjs/dist/purecounter_vanilla.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFkLT1PNls0HcQ6eb2ARdlj5SvsVMyQqk&libraries=places">
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_API_KEY') }}&libraries=places">
     </script>
     <script src="{{ asset('js/custom.js') }}"></script>
     @yield('scripts')
@@ -712,7 +715,7 @@
         }
 
         function getAddressFromLatLng(lat, lng) {
-            const apiKey = "AIzaSyAFkLT1PNls0HcQ6eb2ARdlj5SvsVMyQqk";
+            const apiKey = "{{ env('GOOGLE_API_KEY') }}";
 
             return fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`)
                 .then(res => res.json())
@@ -831,7 +834,7 @@
 
         function sendOtp() {
             const mobile = document.getElementById("mobileNumber").value;
-
+            window.currentMobileForOTP = mobile;
             if (mobile.length !== 10) {
                 Swal.fire({
                     icon: "error",
@@ -1324,6 +1327,10 @@
 
                     const modal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
                     modal.hide();
+                          if (response?.token && response?.user){
+                            localStorage.setItem('token', response.token);
+                            getUser();
+                            }
                 })
                 .catch(err => {
                     if (err && typeof err === 'object') {

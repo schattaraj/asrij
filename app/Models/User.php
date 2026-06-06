@@ -98,13 +98,13 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Receiver::class);
     }
 
-    public function volunteer(): HasOne
-    {
-        return $this->hasOne(Volunteer::class);
-    }
 
     public function bloodBank(): HasOne
     {
         return $this->hasOne(BloodBank::class);
     }
+    public function volunteerMemberships()
+{
+    return $this->hasMany(VolunteerMember::class);
+}
 }

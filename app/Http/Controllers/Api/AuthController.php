@@ -28,7 +28,15 @@ class AuthController extends Controller
                 'name'      => 'required|string|max:255',
                 // 'email'     => 'nullable|email|unique:users,email',
                 'mobile'    => 'required|digits:10|unique:users,mobile',
-                'dob'       => 'required|date',
+                'dob'       =>  [
+                    'required',
+                    'date',
+                    function ($attribute, $value, $fail) {
+                        if (Carbon::parse($value)->age < 18) {
+                            $fail('You must be at least 18 years old.');
+                        }
+                    },
+                ],
                 'gender'       => 'required|in:Male,Female,Other',
                 'address'   => 'nullable|string',
                 // 'pin_code'  => 'required|string|max:10',

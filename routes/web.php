@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BannerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Auth\CustomRegisterController;
@@ -13,8 +14,13 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DonationController;
-use App\Http\Controllers\BloodCampController;
+use App\Http\Controllers\Admin\BloodCampController;
+use App\Http\Controllers\OrganizationController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
+
 
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/about', [PageController::class, 'about'])->name('about');
@@ -62,7 +68,23 @@ Route::middleware(['auth','role:donor|receiver|volunteer'])->group(function () {
 // Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
 Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('dashboard');
-//     Route::get('settings', [AdminController::class, 'settings'])->name('settings');
+    Route::resource('banners', BannerController::class);
+    Route::resource('camps', BloodCampController::class);
+    Route::get('our-organization', [OrganizationController::class,'ourOrganization'])->name('our-organization');
+    Route::put('our-organization/{organization}', [OrganizationController::class,'ourOrganizationUpdate'])->name('organization.update');
+    Route::delete('our-organization/member/{member}', [OrganizationController::class,'destroyMember'])->name('organization.member.destroy');
+    //     Route::get('settings', [AdminController::class, 'settings'])->name('settings');
+    //For Storage
+    Route::get('/storage-link', function () {
+
+        if (File::exists(public_path('storage'))) {
+            return back()->with('info', 'Storage link already exists.');
+        }
+
+        Artisan::call('storage:link');
+
+        return back()->with('success', 'Storage link created successfully.');
+    })->name('admin.storage-link');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -110,4 +132,9 @@ Route::post('/users/{id}/update-role', [RegistrationController::class, 'updateUs
 Route::get('/requests', function () {
     $requests = Request::latest()->get();
     return view('requests.index', compact('requests'));
+});
+
+Route::get('/hash-password',function(){
+$password = Hash::make('admin@123');
+return $password;
 });

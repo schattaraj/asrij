@@ -23,16 +23,16 @@ class StoreVolunteerRegistrationRequest extends FormRequest
 
     public function rules(): array
     {
-        $volunteerType = $this->input('volunteer_type');
+        $volunteerType = $this->input('type');
         $isIndividual = in_array($volunteerType, ['individual', 'student'], true);
         $isOrganization = in_array($volunteerType, ['ngo', 'charity', 'club'], true);
 
         return [
             'request_for' => ['required', Rule::in(['self', 'other'])],
-            'volunteer_type' => ['required', Rule::in(['individual', 'student', 'ngo', 'charity', 'club'])],
+            'type' => ['required', Rule::in(['individual', 'student', 'ngo', 'charity', 'club'])],
 
             'name' => ['required', 'string', 'max:255'],
-            // 'email' => ['required', 'email', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
             'mobile' => ['required', 'digits_between:10,15'],
             'address' => ['required', 'string', 'max:1000'],
             'volunteer_latitude' => ['nullable', 'numeric', 'between:-90,90'],
@@ -46,30 +46,30 @@ class StoreVolunteerRegistrationRequest extends FormRequest
             'course' => ['nullable', 'string', 'max:150'],
             'year_of_study' => ['nullable', 'string', 'max:50'],
 
-            'organization' => [$isOrganization ? 'required' : 'nullable', 'string', 'max:255'],
-            'registration_number' => [$isOrganization ? 'required' : 'nullable', 'string', 'max:150'],
-            'group_quantity' => [$isOrganization ? 'required' : 'nullable', 'integer', 'min:1', 'max:100000'],
-            'president_name' => ['nullable', 'string', 'max:255'],
-            'president_number' => ['nullable', 'digits_between:10,15'],
-            'secretary_name' => ['nullable', 'string', 'max:255'],
-            'secretary_number' => ['nullable', 'digits_between:10,15'],
-            'account_name' => ['nullable', 'string', 'max:255'],
-            'account_number' => ['nullable', 'string', 'max:50'],
+            // 'organization' => [$isOrganization ? 'required' : 'nullable', 'string', 'max:255'],
+            // 'registration_number' => [$isOrganization ? 'required' : 'nullable', 'string', 'max:150'],
+            // 'group_quantity' => [$isOrganization ? 'required' : 'nullable', 'integer', 'min:1', 'max:100000'],
+            // 'president_name' => ['nullable', 'string', 'max:255'],
+            // 'president_number' => ['nullable', 'digits_between:10,15'],
+            // 'secretary_name' => ['nullable', 'string', 'max:255'],
+            // 'secretary_number' => ['nullable', 'digits_between:10,15'],
+            // 'account_name' => ['nullable', 'string', 'max:255'],
+            // 'account_number' => ['nullable', 'string', 'max:50'],
 
-            'member_name' => ['nullable', 'array'],
-            'member_name.*' => ['nullable', 'string', 'max:255'],
-            'member_contact_number' => ['nullable', 'array'],
-            'member_contact_number.*' => ['nullable', 'digits_between:10,15'],
-            'member_position' => ['nullable', 'array'],
-            'member_position.*' => ['nullable', 'string', 'max:100'],
-            'members' => ['nullable'],
+            // 'member_name' => ['nullable', 'array'],
+            // 'member_name.*' => ['nullable', 'string', 'max:255'],
+            // 'member_contact_number' => ['nullable', 'array'],
+            // 'member_contact_number.*' => ['nullable', 'digits_between:10,15'],
+            // 'member_position' => ['nullable', 'array'],
+            // 'member_position.*' => ['nullable', 'string', 'max:100'],
+            // 'members' => ['nullable'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'volunteer_type.in' => 'Please choose a valid volunteer type.',
+            'type.in' => 'Please choose a valid volunteer type.',
             'blood_group.required' => 'Blood group is required for individual and student volunteers.',
             'dob.required' => 'Date of birth is required for individual and student volunteers.',
             'institution.required' => 'Institution is required for student volunteers.',

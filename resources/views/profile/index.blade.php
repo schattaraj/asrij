@@ -455,7 +455,7 @@ function ppRenderRoleSection(d) {
         const v = rd.volunteer;
         let html = `
             <h5 class="border-bottom pb-2 mb-3 mt-4">Volunteer Details</h5>
-            <p><strong>Type:</strong> ${(v.volunteer_type || '').replace(/^./, c=>c.toUpperCase())}</p>
+            <p><strong>Position:</strong> ${(v.position || '').replace(/^./, c=>c.toUpperCase())}</p>
         `;
         if (v.volunteer_type === 'individual') {
             html += `
@@ -464,9 +464,8 @@ function ppRenderRoleSection(d) {
             `;
         } else {
             html += `
-                <p><strong>Organization:</strong> ${v.organization || '—'}</p>
-                <p><strong>Registration No:</strong> ${v.registration_number || '—'}</p>
-                <p><strong>Group Quantity:</strong> ${v.group_quantity || '—'}</p>
+                <p><strong>Organization:</strong> ${v.organization.organization_name || '—'}</p>
+                <p><strong>Registration No:</strong> ${v.organization.registration_number || '—'}</p>
             `;
         }
         parts.push(html);

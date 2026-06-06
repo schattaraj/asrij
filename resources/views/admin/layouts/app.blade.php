@@ -7,19 +7,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Asrij</title>
     <!-- plugins:css -->
-    <link rel="stylesheet" href="dist/assets/vendors/mdi/css/materialdesignicons.min.css">
-    <link rel="stylesheet" href="dist/assets/vendors/ti-icons/css/themify-icons.css">
-    <!-- <link rel="stylesheet" href="dist/assets/vendors/css/vendor.bundle.base.css"> -->
-    <!-- <link rel="stylesheet" href="dist/assets/vendors/font-awesome/css/font-awesome.min.css"> -->
+    <link rel="stylesheet" href="{{url('/')}}/dist/assets/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="{{url('/')}}/dist/assets/vendors/ti-icons/css/themify-icons.css">
+    <!-- <link rel="stylesheet" href="{{url('/')}}/dist/assets/vendors/css/vendor.bundle.base.css"> -->
+    <!-- <link rel="stylesheet" href="{{url('/')}}/dist/assets/vendors/font-awesome/css/font-awesome.min.css"> -->
     <!-- endinject -->
     <!-- Plugin css for this page -->
-    <!-- <link rel="stylesheet" href="dist/assets/vendors/font-awesome/css/font-awesome.min.css" /> -->
-    <!-- <link rel="stylesheet" href="dist/assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css"> -->
+    <!-- <link rel="stylesheet" href="{{url('/')}}/dist/assets/vendors/font-awesome/css/font-awesome.min.css" /> -->
+    <!-- <link rel="stylesheet" href="{{url('/')}}/dist/assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css"> -->
     <!-- End plugin css for this page -->
     <!-- inject:css -->
     <!-- endinject -->
     <!-- Layout styles -->
-    <link rel="stylesheet" href="dist/assets/css/style.css">
+    <link rel="stylesheet" href="{{url('/')}}/dist/assets/css/style.css">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="assets/img/favicon.png" />
 </head>
@@ -29,9 +29,9 @@
         <!-- partial:partials/_navbar.html -->
         <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
             <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
-                <a class="navbar-brand brand-logo" href="{{route('home')}}"><img src="assets/img/logo.png"
+                <a class="navbar-brand brand-logo" href="{{route('home')}}"><img src="{{url('/')}}/assets/img/logo.png"
                         alt="logo" style="height:40px"/></a>
-                <a class="navbar-brand brand-logo-mini" href="{{route('home')}}"><img src="dist/assets/images/logo-mini.svg"
+                <a class="navbar-brand brand-logo-mini" href="{{route('home')}}"><img src="{{url('/')}}/dist/assets/images/logo-mini.svg"
                         alt="logo" /></a>
             </div>
             <div class="navbar-menu-wrapper d-flex align-items-stretch">
@@ -54,11 +54,11 @@
                         <a class="nav-link dropdown-toggle" id="profileDropdown" href="#"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <div class="nav-profile-img">
-                                <img src="dist/assets/images/faces/face1.jpg" alt="image">
+                                <img src="{{url('/')}}/dist/assets/images/faces/face1.jpg" alt="image">
                                 <span class="availability-status online"></span>
                             </div>
                             <div class="nav-profile-text">
-                                <p class="mb-1 text-black">{{$currentUser->name}}</p>
+                                <p class="mb-1 text-black">{{ Auth::user()?->name }}</p>
                             </div>
                         </a>
                         <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
@@ -86,7 +86,7 @@
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item preview-item">
                                 <div class="preview-thumbnail">
-                                    <img src="dist/assets/images/faces/face4.jpg" alt="image" class="profile-pic">
+                                    <img src="{{url('/')}}/dist/assets/images/faces/face4.jpg" alt="image" class="profile-pic">
                                 </div>
                                 <div
                                     class="preview-item-content d-flex align-items-start flex-column justify-content-center">
@@ -98,7 +98,7 @@
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item preview-item">
                                 <div class="preview-thumbnail">
-                                    <img src="dist/assets/images/faces/face2.jpg" alt="image" class="profile-pic">
+                                    <img src="{{url('/')}}/dist/assets/images/faces/face2.jpg" alt="image" class="profile-pic">
                                 </div>
                                 <div
                                     class="preview-item-content d-flex align-items-start flex-column justify-content-center">
@@ -110,7 +110,7 @@
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item preview-item">
                                 <div class="preview-thumbnail">
-                                    <img src="dist/assets/images/faces/face3.jpg" alt="image" class="profile-pic">
+                                    <img src="{{url('/')}}/dist/assets/images/faces/face3.jpg" alt="image" class="profile-pic">
                                 </div>
                                 <div
                                     class="preview-item-content d-flex align-items-start flex-column justify-content-center">
@@ -201,13 +201,13 @@
                     <li class="nav-item nav-profile">
                         <a href="#" class="nav-link">
                             <div class="nav-profile-image">
-                                <img src="dist/assets/images/faces/face1.jpg" alt="profile" />
+                                <img src="{{url('/')}}/dist/assets/images/faces/face1.jpg" alt="profile" />
                                 <span class="login-status online"></span>
                                 <!--change to offline or busy as needed-->
                             </div>
                             <div class="nav-profile-text d-flex flex-column">
-                                <span class="font-weight-bold mb-2">{{$currentUser->name}}</span>
-                                <span class="text-secondary text-small">{{$currentUser->role}}</span>
+                                <span class="font-weight-bold mb-2">{{ Auth::user()?->name }}</span>
+                                <span class="text-secondary text-small">{{ Auth::user()?->role }}</span>
                             </div>
                             <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
                         </a>
@@ -216,6 +216,24 @@
                         <a class="nav-link" href="{{route('admin.dashboard')}}">
                             <span class="menu-title">Dashboard</span>
                             <i class="mdi mdi-home menu-icon"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{route('admin.banners.index')}}">
+                            <span class="menu-title">Banner</span>
+                            <i class="mdi mdi-image menu-icon"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{route('admin.camps.index')}}">
+                            <span class="menu-title">Camps</span>
+                            <i class="mdi mdi-blood-bag menu-icon"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{route('admin.our-organization')}}">
+                            <span class="menu-title">Our Organization</span>
+                            <i class="mdi mdi-handshake menu-icon"></i>
                         </a>
                     </li>
                     {{-- <li class="nav-item">
@@ -334,21 +352,21 @@
             </div>
             <!-- container-scroller -->
             <!-- plugins:js -->
-            <script src="dist/assets/vendors/js/vendor.bundle.base.js"></script>
+            <script src="{{url('/')}}/dist/assets/vendors/js/vendor.bundle.base.js"></script>
             <!-- endinject -->
             <!-- Plugin js for this page -->
-            <script src="dist/assets/vendors/chart.js/chart.umd.js"></script>
-    <script src="dist/assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+            <script src="{{url('/')}}/dist/assets/vendors/chart.js/chart.umd.js"></script>
+    <script src="{{url('/')}}/dist/assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
             <!-- End plugin js for this page -->
             <!-- inject:js -->
-            <script src="dist/assets/js/off-canvas.js"></script>
-    <script src="dist/assets/js/misc.js"></script>
-    <script src="dist/assets/js/settings.js"></script>
-    <script src="dist/assets/js/todolist.js"></script>
-    <script src="dist/assets/js/jquery.cookie.js"></script>
+            <script src="{{url('/')}}/dist/assets/js/off-canvas.js"></script>
+    <script src="{{url('/')}}/dist/assets/js/misc.js"></script>
+    <script src="{{url('/')}}/dist/assets/js/settings.js"></script>
+    <script src="{{url('/')}}/dist/assets/js/todolist.js"></script>
+    <script src="{{url('/')}}/dist/assets/js/jquery.cookie.js"></script>
             <!-- endinject -->
             <!-- Custom js for this page -->
-            <!-- <script src="dist/assets/js/dashboard.js"></script> -->
+            <!-- <script src="{{url('/')}}/dist/assets/js/dashboard.js"></script> -->
             <!-- End custom js for this page -->
           </div>
           <!-- content-wrapper ends -->
