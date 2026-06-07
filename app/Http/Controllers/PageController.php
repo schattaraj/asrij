@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Banner;
+use App\Models\BloodCamp;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PageController extends Controller
 {
@@ -11,7 +13,10 @@ class PageController extends Controller
             $banners = Banner::where('status', 1)
         ->orderBy('sort_order')
         ->get();
-        return view('home',compact('banners'));
+        $blood_camps = BloodCamp::where('status', 1)
+        ->latest('camp_date')
+        ->get();
+        return view('home',compact('banners','blood_camps'));
     }
 
     public function about() {
@@ -53,7 +58,7 @@ class PageController extends Controller
     }
     public function profile()
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $data = ['user' => $user];
 
         $roles = $user->roles ?? [];

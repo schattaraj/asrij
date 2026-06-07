@@ -37,7 +37,7 @@
                 <label>Current Image</label>
                 <br>
 
-                <img src="{{ asset('/public/storage/' . $banner->image) }}"
+                <img src="{{ asset('/storage/app/public/' . $banner->image) }}"
                      width="200"
                      class="img-thumbnail">
             </div>

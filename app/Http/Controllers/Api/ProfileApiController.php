@@ -42,9 +42,13 @@ class ProfileApiController extends Controller
         $donor     = in_array('donor', $roles, true)     ? Donor::where('user_id', $user->id)->first()     : null;
         $receiver  = in_array('receiver', $roles, true)  ? Receiver::where('user_id', $user->id)->first()  : null;
         $volunteer = in_array('volunteer', $roles, true) ? VolunteerMember::where('user_id', $user->id)->with(['organization'])->first() : null;
-        $members = in_array('volunteer', $roles, true) ? 
-        VolunteerMember::where('volunteer_organization_id',$volunteer->volunteer_organization_id)
-        ->where('user_id','!=',$user->id)->get() : collect();
+        $members = $volunteer
+            ? VolunteerMember::with(['user:id,name,email,mobile,blood_group,avatar'])
+                ->where('volunteer_organization_id', $volunteer->volunteer_organization_id)
+                ->where('user_id', '!=', $user->id)
+                ->orderByDesc('created_at')
+                ->get()
+            : collect();
 
 
         // Activity snapshot
@@ -70,7 +74,7 @@ Join me in saving lives through blood donation!
 Visit ASRIJ:
 https://asrij.org/
 TEXT;
-
+    $users = in_array('volunteer', $roles, true) ? User::orderBy('name')->get() : null;
         return response()->json([
             'status' => true,
             'data'   => [
@@ -108,10 +112,111 @@ TEXT;
                     'open_requests'   => $openRequests,
                     'last_donation'   => optional($donor?->last_donation)->toDateString(),
                 ],
+                'users'=>$users,
                 'suggested_roles' => $missingRoles,
                 'share_text' => trim($shareText),
             ],
         ]);
+    }
+
+    /**
+     * POST /api/v1/profile/volunteer-members
+     *
+     * Add an existing user to the current volunteer's organization.
+     */
+    public function storeVolunteerMember(Request $request)
+    {
+        $data = $request->validate([
+            'user_id'       => 'nullable|required_without:mobile|integer|exists:users,id',
+            'mobile'        => 'nullable|required_without:user_id|string|digits_between:10,15',
+            'position'      => 'nullable|string|max:100',
+            'last_donation' => 'nullable|date|before_or_equal:today',
+            'is_available'  => 'nullable|boolean',
+        ]);
+
+        $user = $request->user();
+        $roles = is_array($user->roles) ? $user->roles : (json_decode($user->roles, true) ?: []);
+
+        if (!in_array('volunteer', $roles, true)) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Only volunteers can add organization members.',
+            ], 403);
+        }
+
+        $volunteer = VolunteerMember::where('user_id', $user->id)->first();
+
+        if (!$volunteer || !$volunteer->volunteer_organization_id) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Your volunteer organization could not be found.',
+            ], 403);
+        }
+
+        $memberUser = !empty($data['user_id'])
+            ? User::find($data['user_id'])
+            : User::where('mobile', $data['mobile'])->first();
+
+        if (!$memberUser) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'User not found.',
+            ], 404);
+        }
+
+        if ($memberUser->id === $user->id) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'You are already a member of this organization.',
+            ], 409);
+        }
+
+        $existingMembership = VolunteerMember::where('user_id', $memberUser->id)->first();
+
+        if ($existingMembership) {
+            $message = (int) $existingMembership->volunteer_organization_id === (int) $volunteer->volunteer_organization_id
+                ? 'This user is already a member of your organization.'
+                : 'This user is already registered with another volunteer organization.';
+
+            return response()->json([
+                'status'  => false,
+                'message' => $message,
+            ], 409);
+        }
+
+        $member = DB::transaction(function () use ($data, $memberUser, $volunteer) {
+            $memberRoles = is_array($memberUser->roles)
+                ? $memberUser->roles
+                : (json_decode($memberUser->roles, true) ?: []);
+
+            if (!in_array('user', $memberRoles, true)) {
+                $memberRoles[] = 'user';
+            }
+
+            if (!in_array('volunteer', $memberRoles, true)) {
+                $memberRoles[] = 'volunteer';
+            }
+
+            $memberUser->update([
+                'roles' => array_values(array_unique($memberRoles)),
+            ]);
+
+            return VolunteerMember::create([
+                'volunteer_organization_id' => $volunteer->volunteer_organization_id,
+                'user_id'                   => $memberUser->id,
+                'position'                  => $data['position'] ?? 'member',
+                'last_donation'             => $data['last_donation'] ?? null,
+                'is_available'              => $data['is_available'] ?? true,
+            ])->load(['user:id,name,email,mobile,blood_group,avatar']);
+        });
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Member added successfully.',
+            'data'    => [
+                'member' => $member,
+            ],
+        ], 201);
     }
 
     /**

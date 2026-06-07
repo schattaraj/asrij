@@ -84,6 +84,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/devices',              [ProfileApiController::class, 'devices'])->name('api.profile.devices');
             Route::delete('/devices/{id}',      [ProfileApiController::class, 'revokeDevice'])->name('api.profile.devices.revoke');
             Route::get('/activity',             [ProfileApiController::class, 'activity'])->name('api.profile.activity');
+            Route::post('/volunteer-members',   [ProfileApiController::class, 'storeVolunteerMember'])->name('api.profile.volunteer-members.store');
         });
 
         // ── Live location (in-app "track donor") ─────────────────────────────

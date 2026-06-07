@@ -2075,6 +2075,10 @@ body.design2 .carousel .carousel-item img {
 .request-card .donate-btn {
   margin-top: auto;
 }
+.request-card .urgent-tag {
+  height: -moz-max-content;
+  height: max-content;
+}
 
 /* Make all columns stretch equally */
 #requestContainer > div {

@@ -18,7 +18,7 @@
                         Saving Lives, <span class="ax-accent">One&nbsp;Drop</span> at a Time.
                     </h1>
                     <p class="ax-hero-sub">
-                        ASRIJ is a community-driven blood donation network connecting verified donors,
+                        ASRIJ Foundation is a community-driven blood donation network connecting verified donors,
                         receivers and volunteers — backed by technology and powered by empathy.
                     </p>
                     <div class="ax-hero-actions">
@@ -85,7 +85,7 @@
                     <span class="ax-chip"><i class="fa-solid fa-book-open"></i> Our Story</span>
                     <h2 class="ax-section-title">A mission born from compassion.</h2>
                     <p class="ax-muted">
-                        ASRIJ began as a small community initiative with one belief — that no life should be
+                        ASRIJ Foundation began as a small community initiative with one belief — that no life should be
                         lost due to the unavailability of blood. Today, we bridge thousands of donors and
                         patients through a transparent, technology-driven network.
                     </p>

@@ -65,7 +65,7 @@
 
                         @if($camp->image)
                             <div class="mb-2">
-                                <img src="{{ asset('storage/'.$camp->image) }}"
+                                <img src="{{ asset('/storage/app/public/'.$camp->image) }}"
                                      width="100">
                             </div>
                         @endif

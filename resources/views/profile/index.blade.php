@@ -74,6 +74,19 @@
     .device-row .device-meta { color: #6a7280; font-size: 12px; margin-top: 4px; }
     .device-row .btn-revoke { font-size: 12px; }
 
+    /* Volunteer members */
+    .vol-member-row {
+        display: grid; grid-template-columns: minmax(180px, 1fr) 140px 120px 120px;
+        gap: 12px; align-items: center;
+        padding: 12px 14px; border: 1px solid #f0f1f5; border-radius: 12px;
+        margin-bottom: 10px;
+    }
+    .vol-member-name { font-weight: 700; color: #111827; }
+    .vol-member-meta { color: #6a7280; font-size: 12px; margin-top: 3px; }
+    @media (max-width: 767.98px) {
+        .vol-member-row { grid-template-columns: 1fr; gap: 6px; }
+    }
+
     /* Tabs */
     .profile-page .nav-tabs .nav-link {
         color: #444; font-weight: 600; border-radius: 0;
@@ -315,6 +328,54 @@
         </div>
     </div>
 </div>
+
+{{-- ADD VOLUNTEER MEMBER MODAL --}}
+<div class="modal fade" id="addVolunteerMemberModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4">
+            <form id="addVolunteerMemberForm" onsubmit="event.preventDefault(); ppAddVolunteerMember();" autocomplete="off">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Member</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Select Member</label>
+                        {{-- <input type="text" class="form-control" id="vmMobile" maxlength="15" inputmode="numeric" required> --}}
+                        <select id="vmMember" class="form-select">
+                            <option value="">Select Member</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Position</label>
+                        {{-- <input type="text" class="form-control" id="vmPosition" maxlength="100" placeholder=""> --}}
+                        <select class="form-select" id="vmPosition">
+                            <option value="member">Member</option>
+                            <option value="president">President</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Last Donation</label>
+                        <input type="date" class="form-control" id="vmLastDonation">
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label">Available</label>
+                        <select class="form-select" id="vmIsAvailable">
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="vmAddBtn">
+                        <i class="fa-solid fa-user-plus me-1"></i> Add Member
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
@@ -340,6 +401,12 @@ function ppFire(icon, title, text) {
         confirmButtonColor: icon === 'error' ? '#dc3545' : '#c70039' });
 }
 
+function ppEsc(value) {
+    return String(value ?? '').replace(/[&<>"']/g, (ch) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    }[ch]));
+}
+
 /* ── HYDRATION ───────────────────────────────────────────────────── */
 async function ppLoadProfile() {
     showLoader && showLoader();
@@ -354,6 +421,7 @@ async function ppLoadProfile() {
         ppRenderActivity(json.data.activity);
         ppRenderForm(json.data.user);
         ppRenderRoleSection(json.data);
+        ppRenderUsers(json.data.users);
     } catch (err) {
         ppFire('error', 'Oops!', err.message || 'Could not load your profile.');
     } finally {
@@ -361,7 +429,18 @@ async function ppLoadProfile() {
     }
     ppLoadDevices(); // independent fetch
 }
+function ppRenderUsers(users = []) {
+    const select = document.getElementById('vmMember');
 
+    select.innerHTML = '<option value="">Select Member</option>';
+
+    users.forEach(user => {
+        const option = document.createElement('option');
+        option.value = user.id; // or user.mobile, depending on your requirement
+        option.textContent = user.name; // adjust property name if different
+        select.appendChild(option);
+    });
+}
 function ppRenderHeader(d) {
     const u = d.user;
     document.getElementById('ppHeaderName').innerText = u.name || '—';
@@ -452,6 +531,65 @@ function ppRenderRoleSection(d) {
     }
 
     if (rd.volunteer) {
+        const v = rd.volunteer;
+        const org = v.organization || {};
+        const members = rd.members || [];
+        const memberRows = members.length
+            ? members.map(member => {
+                const memberUser = member.user || {};
+                return `
+                    <div class="vol-member-row">
+                        <div>
+                            <div class="vol-member-name">${ppEsc(memberUser.name || 'Unknown user')}</div>
+                            <div class="vol-member-meta">
+                                ${ppEsc(memberUser.mobile || 'No mobile')}
+                                ${memberUser.blood_group ? ' - ' + ppEsc(memberUser.blood_group) : ''}
+                            </div>
+                        </div>
+                        <div>${ppEsc(member.position || 'member')}</div>
+                        <div>${member.last_donation ? new Date(member.last_donation).toLocaleDateString() : 'No donation'}</div>
+                        <div>
+                            <span class="badge ${member.is_available ? 'bg-success' : 'bg-secondary'}">
+                                ${member.is_available ? 'Available' : 'Unavailable'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('')
+            : '<p class="muted mb-0">No other members have been added yet.</p>';
+
+        let html = `
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 border-bottom pb-2 mb-3 mt-4">
+                <h5 class="mb-0">Volunteer Details</h5>
+                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#addVolunteerMemberModal">
+                    <i class="fa-solid fa-user-plus me-1"></i> Add Member
+                </button>
+            </div>
+            <p><strong>Position:</strong> ${ppEsc((v.position || 'member').replace(/^./, c=>c.toUpperCase()))}</p>
+        `;
+
+        if (v.volunteer_type === 'individual') {
+            html += `
+                <p><strong>Blood Group:</strong> ${ppEsc((v.extra && v.extra.blood_group) || '---')}</p>
+                <p><strong>Year of Birth:</strong> ${ppEsc((v.extra && v.extra.year_of_birth) || '---')}</p>
+            `;
+        } else {
+            html += `
+                <p><strong>Organization:</strong> ${ppEsc(org.organization_name || '---')}</p>
+                <p><strong>Registration No:</strong> ${ppEsc(org.registration_number || '---')}</p>
+            `;
+        }
+
+        html += `
+            <div class="mt-4">
+                <h6 class="mb-3">Organization Members</h6>
+                ${memberRows}
+            </div>
+        `;
+        parts.push(html);
+    }
+
+    if (false && rd.volunteer) {
         const v = rd.volunteer;
         let html = `
             <h5 class="border-bottom pb-2 mb-3 mt-4">Volunteer Details</h5>
@@ -678,6 +816,54 @@ async function ppMobileVerifyOtp() {
 }
 
 /* ── DEVICES ─────────────────────────────────────────────────────── */
+async function ppAddVolunteerMember() {
+    // const mobile = document.getElementById('vmMobile').value.trim();
+    const member = document.getElementById('vmMember').value;
+    const position = document.getElementById('vmPosition').value.trim();
+    const lastDonation = document.getElementById('vmLastDonation').value;
+    const isAvailable = document.getElementById('vmIsAvailable').value === '1';
+
+    // if (!/^[0-9]{10,15}$/.test(mobile)) {
+    //     ppFire('error', 'Invalid number', 'Enter a valid member mobile number.');
+    //     return;
+    // }
+    if (!/^[0-9]$/.test(member)) {
+        ppFire('error', 'Invalid number', 'Enter a valid member mobile number.');
+        return;
+    }
+    const btn = document.getElementById('vmAddBtn');
+    btn.disabled = true;
+    showLoader && showLoader();
+
+    try {
+        const res = await fetch(`${PROFILE_API_BASE}/profile/volunteer-members`, {
+            method: 'POST',
+            headers: ppHeaders(),
+            body: JSON.stringify({
+                user_id:member,
+                position: position || 'member',
+                last_donation: lastDonation || null,
+                is_available: isAvailable,
+            }),
+        });
+        const json = await res.json();
+        if (!res.ok || !json.status) throw new Error(json.message || 'Could not add member.');
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addVolunteerMemberModal'));
+        modal && modal.hide();
+        document.getElementById('addVolunteerMemberForm').reset();
+        document.getElementById('vmIsAvailable').value = '1';
+
+        await ppLoadProfile();
+        ppFire('success', 'Member added', json.message || 'Member added successfully.');
+    } catch (e) {
+        ppFire('error', 'Could not add member', e.message);
+    } finally {
+        btn.disabled = false;
+        hideLoader && hideLoader();
+    }
+}
+
 async function ppLoadDevices() {
     const wrap = document.getElementById('ppDeviceList');
     wrap.innerHTML = '<div class="pp-skel" style="width:100%;height:60px;"></div>';

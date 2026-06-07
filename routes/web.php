@@ -129,10 +129,9 @@ Route::post('/users/{id}/update-role', [RegistrationController::class, 'updateUs
     ->name('users.update.role');
 
 
-Route::get('/requests', function () {
-    $requests = Request::latest()->get();
-    return view('requests.index', compact('requests'));
-});
+Route::get('/all-blood-requests', function () {
+    return view('all-blood-requests.index');
+})->name("all-blood-requests");
 
 Route::get('/hash-password',function(){
 $password = Hash::make('admin@123');

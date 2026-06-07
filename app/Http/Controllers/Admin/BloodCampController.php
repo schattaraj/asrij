@@ -28,7 +28,9 @@ class BloodCampController extends Controller
             'start_time' => 'required',
             'end_time' => 'required',
             'location' => 'required',
-            'image' => 'nullable|image',
+            'camp_latitude'=>'required',
+            'camp_longitude'=>'required',
+            'image' => 'required|image',
         ]);
 
         $data = $request->all();

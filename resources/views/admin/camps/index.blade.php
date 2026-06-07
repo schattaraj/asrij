@@ -42,7 +42,7 @@
 
                             <td>
                                 @if($camp->image)
-                                    <img src="{{ asset('storage/'.$camp->image) }}"
+                                    <img src="{{ asset('/storage/app/public/'.$camp->image) }}"
                                          width="60"
                                          height="60"
                                          style="object-fit:cover;">

@@ -46,55 +46,45 @@
     </div> --}}
     <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
 
-    <div class="carousel-indicators">
-        @foreach($banners as $key => $banner)
-            <button type="button"
-                data-bs-target="#carouselExampleCaptions"
-                data-bs-slide-to="{{ $key }}"
-                class="{{ $key == 0 ? 'active' : '' }}">
-            </button>
-        @endforeach
-    </div>
+        <div class="carousel-indicators">
+            @foreach ($banners as $key => $banner)
+                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="{{ $key }}"
+                    class="{{ $key == 0 ? 'active' : '' }}">
+                </button>
+            @endforeach
+        </div>
 
-    <div class="carousel-inner">
+        <div class="carousel-inner">
 
-        @foreach($banners as $key => $banner)
+            @foreach ($banners as $key => $banner)
+                <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                    <img src="{{ asset('/storage/app/public/' . $banner->image) }}" class="d-block w-100"
+                        alt="{{ $banner->title }}">
 
-            <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-                <img src="{{ asset('/public/storage/' . $banner->image) }}"
-                     class="d-block w-100"
-                     alt="{{ $banner->title }}">
+                    <div class="carousel-caption">
+                        <h3>{{ $banner->title }}</h3>
+                        <p>{{ $banner->description }}</p>
 
-                <div class="carousel-caption">
-                    <h3>{{ $banner->title }}</h3>
-                    <p>{{ $banner->description }}</p>
-
-                    @if($banner->button_text)
-                        <a href="{{ $banner->button_link }}"
-                           class="btn btn-primary">
-                            {{ $banner->button_text }}
-                        </a>
-                    @endif
+                        @if ($banner->button_text)
+                            <a href="{{ $banner->button_link }}" class="btn btn-primary">
+                                {{ $banner->button_text }}
+                            </a>
+                        @endif
+                    </div>
                 </div>
-            </div>
+            @endforeach
 
-        @endforeach
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
 
     </div>
-
-    <button class="carousel-control-prev" type="button"
-        data-bs-target="#carouselExampleCaptions"
-        data-bs-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-    </button>
-
-    <button class="carousel-control-next" type="button"
-        data-bs-target="#carouselExampleCaptions"
-        data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
-    </button>
-
-</div>
     <!-- ===== STATS SECTION ===== -->
     <section class="stats">
         <div class="stat-box">
@@ -201,9 +191,8 @@
                             </label>
                         </div> --}}
                         <div class="form-floating">
-                            <input type="text" class="form-control @error('name') is-invalid mb-0 @enderror"
-                                name="name" id="donor_full_name" placeholder="Full Name" value="{{ old('name') }}"
-                                required>
+                            <input type="text" class="form-control @error('name') is-invalid mb-0 @enderror" name="name"
+                                id="donor_full_name" placeholder="Full Name" value="{{ old('name') }}" required>
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -517,8 +506,8 @@
                         @csrf
                         <input type="hidden" name="role" value="volunteer">
                         <div class="form-floating">
-                            <select class="form-select" onchange="volunteerFields(this)" name="type"
-                                id="floatingSelect" required>
+                            <select class="form-select" onchange="volunteerFields(this)" name="type" id="floatingSelect"
+                                required>
                                 <option value="">Select Option</option>
                                 <option value="individual">Individual</option>
                                 <option value="ngo">NGO</option>
@@ -720,22 +709,24 @@
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                <div class="input-group mb-3">
-                                <div class="form-floating flex-grow-1">
-                                    <input id="ngo_volunteer_address" class="form-control mb-0" name="address"
-                                        placeholder="Address" style="border-top-right-radius: 0;border-bottom-right:0;"
-                                        required value="" readonly>
-                                    <label>Address</label>
-                                </div>
-                                <button type="button" class="btn btn-outline-danger rounded-end w-auto open-location-modal"
-                                    data-bs-toggle="modal" data-bs-target="#locationModal"
-                                    data-location-input="ngo_volunteer_address" data-lat="ngo_volunteer_latitude"
-                                    data-lng="ngo_volunteer_longitude">
-                                    Change
-                                </button>
-                                <input type="hidden" name="volunteer_latitude" id="ngo_volunteer_latitude">
-                                <input type="hidden" name="volunteer_longitude" id="ngo_volunteer_longitude">
-                            </div>
+                                    <div class="input-group mb-3">
+                                        <div class="form-floating flex-grow-1">
+                                            <input id="ngo_volunteer_address" class="form-control mb-0" name="address"
+                                                placeholder="Address"
+                                                style="border-top-right-radius: 0;border-bottom-right:0;" required
+                                                value="" readonly>
+                                            <label>Address</label>
+                                        </div>
+                                        <button type="button"
+                                            class="btn btn-outline-danger rounded-end w-auto open-location-modal"
+                                            data-bs-toggle="modal" data-bs-target="#locationModal"
+                                            data-location-input="ngo_volunteer_address" data-lat="ngo_volunteer_latitude"
+                                            data-lng="ngo_volunteer_longitude">
+                                            Change
+                                        </button>
+                                        <input type="hidden" name="volunteer_latitude" id="ngo_volunteer_latitude">
+                                        <input type="hidden" name="volunteer_longitude" id="ngo_volunteer_longitude">
+                                    </div>
                                 </div>
                                 {{-- <div class="col-md-6">
                                     <div class="form-floating mb-3">
@@ -907,7 +898,7 @@
                 </button>
               </div> --}}
             <div id="viewAllWrapper" class="text-center mt-4" style="display:none;">
-                <a href="/requests" class="btn btn-outline-danger px-4">
+                <a href="{{ route('all-blood-requests') }}" class="btn btn-outline-danger px-4">
                     View All Requests
                 </a>
             </div>
@@ -992,7 +983,7 @@
                     <!-- Additional required wrapper -->
                     <div class="swiper-wrapper">
                         <!-- Slides -->
-                        <div class="swiper-slide"><a href="#"><img src="{{ asset('assets/img/camp1.jpg') }}"
+                        {{-- <div class="swiper-slide"><a href="#"><img src="{{ asset('assets/img/camp1.jpg') }}"
                                     alt="Blood Camp 1"></a>
                             <div class="text-area">
                                 <div class="d-flex align-items-center justify-content-between mb-3">
@@ -1066,7 +1057,52 @@
                                         Life Hospital</a>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
+                        @forelse($blood_camps as $camp)
+                            <div class="swiper-slide">
+                                {{-- <a href="{{ route('blood-camp.details', $camp->slug) }}"> --}}
+                                <img src="{{ asset('/storage/app/public/' . $camp->image) }}" alt="{{ $camp->title }}">
+                                {{-- </a> --}}
+
+                                <div class="text-area">
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <div class="date mb-0">
+                                            {{ \Carbon\Carbon::parse($camp->camp_date)->format('d M, Y') }}
+                                        </div>
+
+                                        <span>
+                                            <i class="fa-regular fa-clock"></i>
+                                            {{ \Carbon\Carbon::parse($camp->start_time)->format('h:i A') }}
+                                            -
+                                            {{ \Carbon\Carbon::parse($camp->end_time)->format('h:i A') }}
+                                        </span>
+                                    </div>
+
+                                    {{-- <a href="{{ route('blood-camp.details', $camp->slug) }}"> --}}
+                                    <h4>{{ $camp->title }}</h4>
+                                    {{-- </a> --}}
+
+                                    <p>
+                                        {{ \Illuminate\Support\Str::limit($camp->description, 120) }}
+                                    </p>
+
+                                    <div class="event-latest-details">
+                                        <a class="comments"
+                                            href="https://www.google.com/maps/search/?api=1&query={{ $camp->camp_latitude }},{{ $camp->camp_longitude }}"
+                                            target="_blank" rel="noopener noreferrer">
+                                            <i class="fa-solid fa-location-dot"></i>
+                                            {{ $camp->location }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="swiper-slide">
+                                <div class="text-area text-center">
+                                    <h4>No blood camps available</h4>
+                                </div>
+                            </div>
+                        @endforelse
                     </div>
                     <!-- If we need pagination -->
                     <div class="swiper-pagination"></div>
@@ -1186,8 +1222,8 @@
                         <!-- Description -->
                         <div class="mb-4">
                             <label class="form-label fw-semibold">Describe the Situation</label>
-                            <textarea class="form-control" rows="4" name="description"
-                                placeholder="Provide details about the accident..." required></textarea>
+                            <textarea class="form-control" rows="4" name="description" placeholder="Provide details about the accident..."
+                                required></textarea>
                         </div>
 
                         <div class="d-grid">
@@ -1494,8 +1530,8 @@
                     </div>
                     <div class="social-links">
                         <h3>Follow Us</h3>
-                        <a href="https://www.instagram.com/fullstop.pvt.ltd?igsh=MWRiNXJ4OXkydmRmcw=="
-                            target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="https://www.instagram.com/fullstop.pvt.ltd?igsh=MWRiNXJ4OXkydmRmcw==" target="_blank"><i
+                                class="fa-brands fa-instagram"></i></a>
                         <a href="https://www.facebook.com/profile.php?id=61572378570370&mibextid=ZbWKwL"
                             target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
                         <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
@@ -1538,77 +1574,80 @@
         </div>
     </div>
 
-@section('scripts')
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const counters = document.querySelectorAll(".count");
-            const speed = 200; // lower = faster
+    @section('scripts')
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const counters = document.querySelectorAll(".count");
+                const speed = 200; // lower = faster
 
-            const animateCounter = (counter) => {
-                const updateCount = () => {
-                    const target = +counter.getAttribute("data-target");
-                    const count = +counter.innerText;
-                    const increment = target / speed;
+                const animateCounter = (counter) => {
+                    const updateCount = () => {
+                        const target = +counter.getAttribute("data-target");
+                        const count = +counter.innerText;
+                        const increment = target / speed;
 
-                    if (count < target) {
-                        counter.innerText = Math.ceil(count + increment);
-                        requestAnimationFrame(updateCount);
-                    } else {
-                        counter.innerText = target.toLocaleString(); // formatted with commas
-                    }
+                        if (count < target) {
+                            counter.innerText = Math.ceil(count + increment);
+                            requestAnimationFrame(updateCount);
+                        } else {
+                            counter.innerText = target.toLocaleString(); // formatted with commas
+                        }
+                    };
+                    updateCount();
                 };
-                updateCount();
-            };
 
-            // Use IntersectionObserver to trigger only when visible
-            const observer = new IntersectionObserver((entries, obs) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        animateCounter(entry.target);
-                        obs.unobserve(entry.target); // stop observing once animated
-                    }
+                // Use IntersectionObserver to trigger only when visible
+                const observer = new IntersectionObserver((entries, obs) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            animateCounter(entry.target);
+                            obs.unobserve(entry.target); // stop observing once animated
+                        }
+                    });
+                }, {
+                    threshold: 0.5
                 });
-            }, {
-                threshold: 0.5
+
+                counters.forEach(counter => observer.observe(counter));
             });
 
-            counters.forEach(counter => observer.observe(counter));
-        });
+            const container = document.getElementById("requestContainer");
 
-        const container = document.getElementById("requestContainer");
+            function render(data) {
+                container.innerHTML = "";
 
-        function render(data) {
-            container.innerHTML = "";
-
-            data.forEach(req => {
-                    const createdDate = req.created_at
-            ? new Date(req.created_at).toLocaleString('en-IN', {
-        day: '2-digit',
-        month: 'short',
-        year: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-      })
-            : "N/A";
-                container.innerHTML += `
+                data.forEach(req => {
+                    const createdDate = req.created_at ?
+                        new Date(req.created_at).toLocaleString('en-IN', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true
+                        }) :
+                        "N/A";
+                        const required_within = `${req.required_before} ${req.required_before_unit}`;
+                    container.innerHTML += `
       <div class="col-md-6 col-lg-4 col-xl-3">
         <div class="request-card ${req.urgency === 'urgent' ? 'urgent-card' : ''}">
-          
+          <div class="d-flex justify-content-between">
+            <div class="blood-group">${req.blood_group}</div>
           ${req.urgency === 'urgent' 
-            ? '<span class="badge bg-danger urgent-tag">URGENT</span>' 
+            ? '<span class="badge bg-danger urgent-tag"><i class="fa-solid fa-exclamation"></i> URGENT</span>' 
             : ''}
-
-          <div class="blood-group">${req.blood_group}</div>
-
+        </div>
           <div class="meta"><strong>Hospital Name</strong> : ${req.hospital_name}</div>
           <div class="meta mb-1"><strong>Address</strong> : ${req.address}</div>
           <div class="meta mb-2"><strong>Units</strong> : ${req.unit}</div>
           <div class="meta mb-1">
             <strong>Token</strong> : ${req.token || 'N/A'}
             </div>
-        <div class="meta mb-2">
+        <div class="meta mb-1">
             <strong>Requested On</strong> : ${createdDate}
+        </div>
+        <div class="meta mb-2">
+            <strong>Required within ${required_within}</strong>
         </div>
           ${req?.distance   ? `<div class="meta mb-3"><strong>Distance</strong> : ${req.distance_text} from your registered address</div>` : ''}
             <button 
@@ -1622,598 +1661,557 @@
         </div>
       </div>
     `;
-            });
-
-            attachEvents();
-        }
-
-        function attachEvents() {
-            document.querySelectorAll(".donate-btn").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    if (btn.disabled) return;
-                    let token = localStorage.getItem("token");
-
-                    // 1. Auth & Validation
-                    if (!token) {
-                        bootstrap.Modal.getOrCreateInstance(document.getElementById('loginModal')).show();
-                        return;
-                    }
-
-                    if (userData && userData.blood_group && userData.blood_group !== btn.dataset
-                        .blood_group) {
-                        showAlert("warning",
-                            "Blood group mismatch. Please check the request requirements.");
-                        return;
-                    }
-
-                    // 2. Populate Modal Data
-                    const modalEl = document.getElementById('confirmDonationModal');
-
-                    // Pass the request ID from the clicked button
-                    modalEl.querySelector('#request_id').value = btn.dataset.request_id;
-
-                    // Pre-fill from your global userData object
-                    modalEl.querySelector('#donor_name').value = userData.name || "User";
-                    modalEl.querySelector('#donor_phone').value = userData.mobile || "";
-
-                    // 3. Show the Modal
-                    bootstrap.Modal.getOrCreateInstance(modalEl).show();
-                });
-            });
-
-            // 3. Submit handling
-            document.getElementById('donationForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-
-                const submitBtn = e.target.querySelector('button[type="submit"]');
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Processing...`;
-
-                const payload = {
-                    request_id: document.getElementById('request_id').value,
-                    contact_number: document.getElementById('donor_phone')
-                        .value // This takes the (possibly edited) number
-                };
-
-                try {
-                    const response = await fetch('{{ route('blood-requests.respond') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem("token")}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-
-                    const result = await response.json();
-
-                    if (result.status) {
-                        showAlert("success", "Thank you! Your response has been sent to the requester.");
-                        bootstrap.Modal.getInstance(document.getElementById('confirmDonationModal')).hide();
-                    } else {
-                        showAlert("error", result.message || "Something went wrong.");
-                    }
-                } catch (error) {
-                    showAlert("danger", "Connection error. Please try again.");
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = "Confirm & Respond";
-                }
-            });
-        }
-
-        function filterData() {
-            const blood = document.getElementById("bloodFilter").value;
-            const urgency = document.getElementById("urgencyFilter").value;
-            const search = document.getElementById("searchInput").value.toLowerCase();
-
-            const filtered = allRequests.filter(r => {
-                return (
-                    (!blood || r.blood_group === blood) &&
-                    (!urgency || r.urgency === urgency) &&
-                    (
-                        r.address.toLowerCase().includes(search) ||
-                        r.hospital_name.toLowerCase().includes(search)
-                    )
-                );
-            });
-
-            render(filtered);
-        }
-
-        function resetFilters() {
-            document.getElementById("bloodFilter").value = "";
-            document.getElementById("urgencyFilter").value = "";
-            document.getElementById("searchInput").value = "";
-            render(allRequests);
-        }
-
-        /* Event Listeners */
-        document.getElementById("bloodFilter").addEventListener("change", filterData);
-        document.getElementById("urgencyFilter").addEventListener("change", filterData);
-        document.getElementById("searchInput").addEventListener("input", filterData);
-
-        /* Init */
-        // render(requests);
-        const API_URL = "{{ route('blood-requests.index') }}";
-        let allRequests = [];
-
-        async function fetchRequests() {
-            showLoader();
-            try {
-                const token = localStorage.getItem("token");
-                let option = {
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                };
-                if (token) {
-                    option = {
-                        headers: {
-                            'Accept': 'application/json',
-                            Authorization: 'Bearer ' + token
-                        }
-                    }
-                }
-                const res = await fetch(API_URL, option);
-                const data = await res.json();
-
-                allRequests = data?.data;
-                if (!allRequests || allRequests.length === 0) {
-                    document.getElementById("blood_requests_section").style.display = 'none';
-                    return;
-                }
-                // Show only first 4
-                render(allRequests.slice(0, 4));
-
-                toggleViewAll(allRequests.length);
-
-            } catch (err) {
-                console.error("Error loading requests", err);
-            }
-            hideLoader();
-        }
-
-        function toggleViewAll(count) {
-            const btn = document.getElementById("viewAllWrapper");
-
-            if (count > 4) {
-                btn.style.display = "block";
-            } else {
-                btn.style.display = "none";
-            }
-        }
-        document.addEventListener('DOMContentLoaded', fetchRequests);
-
-        //Registration tabs - Donor / Request Blood / Volunteer
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        const tabContents = document.querySelectorAll('.tab-content');
-
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                let token = localStorage.getItem("token");
-                if (!token) {
-                    console.log("No Token found");
-                    let loginModalEl = document.getElementById('loginModal');
-                    let loginModal = bootstrap.Modal.getOrCreateInstance(loginModalEl);
-                    loginModal.show();
-                    return;
-                }
-                let checkClass = document.getElementById(btn.dataset.tab).classList;
-                if (checkClass.contains("active")) {
-                    tabBtns.forEach(b => b.classList.remove('active'));
-                    tabContents.forEach(content => content.classList.remove('active'));
-                    return;
-                }
-                tabBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                tabContents.forEach(content => content.classList.remove('active'));
-                checkClass.add('active');
-                console.log("btn", btn.dataset.tab);
-                switch (btn.dataset.tab) {
-                    case "donor":
-                        console.log("test", userData.roles.includes('donor'));
-                        autoDetectLocation({
-                            locationInputId: "donor_address",
-                            latInputId: "donor_latitude",
-                            lngInputId: "donor_longitude"
-                        });
-                        break;
-                    case "request_blood":
-                        autoDetectLocation({
-                            locationInputId: "patient_address",
-                            latInputId: "patient_latitude",
-                            lngInputId: "patient_longitude"
-                        });
-                        break;
-                    case "volunteer":
-                        autoDetectLocation({
-                            locationInputId: "volunteer_address",
-                            latInputId: "volunteer_latitude",
-                            lngInputId: "volunteer_longitude"
-                        });
-                        break;
-                    default:
-                        break;
-                }
-            });
-        });
-
-        document.querySelectorAll(".registration-section .form-check-input").forEach(function(item) {
-            item.addEventListener("change", function(elm) {
-                const checkbox = elm.target;
-                // closest parent container
-                const parent = checkbox.closest("form");
-                // find input inside that parent
-                const input = parent.querySelector("input[name='whatsapp_checkbox']");
-                const contact = parent.querySelector("input[name='mobile']");
-                const whatsapp = parent.querySelector("input[name='whatsapp_number']");
-                console.log(input.checked, contact.value, whatsapp.value);
-                if (input.checked) {
-                    whatsapp.value = contact.value;
-                    whatsapp.setAttribute('readonly', true);
-                } else {
-                    whatsapp.value = '';
-                    whatsapp.removeAttribute('readonly');
-                }
-            });
-        });
-
-        // Request Blood Starts here................................
-        document.getElementById("requestFor_self").addEventListener('change', function() {
-
-            const form = this.closest('form'); // ✅ get current form
-
-            if (this.checked) {
-                showLoader();
-                fetch(`{{ url('/') }}/api/v1/user`, {
-                        headers: {
-                            'Authorization': 'Bearer ' + localStorage.getItem('token'),
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        fillForm(form, data);
-                        disableFields(form, true);
-                    })
-                    .catch(err => {
-                        console.error("Error fetching user data", err);
-                        alert("Failed to auto-fill data. Please try again.");
-                        this.checked = false; // uncheck on error
-                    })
-                    .finally(() => {
-                        hideLoader();
-                    });
-            } else {
-                clearForm(form);
-                disableFields(form, false);
-            }
-        });
-        document.getElementById("requestFor_other").addEventListener('change', function() {
-            const form = this.closest('form');
-            clearForm(form);
-            disableFields(form, false);
-        });
-
-        // function fillForm(form, data) {
-        //     form.querySelector('[name="name"]').value = data.name || '';
-        //     form.querySelector('[name="email"]').value = data.email || '';
-        //     form.querySelector('[name="mobile"]').value = data.mobile || '';
-        //     form.querySelector('[name="whatsapp_number"]').value = data.whatsapp_number || '';
-        //     form.querySelector('[name="blood_group"]').value = data.blood_group || '';
-        //     form.querySelector('[name="dob"]').value = data.dob || '';
-        //     form.querySelector('[name="gender"]').value = data.gender || '';
-        //     form.querySelector('[name="address"]').value = data.address || '';
-        //     // form.querySelector('[name="pin_code"]').value = data.pin_code || '';
-        //     form.querySelector('[name="patient_latitude"]').value = data.latitude || '';
-        //     form.querySelector('[name="patient_longitude"]').value = data.longitude || '';
-        // }
-
-        function fillForm(form, data, fields = {
-            name: 'name',
-            email: 'email',
-            mobile: 'mobile',
-            whatsapp_number: 'whatsapp_number',
-            blood_group: 'blood_group',
-            dob: 'dob',
-            gender: 'gender',
-            address: 'address',
-            patient_latitude: 'latitude',
-            patient_longitude: 'longitude'
-        }) {
-            Object.entries(fields).forEach(([formName, dataKey]) => {
-                const input = form.querySelector(`[name="${formName}"]`);
-                if (input && data[dataKey] !== null) {
-                    input.value = data[dataKey];
-                }
-            });
-        }
-
-        function disableFields(form, state) {
-            const fields = ['name', 'email', 'mobile', 'whatsapp_number', 'address'];
-            fields.forEach(field => {
-                const el = form.querySelector(`[name="${field}"]`);
-                el.readOnly = state ? el.value ? true : false : state;
-            });
-            // Disable selects too (like blood group, year)
-            ['blood_group', 'dob', 'gender'].forEach(field => {
-                const el = form.querySelector(`[name="${field}"]`);
-                if (el && el.value) {
-                    el.style.pointerEvents = state ? 'none' : 'auto';
-                    el.style.backgroundColor = state ? '#e9ecef' : '';
-                    el.setAttribute('data-readonly', state);
-                } else {
-                    el.style.pointerEvents = 'auto';
-                    el.style.backgroundColor = '';
-                    el.setAttribute('data-readonly', false);
-                }
-            });
-        }
-
-        function clearForm(form) {
-            const fields = ['name', 'email', 'mobile', 'whatsapp_number', 'address', 'blood_group', 'dob',
-                'gender'
-            ];
-            fields.forEach(field => {
-                const el = form.querySelector(`[name="${field}"]`);
-                if (el.type !== 'hidden' && el.type !== 'checkbox' && el.type !== 'radio') {
-                    el.value = '';
-                }
-            });
-        }
-
-        document.querySelector('#request_blood .registration-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const form = e.target;
-            const formData = new FormData(form);
-
-            try {
-                // const validPin = await validatePincode(formData.get('address'), formData.get("pin_code"));
-                // if (!validPin) {
-                //     return;
-                // }
-                if (!formData.get('request_for')) {
-
-                }
-                const token = localStorage.getItem('token');
-                showLoader();
-                const response = await fetch("{{ route('blood-requests.store') }}", {
-                    method: "POST",
-                    headers: {
-                        Authorization: 'Bearer ' + token,
-                        "Accept": "application/json"
-                    },
-                    body: formData
                 });
 
-                const data = await response.json();
-                if (response.status == 409) {
-                    showAlert("error", data.message || "Failed to submit request. Please check your input.");
-                    hideLoader();
-                    return;
-                }
-                if (!response.ok) {
-                    showAlert("error", data.message || "Failed to submit request. Please check your input.");
-                    hideLoader();
-                    return;
-                }
-                if (response.status === 201) {
-                    if (checkMessageForOTP(data?.message)) {
-                        // Store the mobile number for later use
-                        window.currentMobileForOTP = formData.get('mobile');
-                        const masked = mobile.substring(0, 2) + "******" + formData.get('mobile').substring(8);
-                        document.getElementById("otpMessage").textContent = "OTP sent to +91 " + masked;
-                        // Show the modal
-                        const otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
-                        otpModal.show();
-                    } else {
-                        showAlert("success", data?.message || "Blood request submitted successfully!");
-                        fetchRequests();
-                        form.reset();
-                    }
-                    // showAlert("success", data?.message);
-                    // Optionally, you can add the new request to the list without reloading
-                    // allRequests.unshift(data);
-                    // render(allRequests.slice(0, 4));
-                    // showAlert("success", "Blood request submitted successfully!");
-                }
-
-            } catch (error) {
-                console.error(error);
-            } finally {
-                hideLoader();
-            }
-        });
-        // Function to verify OTP
-        async function verifyOTP() {
-            const otp = document.getElementById('otpInput').value;
-            const mobile = window.currentMobileForOTP;
-
-            if (!otp || otp.length !== 6) {
-                alert('Please enter a valid 6-digit OTP');
-                return;
+                attachEvents();
             }
 
-            try {
-                const response = await fetch(`{{ route('verifyOtp') }}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        mobile: mobile,
-                        otp: otp
-                    })
-                });
+            function attachEvents() {
+                document.querySelectorAll(".donate-btn").forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        if (btn.disabled) return;
+                        let token = localStorage.getItem("token");
 
-                const data = await response.json();
-
-                if (response.ok) {
-                    showAlert('success', 'OTP verified successfully!');
-                    // Close the modal
-                    const otpModal = bootstrap.Modal.getInstance(document.getElementById('otpModal'));
-                    otpModal.hide();
-                    fetchRequests();
-                    // Handle successful verification (e.g., redirect or update UI)
-                    console.log('Login successful:', data);
-                    // You might want to store the token: localStorage.setItem('token', data.token);
-                } else {
-                    alert(data.message || 'OTP verification failed');
-                }
-            } catch (error) {
-                console.error('Error verifying OTP:', error);
-                alert('An error occurred while verifying OTP');
-            }
-        }
-
-        // Function to resend OTP
-        async function resendOTP() {
-            const mobile = window.currentMobileForOTP;
-
-            if (!mobile) {
-                alert('Mobile number not available');
-                return;
-            }
-
-            try {
-                showLoader();
-                const response = await fetch(`{{ route('sendOtp') }}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        mobile: mobile
-                    })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    const masked = mobile.substring(0, 2) + "******" + mobile.substring(8);
-                    document.getElementById("otpMessage").textContent = "A new OTP has been sent to +91 " + masked;
-                    startResendTimer();
-                    document.querySelector(".otp-box").focus();
-                } else {
-                    alert(data.message || 'Failed to send OTP');
-                }
-            } catch (error) {
-                console.error('Error sending OTP:', error);
-                alert('An error occurred while sending OTP');
-            } finally {
-                hideLoader();
-            }
-        }
-
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            // Verify OTP button
-            document.getElementById('verifyOtpBtn').addEventListener('click', verifyOTP);
-
-            // Resend OTP button
-            document.getElementById('resendOtpBtn').addEventListener('click', resendOTP);
-
-            // Allow Enter key to verify OTP
-            document.getElementById('otpInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    verifyOTP();
-                }
-            });
-        });
-        // Request Blood Ends here................................
-
-        // Donor Registration Form Starts here................................
-        document.querySelector('#donor .registration-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const form = e.target;
-            const formData = new FormData(form);
-
-            try {
-                // const validPin = await validatePincode(formData.get('address'), formData.get("pin_code"));
-                // if (!validPin) {
-                //     return;
-                // }
-                if (!formData.get('request_for')) {
-
-                }
-                const token = localStorage.getItem('token');
-                const response = await fetch("{{ route('donor.registration') }}", {
-                    method: "POST",
-                    headers: {
-                        Authorization: 'Bearer ' + token,
-                        "Accept": "application/json"
-                    },
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    showAlert("error", data.message || "Failed to submit request. Please check your input.");
-                    return;
-                }
-                if (response.status === 200) {
-                    showAlert("success", "You are successfully registered as a donor!");
-                }
-                if (response.status === 201) {
-                    showAlert("success", data.message || "");
-                }
-                toggleFields(form, false);
-                form.reset();
-
-            } catch (error) {
-                console.error(error);
-                alert("Something went wrong!");
-            }
-        });
-        document.getElementById("self").addEventListener("change", function() {
-            const form = this.closest('form');
-            if (this.checked) {
-                showLoader();
-                fetch(`{{ url('/') }}/api/v1/user`, {
-                        headers: {
-                            'Authorization': 'Bearer ' + localStorage.getItem('token'),
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.roles.includes('donor')) {
-                            showAlert('warning', 'You are already registered as donor');
-                            checkbox.checked = false;
+                        // 1. Auth & Validation
+                        if (!token) {
+                            bootstrap.Modal.getOrCreateInstance(document.getElementById('loginModal')).show();
                             return;
                         }
-                        autoFill(form, data);
-                        toggleFields(form, true);
-                    })
-                    .catch(err => {
-                        console.error("Error fetching user data", err);
-                        showAlert('error', "Failed to auto-fill data. Please try again.");
-                        this.checked = false;
-                    })
-                    .finally(() => {
-                        hideLoader();
+
+                        if (userData && userData.blood_group && userData.blood_group !== btn.dataset
+                            .blood_group) {
+                            showAlert("warning",
+                                "Blood group mismatch. Please check the request requirements.");
+                            return;
+                        }
+
+                        // 2. Populate Modal Data
+                        const modalEl = document.getElementById('confirmDonationModal');
+
+                        // Pass the request ID from the clicked button
+                        modalEl.querySelector('#request_id').value = btn.dataset.request_id;
+
+                        // Pre-fill from your global userData object
+                        modalEl.querySelector('#donor_name').value = userData.name || "User";
+                        modalEl.querySelector('#donor_phone').value = userData.mobile || "";
+
+                        // 3. Show the Modal
+                        bootstrap.Modal.getOrCreateInstance(modalEl).show();
                     });
-            } else {
-                clearForm(form);
-                toggleFields(form, false);
+                });
+
+                // 3. Submit handling
+                document.getElementById('donationForm').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const submitBtn = e.target.querySelector('button[type="submit"]');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Processing...`;
+
+                    const payload = {
+                        request_id: document.getElementById('request_id').value,
+                        contact_number: document.getElementById('donor_phone')
+                            .value // This takes the (possibly edited) number
+                    };
+
+                    try {
+                        const response = await fetch('{{ route('blood-requests.respond') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem("token")}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(payload)
+                        });
+
+                        const result = await response.json();
+
+                        if (result.status) {
+                            showAlert("success", "Thank you! Your response has been sent to the requester.");
+                            bootstrap.Modal.getInstance(document.getElementById('confirmDonationModal')).hide();
+                        } else {
+                            showAlert("error", result.message || "Something went wrong.");
+                        }
+                    } catch (error) {
+                        showAlert("danger", "Connection error. Please try again.");
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = "Confirm & Respond";
+                    }
+                });
             }
-        });
-        document.getElementById("other").addEventListener("change", function() {
-            const form = this.closest('form');
-            clearForm(form);
-            toggleFields(form, false);
-        });
-        document.querySelectorAll('.autofill-user').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
 
+            function filterData() {
+                const blood = document.getElementById("bloodFilter").value;
+                const urgency = document.getElementById("urgencyFilter").value;
+                const search = document.getElementById("searchInput").value.toLowerCase();
+
+                const filtered = allRequests.filter(r => {
+                    return (
+                        (!blood || r.blood_group === blood) &&
+                        (!urgency || r.urgency === urgency) &&
+                        (
+                            r.address.toLowerCase().includes(search) ||
+                            r.hospital_name.toLowerCase().includes(search)
+                        )
+                    );
+                });
+
+                render(filtered);
+            }
+
+            function resetFilters() {
+                document.getElementById("bloodFilter").value = "";
+                document.getElementById("urgencyFilter").value = "";
+                document.getElementById("searchInput").value = "";
+                render(allRequests);
+            }
+
+            /* Event Listeners */
+            document.getElementById("bloodFilter").addEventListener("change", filterData);
+            document.getElementById("urgencyFilter").addEventListener("change", filterData);
+            document.getElementById("searchInput").addEventListener("input", filterData);
+
+            /* Init */
+            // render(requests);
+            const API_URL = "{{ route('blood-requests.index') }}";
+            let allRequests = [];
+
+            async function fetchRequests() {
+                showLoader();
+                try {
+                    const token = localStorage.getItem("token");
+                    let option = {
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    };
+                    if (token) {
+                        option = {
+                            headers: {
+                                'Accept': 'application/json',
+                                Authorization: 'Bearer ' + token
+                            }
+                        }
+                    }
+                    const res = await fetch(API_URL, option);
+                    const data = await res.json();
+
+                    allRequests = data?.data;
+                    if (!allRequests || allRequests.length === 0) {
+                        document.getElementById("blood_requests_section").style.display = 'none';
+                        return;
+                    }
+                    // Show only first 4
+                    render(allRequests.slice(0, 4));
+
+                    toggleViewAll(allRequests.length);
+
+                } catch (err) {
+                    console.error("Error loading requests", err);
+                }
+                hideLoader();
+            }
+
+            function toggleViewAll(count) {
+                const btn = document.getElementById("viewAllWrapper");
+
+                if (count > 4) {
+                    btn.style.display = "block";
+                } else {
+                    btn.style.display = "none";
+                }
+            }
+            document.addEventListener('DOMContentLoaded', fetchRequests);
+
+            //Registration tabs - Donor / Request Blood / Volunteer
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    let token = localStorage.getItem("token");
+                    if (!token) {
+                        console.log("No Token found");
+                        let loginModalEl = document.getElementById('loginModal');
+                        let loginModal = bootstrap.Modal.getOrCreateInstance(loginModalEl);
+                        loginModal.show();
+                        return;
+                    }
+                    let checkClass = document.getElementById(btn.dataset.tab).classList;
+                    if (checkClass.contains("active")) {
+                        tabBtns.forEach(b => b.classList.remove('active'));
+                        tabContents.forEach(content => content.classList.remove('active'));
+                        return;
+                    }
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    checkClass.add('active');
+                    console.log("btn", btn.dataset.tab);
+                    switch (btn.dataset.tab) {
+                        case "donor":
+                            console.log("test", userData.roles.includes('donor'));
+                            autoDetectLocation({
+                                locationInputId: "donor_address",
+                                latInputId: "donor_latitude",
+                                lngInputId: "donor_longitude"
+                            });
+                            break;
+                        case "request_blood":
+                            autoDetectLocation({
+                                locationInputId: "patient_address",
+                                latInputId: "patient_latitude",
+                                lngInputId: "patient_longitude"
+                            });
+                            break;
+                        case "volunteer":
+                            autoDetectLocation({
+                                locationInputId: "volunteer_address",
+                                latInputId: "volunteer_latitude",
+                                lngInputId: "volunteer_longitude"
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            });
+
+            document.querySelectorAll(".registration-section .form-check-input").forEach(function(item) {
+                item.addEventListener("change", function(elm) {
+                    const checkbox = elm.target;
+                    // closest parent container
+                    const parent = checkbox.closest("form");
+                    // find input inside that parent
+                    const input = parent.querySelector("input[name='whatsapp_checkbox']");
+                    const contact = parent.querySelector("input[name='mobile']");
+                    const whatsapp = parent.querySelector("input[name='whatsapp_number']");
+                    console.log(input.checked, contact.value, whatsapp.value);
+                    if (input.checked) {
+                        whatsapp.value = contact.value;
+                        whatsapp.setAttribute('readonly', true);
+                    } else {
+                        whatsapp.value = '';
+                        whatsapp.removeAttribute('readonly');
+                    }
+                });
+            });
+
+            // Request Blood Starts here................................
+            document.getElementById("requestFor_self").addEventListener('change', function() {
+
+                const form = this.closest('form'); // ✅ get current form
+
+                if (this.checked) {
+                    showLoader();
+                    fetch(`{{ url('/') }}/api/v1/user`, {
+                            headers: {
+                                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            fillForm(form, data);
+                            disableFields(form, true);
+                        })
+                        .catch(err => {
+                            console.error("Error fetching user data", err);
+                            alert("Failed to auto-fill data. Please try again.");
+                            this.checked = false; // uncheck on error
+                        })
+                        .finally(() => {
+                            hideLoader();
+                        });
+                } else {
+                    clearForm(form);
+                    disableFields(form, false);
+                }
+            });
+            document.getElementById("requestFor_other").addEventListener('change', function() {
                 const form = this.closest('form');
+                clearForm(form);
+                disableFields(form, false);
+            });
 
+            // function fillForm(form, data) {
+            //     form.querySelector('[name="name"]').value = data.name || '';
+            //     form.querySelector('[name="email"]').value = data.email || '';
+            //     form.querySelector('[name="mobile"]').value = data.mobile || '';
+            //     form.querySelector('[name="whatsapp_number"]').value = data.whatsapp_number || '';
+            //     form.querySelector('[name="blood_group"]').value = data.blood_group || '';
+            //     form.querySelector('[name="dob"]').value = data.dob || '';
+            //     form.querySelector('[name="gender"]').value = data.gender || '';
+            //     form.querySelector('[name="address"]').value = data.address || '';
+            //     // form.querySelector('[name="pin_code"]').value = data.pin_code || '';
+            //     form.querySelector('[name="patient_latitude"]').value = data.latitude || '';
+            //     form.querySelector('[name="patient_longitude"]').value = data.longitude || '';
+            // }
+
+            function fillForm(form, data, fields = {
+                name: 'name',
+                email: 'email',
+                mobile: 'mobile',
+                whatsapp_number: 'whatsapp_number',
+                blood_group: 'blood_group',
+                dob: 'dob',
+                gender: 'gender',
+                address: 'address',
+                patient_latitude: 'latitude',
+                patient_longitude: 'longitude'
+            }) {
+                Object.entries(fields).forEach(([formName, dataKey]) => {
+                    const input = form.querySelector(`[name="${formName}"]`);
+                    if (input && data[dataKey] !== null) {
+                        input.value = data[dataKey];
+                    }
+                });
+            }
+
+            function disableFields(form, state) {
+                const fields = ['name', 'email', 'mobile', 'whatsapp_number', 'address'];
+                fields.forEach(field => {
+                    const el = form.querySelector(`[name="${field}"]`);
+                    el.readOnly = state ? el.value ? true : false : state;
+                });
+                // Disable selects too (like blood group, year)
+                ['blood_group', 'dob', 'gender'].forEach(field => {
+                    const el = form.querySelector(`[name="${field}"]`);
+                    if (el && el.value) {
+                        el.style.pointerEvents = state ? 'none' : 'auto';
+                        el.style.backgroundColor = state ? '#e9ecef' : '';
+                        el.setAttribute('data-readonly', state);
+                    } else {
+                        el.style.pointerEvents = 'auto';
+                        el.style.backgroundColor = '';
+                        el.setAttribute('data-readonly', false);
+                    }
+                });
+            }
+
+            function clearForm(form) {
+                const fields = ['name', 'email', 'mobile', 'whatsapp_number', 'address', 'blood_group', 'dob',
+                    'gender'
+                ];
+                fields.forEach(field => {
+                    const el = form.querySelector(`[name="${field}"]`);
+                    if (el.type !== 'hidden' && el.type !== 'checkbox' && el.type !== 'radio') {
+                        el.value = '';
+                    }
+                });
+            }
+
+            document.querySelector('#request_blood .registration-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const form = e.target;
+                const formData = new FormData(form);
+
+                try {
+                    // const validPin = await validatePincode(formData.get('address'), formData.get("pin_code"));
+                    // if (!validPin) {
+                    //     return;
+                    // }
+                    if (!formData.get('request_for')) {
+
+                    }
+                    const token = localStorage.getItem('token');
+                    showLoader();
+                    const response = await fetch("{{ route('blood-requests.store') }}", {
+                        method: "POST",
+                        headers: {
+                            Authorization: 'Bearer ' + token,
+                            "Accept": "application/json"
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    if (response.status == 409) {
+                        showAlert("error", data.message || "Failed to submit request. Please check your input.");
+                        hideLoader();
+                        return;
+                    }
+                    if (!response.ok) {
+                        showAlert("error", data.message || "Failed to submit request. Please check your input.");
+                        hideLoader();
+                        return;
+                    }
+                    if (response.status === 201) {
+                        if (checkMessageForOTP(data?.message)) {
+                            // Store the mobile number for later use
+                            window.currentMobileForOTP = formData.get('mobile');
+                            const masked = mobile.substring(0, 2) + "******" + formData.get('mobile').substring(8);
+                            document.getElementById("otpMessage").textContent = "OTP sent to +91 " + masked;
+                            // Show the modal
+                            const otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
+                            otpModal.show();
+                        } else {
+                            showAlert("success", data?.message || "Blood request submitted successfully!");
+                            fetchRequests();
+                            form.reset();
+                        }
+                        // showAlert("success", data?.message);
+                        // Optionally, you can add the new request to the list without reloading
+                        // allRequests.unshift(data);
+                        // render(allRequests.slice(0, 4));
+                        // showAlert("success", "Blood request submitted successfully!");
+                    }
+
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    hideLoader();
+                }
+            });
+            // Function to verify OTP
+            async function verifyOTP() {
+                const otp = document.getElementById('otpInput').value;
+                const mobile = window.currentMobileForOTP;
+
+                if (!otp || otp.length !== 6) {
+                    alert('Please enter a valid 6-digit OTP');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`{{ route('verifyOtp') }}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            mobile: mobile,
+                            otp: otp
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        showAlert('success', 'OTP verified successfully!');
+                        // Close the modal
+                        const otpModal = bootstrap.Modal.getInstance(document.getElementById('otpModal'));
+                        otpModal.hide();
+                        fetchRequests();
+                        // Handle successful verification (e.g., redirect or update UI)
+                        console.log('Login successful:', data);
+                        // You might want to store the token: localStorage.setItem('token', data.token);
+                    } else {
+                        alert(data.message || 'OTP verification failed');
+                    }
+                } catch (error) {
+                    console.error('Error verifying OTP:', error);
+                    alert('An error occurred while verifying OTP');
+                }
+            }
+
+            // Function to resend OTP
+            async function resendOTP() {
+                const mobile = window.currentMobileForOTP;
+
+                if (!mobile) {
+                    alert('Mobile number not available');
+                    return;
+                }
+
+                try {
+                    showLoader();
+                    const response = await fetch(`{{ route('sendOtp') }}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            mobile: mobile
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        const masked = mobile.substring(0, 2) + "******" + mobile.substring(8);
+                        document.getElementById("otpMessage").textContent = "A new OTP has been sent to +91 " + masked;
+                        startResendTimer();
+                        document.querySelector(".otp-box").focus();
+                    } else {
+                        alert(data.message || 'Failed to send OTP');
+                    }
+                } catch (error) {
+                    console.error('Error sending OTP:', error);
+                    alert('An error occurred while sending OTP');
+                } finally {
+                    hideLoader();
+                }
+            }
+
+            // Event listeners
+            document.addEventListener('DOMContentLoaded', function() {
+                // Verify OTP button
+                document.getElementById('verifyOtpBtn').addEventListener('click', verifyOTP);
+
+                // Resend OTP button
+                document.getElementById('resendOtpBtn').addEventListener('click', resendOTP);
+
+                // Allow Enter key to verify OTP
+                document.getElementById('otpInput').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        verifyOTP();
+                    }
+                });
+            });
+            // Request Blood Ends here................................
+
+            // Donor Registration Form Starts here................................
+            document.querySelector('#donor .registration-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const form = e.target;
+                const formData = new FormData(form);
+
+                try {
+                    // const validPin = await validatePincode(formData.get('address'), formData.get("pin_code"));
+                    // if (!validPin) {
+                    //     return;
+                    // }
+                    if (!formData.get('request_for')) {
+
+                    }
+                    const token = localStorage.getItem('token');
+                    const response = await fetch("{{ route('donor.registration') }}", {
+                        method: "POST",
+                        headers: {
+                            Authorization: 'Bearer ' + token,
+                            "Accept": "application/json"
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        showAlert("error", data.message || "Failed to submit request. Please check your input.");
+                        return;
+                    }
+                    if (response.status === 200) {
+                        showAlert("success", "You are successfully registered as a donor!");
+                    }
+                    if (response.status === 201) {
+                        showAlert("success", data.message || "");
+                    }
+                    toggleFields(form, false);
+                    form.reset();
+
+                } catch (error) {
+                    console.error(error);
+                    alert("Something went wrong!");
+                }
+            });
+            document.getElementById("self").addEventListener("change", function() {
+                const form = this.closest('form');
                 if (this.checked) {
                     showLoader();
                     fetch(`{{ url('/') }}/api/v1/user`, {
@@ -2245,132 +2243,173 @@
                     toggleFields(form, false);
                 }
             });
-        });
+            document.getElementById("other").addEventListener("change", function() {
+                const form = this.closest('form');
+                clearForm(form);
+                toggleFields(form, false);
+            });
+            document.querySelectorAll('.autofill-user').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
 
-        function autoFill(form, data) {
+                    const form = this.closest('form');
 
-            const fieldMap = {
-                name: 'name',
-                email: 'email',
-                mobile: 'mobile',
-                whatsapp_number: 'whatsapp_number',
-                address: 'address',
-                blood_group: 'blood_group',
-                dob: 'dob',
-                gender: 'gender'
-            };
-
-            Object.keys(fieldMap).forEach(key => {
-                const input = form.querySelector(`[name="${fieldMap[key]}"]`);
-                if (input && data[key]) {
-                    input.value = data[key];
-                }
+                    if (this.checked) {
+                        showLoader();
+                        fetch(`{{ url('/') }}/api/v1/user`, {
+                                headers: {
+                                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                                    'Accept': 'application/json'
+                                }
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.roles.includes('donor')) {
+                                    showAlert('warning', 'You are already registered as donor');
+                                    checkbox.checked = false;
+                                    return;
+                                }
+                                autoFill(form, data);
+                                toggleFields(form, true);
+                            })
+                            .catch(err => {
+                                console.error("Error fetching user data", err);
+                                showAlert('error', "Failed to auto-fill data. Please try again.");
+                                this.checked = false;
+                            })
+                            .finally(() => {
+                                hideLoader();
+                            });
+                    } else {
+                        clearForm(form);
+                        toggleFields(form, false);
+                    }
+                });
             });
 
-            // Special case: WhatsApp same as contact checkbox (if exists)
-            const sameCheckbox = form.querySelector('#sameAsContact');
-            if (sameCheckbox && data.mobile === data.whatsapp_number) {
-                sameCheckbox.checked = true;
-            }
-        }
+            function autoFill(form, data) {
 
-        function toggleFields(form, state) {
-            const fields = ['name', 'email', 'mobile', 'whatsapp_number', 'address'];
-
-            fields.forEach(field => {
-                const el = form.querySelector(`[name="${field}"]`);
-                if (el && el.value) {
-                    el.readOnly = state;
-                } else {
-                    el.readOnly = false;
+                const fieldMap = {
+                    name: 'name',
+                    email: 'email',
+                    mobile: 'mobile',
+                    whatsapp_number: 'whatsapp_number',
+                    address: 'address',
+                    blood_group: 'blood_group',
+                    dob: 'dob',
+                    gender: 'gender'
                 };
-            });
 
-            // Disable selects too (like blood group, year)
-            ['blood_group', 'dob', 'gender'].forEach(field => {
-                const el = form.querySelector(`[name="${field}"]`);
-                if (el && el.value) {
-                    el.style.pointerEvents = state ? 'none' : 'auto';
-                    el.style.backgroundColor = state ? '#e9ecef' : '';
-                    el.setAttribute('data-readonly', state);
-                } else {
-                    el.style.pointerEvents = 'auto';
-                    el.style.backgroundColor = '';
-                    el.setAttribute('data-readonly', false);
+                Object.keys(fieldMap).forEach(key => {
+                    const input = form.querySelector(`[name="${fieldMap[key]}"]`);
+                    if (input && data[key]) {
+                        input.value = data[key];
+                    }
+                });
+
+                // Special case: WhatsApp same as contact checkbox (if exists)
+                const sameCheckbox = form.querySelector('#sameAsContact');
+                if (sameCheckbox && data.mobile === data.whatsapp_number) {
+                    sameCheckbox.checked = true;
                 }
-            });
-        }
-
-        // Donor Registration Form Ends here................................
-
-        // function volunteerFields(elm) {
-        //     let volunteer = document.getElementById('volunteer');
-        //     const types = ['individual', 'ngo', 'charity', 'club'];
-        //     volunteer.removeAttribute("style");
-        //     document.querySelectorAll('.fields').forEach(field => {
-        //         field.style.display = 'none';
-        //     });
-        //     switch (elm.value) {
-        //         case "individual":
-        //             document.getElementById('individual').style.display = 'block';
-        //             break;
-        //         case "ngo":
-        //             document.getElementById('ngo').style.display = 'block';
-        //             volunteer.style.maxWidth = '800px';
-        //             break;
-        //         case "charity":
-        //             document.getElementById('charity').style.display = 'block';
-        //             volunteer.style.maxWidth = '800px';
-        //             break;
-        //         case "club":
-        //             document.getElementById('club').style.display = 'block';
-        //             volunteer.style.maxWidth = '800px';
-        //             break;
-        //         default:
-        //             break;
-        //     }
-        //     types.forEach(type => {
-        //         const section = document.getElementById(type);
-        //         const inputs = section.querySelectorAll('input, select, textarea');
-
-        //         if (type === elm.value) {
-        //             section.style.display = 'block';
-        //             inputs.forEach(el => el.disabled = false);
-        //         } else {
-        //             section.style.display = 'none';
-        //             inputs.forEach(el => {
-        //                 el.disabled = true;
-        //                 el.removeAttribute('required');
-        //             });
-        //         }
-        //     });
-        // }
-        function volunteerFields(elm) {
-            let volunteer = document.getElementById('volunteer');
-            const types = ['individual', 'ngo', 'charity', 'club'];
-            volunteer.removeAttribute("style");
-            document.querySelectorAll('.fields').forEach(field => {
-                field.style.display = 'none';
-            });
-            switch (elm.value) {
-                case "individual":
-                    document.getElementById('individual').style.display = 'block';
-                    break;
-                case "ngo":
-                    document.getElementById('ngo').style.display = 'block';
-                    volunteer.style.maxWidth = '800px';
-                    break;
-                case "charity":
-                    document.getElementById('ngo').style.display = 'block';
-                    volunteer.style.maxWidth = '800px';
-                    break;
-                case "club":
-                    document.getElementById('ngo').style.display = 'block';
-                    volunteer.style.maxWidth = '800px';
-                    break;
-                default:
-                    break;
             }
+
+            function toggleFields(form, state) {
+                const fields = ['name', 'email', 'mobile', 'whatsapp_number', 'address'];
+
+                fields.forEach(field => {
+                    const el = form.querySelector(`[name="${field}"]`);
+                    if (el && el.value) {
+                        el.readOnly = state;
+                    } else {
+                        el.readOnly = false;
+                    };
+                });
+
+                // Disable selects too (like blood group, year)
+                ['blood_group', 'dob', 'gender'].forEach(field => {
+                    const el = form.querySelector(`[name="${field}"]`);
+                    if (el && el.value) {
+                        el.style.pointerEvents = state ? 'none' : 'auto';
+                        el.style.backgroundColor = state ? '#e9ecef' : '';
+                        el.setAttribute('data-readonly', state);
+                    } else {
+                        el.style.pointerEvents = 'auto';
+                        el.style.backgroundColor = '';
+                        el.setAttribute('data-readonly', false);
+                    }
+                });
+            }
+
+            // Donor Registration Form Ends here................................
+
+            // function volunteerFields(elm) {
+            //     let volunteer = document.getElementById('volunteer');
+            //     const types = ['individual', 'ngo', 'charity', 'club'];
+            //     volunteer.removeAttribute("style");
+            //     document.querySelectorAll('.fields').forEach(field => {
+            //         field.style.display = 'none';
+            //     });
+            //     switch (elm.value) {
+            //         case "individual":
+            //             document.getElementById('individual').style.display = 'block';
+            //             break;
+            //         case "ngo":
+            //             document.getElementById('ngo').style.display = 'block';
+            //             volunteer.style.maxWidth = '800px';
+            //             break;
+            //         case "charity":
+            //             document.getElementById('charity').style.display = 'block';
+            //             volunteer.style.maxWidth = '800px';
+            //             break;
+            //         case "club":
+            //             document.getElementById('club').style.display = 'block';
+            //             volunteer.style.maxWidth = '800px';
+            //             break;
+            //         default:
+            //             break;
+            //     }
+            //     types.forEach(type => {
+            //         const section = document.getElementById(type);
+            //         const inputs = section.querySelectorAll('input, select, textarea');
+
+            //         if (type === elm.value) {
+            //             section.style.display = 'block';
+            //             inputs.forEach(el => el.disabled = false);
+            //         } else {
+            //             section.style.display = 'none';
+            //             inputs.forEach(el => {
+            //                 el.disabled = true;
+            //                 el.removeAttribute('required');
+            //             });
+            //         }
+            //     });
+            // }
+            function volunteerFields(elm) {
+                let volunteer = document.getElementById('volunteer');
+                const types = ['individual', 'ngo', 'charity', 'club'];
+                volunteer.removeAttribute("style");
+                document.querySelectorAll('.fields').forEach(field => {
+                    field.style.display = 'none';
+                });
+                switch (elm.value) {
+                    case "individual":
+                        document.getElementById('individual').style.display = 'block';
+                        break;
+                    case "ngo":
+                        document.getElementById('ngo').style.display = 'block';
+                        volunteer.style.maxWidth = '800px';
+                        break;
+                    case "charity":
+                        document.getElementById('ngo').style.display = 'block';
+                        volunteer.style.maxWidth = '800px';
+                        break;
+                    case "club":
+                        document.getElementById('ngo').style.display = 'block';
+                        volunteer.style.maxWidth = '800px';
+                        break;
+                    default:
+                        break;
+                }
                 const sectionMap = {
                     individual: 'individual',
                     ngo: 'ngo',
@@ -2395,161 +2434,162 @@
                         });
                     }
                 });
-        }
-        function addMember() {
-            let memberRow = document.querySelector('.member-row').cloneNode(true);
-            memberRow.querySelectorAll('input').forEach(input => input.value = "");
-            document.getElementById('members-area').appendChild(memberRow);
-        }
+            }
 
-        document.getElementById("volunteer_request_for_self").addEventListener('change', function() {
+            function addMember() {
+                let memberRow = document.querySelector('.member-row').cloneNode(true);
+                memberRow.querySelectorAll('input').forEach(input => input.value = "");
+                document.getElementById('members-area').appendChild(memberRow);
+            }
 
-            const form = this.closest('form');
-            console.log("form", form);
-            if (this.checked) {
-                showLoader();
-                fetch(`{{ url('/') }}/api/v1/user`, {
-                        headers: {
-                            'Authorization': 'Bearer ' + localStorage.getItem('token'),
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        fillForm(form, data, {
-                            name: 'name',
-                            email: 'email',
-                            mobile: 'mobile',
-                            whatsapp_number: 'whatsapp_number',
-                            blood_group: 'blood_group',
-                            dob: 'dob',
-                            gender: 'gender',
-                            address: 'address',
-                            volunteer_latitude: 'latitude',
-                            volunteer_longitude: 'longitude'
+            document.getElementById("volunteer_request_for_self").addEventListener('change', function() {
+
+                const form = this.closest('form');
+                console.log("form", form);
+                if (this.checked) {
+                    showLoader();
+                    fetch(`{{ url('/') }}/api/v1/user`, {
+                            headers: {
+                                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            fillForm(form, data, {
+                                name: 'name',
+                                email: 'email',
+                                mobile: 'mobile',
+                                whatsapp_number: 'whatsapp_number',
+                                blood_group: 'blood_group',
+                                dob: 'dob',
+                                gender: 'gender',
+                                address: 'address',
+                                volunteer_latitude: 'latitude',
+                                volunteer_longitude: 'longitude'
+                            });
+                            disableFields(form, true);
+                        })
+                        .catch(err => {
+                            console.error("Error fetching user data", err);
+                            alert("Failed to auto-fill data. Please try again.");
+                            this.checked = false; // uncheck on error
+                        })
+                        .finally(() => {
+                            hideLoader();
                         });
-                        disableFields(form, true);
-                    })
-                    .catch(err => {
-                        console.error("Error fetching user data", err);
-                        alert("Failed to auto-fill data. Please try again.");
-                        this.checked = false; // uncheck on error
-                    })
-                    .finally(() => {
-                        hideLoader();
-                    });
-            } else {
+                } else {
+                    clearForm(form);
+                    disableFields(form, false);
+                }
+            });
+            document.getElementById("volunteer_request_for_other").addEventListener('change', function() {
+                const form = this.closest('form');
                 clearForm(form);
                 disableFields(form, false);
-            }
-        });
-        document.getElementById("volunteer_request_for_other").addEventListener('change', function() {
-            const form = this.closest('form');
-            clearForm(form);
-            disableFields(form, false);
-        });
-
-        document.querySelector('#volunteer .registration-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const form = this;
-            let formData = new FormData(form);
-            let action = "{{route('volunteer.organization.registration')}}";
-            if(formData.get("type") == "individual"){
-                action = this.action;
-            }
-            const token = localStorage.getItem('token');
-            const response = await fetch(action, {
-                method: 'POST',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    "Accept": "application/json"
-                },
-                body: formData
             });
 
-            const data = await response.json();
-            if (response.status == 409) {
-                showAlert("error", data.message || "Failed to submit request. Please check your input.");
-                hideLoader();
-                return;
-            }
-            if (!response.ok) {
-                showAlert("error", data.message || "Failed to submit request. Please check your input.");
-                hideLoader();
-                return;
-            }
-            if (response.status === 201) {
-                if (data?.data?.otp_sent) {
-                    // Store the mobile number for later use
-                    window.currentMobileForOTP = formData.get('mobile');
-                    const masked = mobile.substring(0, 2) + "******" + formData.get('mobile').substring(8);
-                    document.getElementById("otpMessage").textContent = "OTP sent to +91 " + masked;
-                    // Show the modal
-                    const otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
-                    otpModal.show();
-                } else {
-                    showAlert("success", data?.message || "Volunteer Registered Successfully.");
-                    fetchRequests();
-                    form.reset();
+            document.querySelector('#volunteer .registration-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const form = this;
+                let formData = new FormData(form);
+                let action = "{{ route('volunteer.organization.registration') }}";
+                if (formData.get("type") == "individual") {
+                    action = this.action;
                 }
-            }
-        });
-    </script>
+                const token = localStorage.getItem('token');
+                const response = await fetch(action, {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        "Accept": "application/json"
+                    },
+                    body: formData
+                });
 
-    @if (session('success'))
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Registration Successful 🎉',
-                html: `
+                const data = await response.json();
+                if (response.status == 409) {
+                    showAlert("error", data.message || "Failed to submit request. Please check your input.");
+                    hideLoader();
+                    return;
+                }
+                if (!response.ok) {
+                    showAlert("error", data.message || "Failed to submit request. Please check your input.");
+                    hideLoader();
+                    return;
+                }
+                if (response.status === 201) {
+                    if (data?.data?.otp_sent) {
+                        // Store the mobile number for later use
+                        window.currentMobileForOTP = formData.get('mobile');
+                        const masked = mobile.substring(0, 2) + "******" + formData.get('mobile').substring(8);
+                        document.getElementById("otpMessage").textContent = "OTP sent to +91 " + masked;
+                        // Show the modal
+                        const otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
+                        otpModal.show();
+                    } else {
+                        showAlert("success", data?.message || "Volunteer Registered Successfully.");
+                        fetchRequests();
+                        form.reset();
+                    }
+                }
+            });
+        </script>
+
+        @if (session('success'))
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Registration Successful 🎉',
+                    html: `
                 <p style="font-size: 16px;">
                     You have successfully registered.<br><br>
                     📧 <strong>Please check your email</strong> to verify your account<br>
                     🔐 and <strong>set your password</strong>.
                 </p>
             `,
-                confirmButtonText: 'Got it!',
-                confirmButtonColor: '#e63946',
-                backdrop: true
-            });
-        </script>
-    @endif
+                    confirmButtonText: 'Got it!',
+                    confirmButtonColor: '#e63946',
+                    backdrop: true
+                });
+            </script>
+        @endif
 
-    @if (session('error'))
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                html: `
+        @if (session('error'))
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    html: `
                 <p style="font-size: 16px;">
                     {{ session('error') }}<br><br>
                 </p>
             `,
-                confirmButtonText: 'Try Again',
-                confirmButtonColor: '#e63946',
-                backdrop: true
-            });
-        </script>
-    @endif
+                    confirmButtonText: 'Try Again',
+                    confirmButtonColor: '#e63946',
+                    backdrop: true
+                });
+            </script>
+        @endif
 
-    <!-- Showing validation errors (if any) -->
-    @if ($errors->any())
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: 'There were some problems',
-                html: `
+        <!-- Showing validation errors (if any) -->
+        @if ($errors->any())
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'There were some problems',
+                    html: `
                 <ul style="font-size: 16px;">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
             `,
-                confirmButtonText: 'Got it!',
-                confirmButtonColor: '#e63946',
-                backdrop: true
-            });
-        </script>
-    @endif
-@endsection
+                    confirmButtonText: 'Got it!',
+                    confirmButtonColor: '#e63946',
+                    backdrop: true
+                });
+            </script>
+        @endif
+    @endsection
 @endsection

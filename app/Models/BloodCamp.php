@@ -15,6 +15,8 @@ class BloodCamp extends Model
         'start_time',
         'end_time',
         'location',
+        'camp_latitude',
+        'camp_longitude',
         'slug',
         'status',
     ];

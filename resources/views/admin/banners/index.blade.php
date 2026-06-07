@@ -36,7 +36,7 @@
                         <td>{{ $banner->id }}</td>
 
                         <td>
-                            <img src="{{ asset('/public/storage/' . $banner->image) }}"
+                            <img src="{{ asset('/storage/app/public/' . $banner->image) }}"
                                  width="120"
                                  class="img-thumbnail">
                         </td>
