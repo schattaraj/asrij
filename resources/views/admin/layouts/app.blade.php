@@ -231,6 +231,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{{route('admin.testimonials.index')}}">
+                            <span class="menu-title">Testimonials</span>
+                            <i class="mdi mdi-comment-account menu-icon"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{route('admin.our-organization')}}">
                             <span class="menu-title">Our Organization</span>
                             <i class="mdi mdi-handshake menu-icon"></i>

@@ -817,6 +817,7 @@
 
         function toggleRole(userRoles, sectionId, roleName) {
             const section = document.getElementById(sectionId);
+            if(section){
             const form = section.querySelector(".registration-form");
             const message = section.querySelector(".role-message");
             const request_for = section.querySelector("input[value='self'] + label");
@@ -829,6 +830,7 @@
             } else {
                 // form.classList.remove("d-none");
                 // message.classList.add("d-none");
+            }
             }
         }
 

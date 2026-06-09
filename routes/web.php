@@ -15,6 +15,7 @@ use App\Http\Controllers\SupportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\Admin\BloodCampController;
+use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\OrganizationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -70,6 +71,7 @@ Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group
     Route::get('/', [AdminController::class, 'index'])->name('dashboard');
     Route::resource('banners', BannerController::class);
     Route::resource('camps', BloodCampController::class);
+    Route::resource('testimonials', TestimonialController::class);
     Route::get('our-organization', [OrganizationController::class,'ourOrganization'])->name('our-organization');
     Route::put('our-organization/{organization}', [OrganizationController::class,'ourOrganizationUpdate'])->name('organization.update');
     Route::delete('our-organization/member/{member}', [OrganizationController::class,'destroyMember'])->name('organization.member.destroy');

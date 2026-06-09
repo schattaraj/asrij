@@ -88,15 +88,15 @@
     <!-- ===== STATS SECTION ===== -->
     <section class="stats">
         <div class="stat-box">
-            <h2 class="count" data-target="2345">0</h2>
+            <h2 class="count" data-target="345">0</h2>
             <p>Total Units Donated</p>
         </div>
         <div class="stat-box">
-            <h2 class="count" data-target="1120">0</h2>
+            <h2 class="count" data-target="98">0</h2>
             <p>Total Donors</p>
         </div>
         <div class="stat-box">
-            <h2 class="count" data-target="980">0</h2>
+            <h2 class="count" data-target="80">0</h2>
             <p>Total Receivers</p>
         </div>
         <div class="stat-box">
@@ -849,7 +849,7 @@
             <!-- Section Header -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h3 class="fw-bold mb-0 section-title">🩸 Blood Requests</h3>
+                    <h3 class="fw-bold mb-0 section-title"><i class="fa-solid fa-droplet"></i> Blood Requests</h3>
                     <small class="text-muted">Help save lives by responding to requests</small>
                 </div>
                 <span class="badge bg-danger px-3 py-2">Live</span>
@@ -1446,35 +1446,30 @@
             <div class="swiper mySwiper" data-aos="fade-down">
                 <div class="swiper-wrapper">
 
-                    <!-- Testimonial 1 -->
-                    <div class="swiper-slide">
-                        <img src="https://i.pravatar.cc/100?img=3" alt="User" class="testimonial-img" />
-                        <h3 class="testimonial-name">Sarah Johnson</h3>
-                        <p class="testimonial-text">
-                            “Absolutely amazing experience! The team was professional, friendly, and went above and beyond
-                            my expectations.”
-                        </p>
-                    </div>
-
-                    <!-- Testimonial 2 -->
-                    <div class="swiper-slide">
-                        <img src="https://i.pravatar.cc/100?img=5" alt="User" class="testimonial-img" />
-                        <h3 class="testimonial-name">Michael Smith</h3>
-                        <p class="testimonial-text">
-                            “I’ve seen great results since using their service. Highly recommended to anyone looking for
-                            quality and reliability!”
-                        </p>
-                    </div>
-
-                    <!-- Testimonial 3 -->
-                    <div class="swiper-slide">
-                        <img src="https://i.pravatar.cc/100?img=8" alt="User" class="testimonial-img" />
-                        <h3 class="testimonial-name">Emily Davis</h3>
-                        <p class="testimonial-text">
-                            “Fantastic customer support and beautiful results. I’ll definitely be returning for future
-                            projects.”
-                        </p>
-                    </div>
+                    @forelse ($testimonials as $testimonial)
+                        <div class="swiper-slide">
+                            <img src="{{ $testimonial->image ? asset('/storage/app/public/' . $testimonial->image) : 'https://i.pravatar.cc/100' }}"
+                                alt="{{ $testimonial->name }}" class="testimonial-img" />
+                            <h3 class="testimonial-name">{{ $testimonial->name }}</h3>
+                            @if ($testimonial->profession)
+                                <span class="testimonial-profession d-block text-muted mb-2"
+                                    style="font-size:13px;">{{ $testimonial->profession }}</span>
+                            @endif
+                            <p class="testimonial-text">
+                                “{{ $testimonial->message }}”
+                            </p>
+                        </div>
+                    @empty
+                        <!-- Fallback testimonial when none are configured -->
+                        <div class="swiper-slide">
+                            <img src="https://i.pravatar.cc/100?img=3" alt="User" class="testimonial-img" />
+                            <h3 class="testimonial-name">Sarah Johnson</h3>
+                            <p class="testimonial-text">
+                                “Absolutely amazing experience! The team was professional, friendly, and went above and
+                                beyond my expectations.”
+                            </p>
+                        </div>
+                    @endforelse
 
                 </div>
 

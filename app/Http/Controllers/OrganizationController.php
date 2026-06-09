@@ -71,7 +71,7 @@ class OrganizationController extends Controller
         $organization = VolunteerOrganization::with([
         'members.user',
         'creator'
-    ])->findOrFail(3);
+    ])->findOrFail(env('ORGANIZAION_ID'));
     $users = User::orderBy('name')->get();
     return view('admin.our-organization.index',compact('organization','users'));
     }

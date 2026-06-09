@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Banner;
 use App\Models\BloodCamp;
+use App\Models\Testimonial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,7 +17,10 @@ class PageController extends Controller
         $blood_camps = BloodCamp::where('status', 1)
         ->latest('camp_date')
         ->get();
-        return view('home',compact('banners','blood_camps'));
+        $testimonials = Testimonial::where('status', 1)
+        ->orderBy('sort_order')
+        ->get();
+        return view('home',compact('banners','blood_camps','testimonials'));
     }
 
     public function about() {
