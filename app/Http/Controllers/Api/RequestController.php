@@ -235,6 +235,27 @@ public function index(Request $request)
 
         /*
         |--------------------------------------------------------------------------
+        | Expiry detection
+        |--------------------------------------------------------------------------
+        | A request expires once "created_at + required_before" has passed.
+        | required_before_unit is either "hours" or "days".
+        */
+        $expiresAt = null;
+        $isExpired = false;
+
+        if ($req->created_at && $req->required_before) {
+            $expiresAt = $req->required_before_unit === 'hours'
+                ? $req->created_at->copy()->addHours((int) $req->required_before)
+                : $req->created_at->copy()->addDays((int) $req->required_before);
+
+            $isExpired = now()->greaterThan($expiresAt);
+        }
+
+        $req->setAttribute('expires_at', $expiresAt);
+        $req->setAttribute('is_expired', $isExpired);
+
+        /*
+        |--------------------------------------------------------------------------
         | Optimized response lookup
         |--------------------------------------------------------------------------
         */

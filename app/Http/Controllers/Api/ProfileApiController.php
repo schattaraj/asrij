@@ -153,6 +153,17 @@ TEXT;
             ], 403);
         }
 
+        // Only an admin or president of the organization may add members.
+        // Plain members are not allowed to add other members.
+        $allowedPositions = ['admin', 'president'];
+
+        if (!in_array(strtolower((string) $volunteer->position), $allowedPositions, true)) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Only an admin or president can add organization members.',
+            ], 403);
+        }
+
         $memberUser = !empty($data['user_id'])
             ? User::find($data['user_id'])
             : User::where('mobile', $data['mobile'])->first();
@@ -217,6 +228,47 @@ TEXT;
                 'member' => $member,
             ],
         ], 201);
+    }
+
+    /**
+     * GET /api/v1/profile/volunteer-members/search?mobile=98765
+     *
+     * Typeahead search for the add-member flow. Names are not unique, so
+     * members are resolved by mobile number. Returns a lightweight list.
+     */
+    public function searchVolunteerMembers(Request $request)
+    {
+        $request->validate([
+            'mobile' => 'required|string|max:20',
+        ]);
+
+        $user  = $request->user();
+        $roles = is_array($user->roles) ? $user->roles : (json_decode($user->roles, true) ?: []);
+
+        if (!in_array('volunteer', $roles, true)) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Only volunteers can search members.',
+            ], 403);
+        }
+
+        // Digits only — match against the stored mobile number.
+        $term = preg_replace('/\D+/', '', (string) $request->query('mobile'));
+
+        if ($term === '') {
+            return response()->json(['status' => true, 'data' => []]);
+        }
+
+        $users = User::where('mobile', 'like', "%{$term}%")
+            ->where('id', '!=', $user->id)
+            ->orderBy('mobile')
+            ->limit(10)
+            ->get(['id', 'name', 'mobile', 'blood_group']);
+
+        return response()->json([
+            'status' => true,
+            'data'   => $users,
+        ]);
     }
 
     /**

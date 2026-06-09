@@ -26,6 +26,25 @@
     <link rel="stylesheet" href="dist/assets/css/custom.css">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="assets/img/favicon.png" />
+    <style>
+.pac-container {
+  z-index: 1070 !important; /* higher than Bootstrap modal (1055) */
+}
+.clear-location {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  color: #999;
+  cursor: pointer;
+  font-size: 18px;
+  display: none;
+}
+
+.clear-location:hover {
+  color: #dc3545;
+}
+    </style>
 </head>
 
 <body>
@@ -334,7 +353,7 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFkLT1PNls0HcQ6eb2ARdlj5SvsVMyQqk&libraries=places"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_API_KEY') }}&libraries=places"></script>
     <script src="{{ asset('js/custom.js') }}"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {

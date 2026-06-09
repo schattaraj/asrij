@@ -49,6 +49,36 @@
     .role-chip.add:hover { background: #ffe4eb; }
     .verified-tick { color: #16a34a; }
 
+    /* Add-member mobile typeahead */
+    .vm-search-wrap { position: relative; }
+    .vm-search-icon {
+        position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+        color: #b08; opacity: .55; font-size: 13px; pointer-events: none;
+    }
+    .vm-search-input { padding-left: 38px; }
+    .vm-search-spinner { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); }
+    .vm-search-results {
+        position: absolute; z-index: 1080; top: 100%; left: 0; right: 0; margin-top: 6px;
+        max-height: 250px; overflow-y: auto; background: #fff;
+        border: 1px solid #f1e6e8; border-radius: 12px;
+        box-shadow: 0 12px 30px rgba(15,23,36,0.12);
+    }
+    .vm-search-results .vm-result-item {
+        display: block; width: 100%; text-align: left; border: 0;
+        border-bottom: 1px solid #f6eef0; background: #fff;
+        padding: 10px 14px; cursor: pointer; transition: background .15s ease;
+    }
+    .vm-search-results .vm-result-item:last-child { border-bottom: 0; }
+    .vm-search-results .vm-result-item:hover { background: #ffe4eb; }
+    .vm-result-name { font-weight: 600; font-size: 14px; color: #0f1724; }
+    .vm-result-meta { font-size: 12.5px; color: #6a7280; margin-top: 2px; }
+    .vm-search-empty { padding: 12px 14px; font-size: 13px; color: #6a7280; }
+    .vm-selected-card {
+        display: flex; align-items: center; justify-content: space-between; gap: 10px;
+        border: 1px solid #f1e6e8; border-radius: 12px; padding: 10px 14px; background: #fbf5f6;
+    }
+    .vm-selected-card .vm-result-name { color: #c70039; }
+
     /* Activity tiles */
     .activity-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
     @media (max-width: 767.98px) { .activity-row { grid-template-columns: repeat(2, 1fr); } }
@@ -339,12 +369,23 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Select Member</label>
-                        {{-- <input type="text" class="form-control" id="vmMobile" maxlength="15" inputmode="numeric" required> --}}
-                        <select id="vmMember" class="form-select">
-                            <option value="">Select Member</option>
-                        </select>
+                    <div class="mb-3 vm-search-wrap">
+                        <label class="form-label">Search Member by Mobile</label>
+                        <div class="position-relative">
+                            <i class="fa-solid fa-magnifying-glass vm-search-icon"></i>
+                            <input type="text" class="form-control vm-search-input" id="vmMemberSearch"
+                                autocomplete="off" inputmode="numeric" maxlength="15"
+                                placeholder="Type a mobile number to search…">
+                            <i class="fa-solid fa-spinner fa-spin vm-search-spinner text-muted d-none"
+                                id="vmSearchSpinner"></i>
+                        </div>
+                        {{-- Holds the resolved, unique user id --}}
+                        <input type="hidden" id="vmMember">
+                        {{-- Live results popup --}}
+                        <div id="vmMemberResults" class="vm-search-results d-none"></div>
+                        {{-- Selected member card --}}
+                        <div id="vmMemberSelected" class="mt-2 d-none"></div>
+                        <div class="form-text">Names can repeat — search by mobile number to pick the right person.</div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Position</label>
@@ -421,7 +462,6 @@ async function ppLoadProfile() {
         ppRenderActivity(json.data.activity);
         ppRenderForm(json.data.user);
         ppRenderRoleSection(json.data);
-        ppRenderUsers(json.data.users);
     } catch (err) {
         ppFire('error', 'Oops!', err.message || 'Could not load your profile.');
     } finally {
@@ -429,17 +469,144 @@ async function ppLoadProfile() {
     }
     ppLoadDevices(); // independent fetch
 }
-function ppRenderUsers(users = []) {
-    const select = document.getElementById('vmMember');
+/* ── ADD MEMBER: mobile-number typeahead ─────────────────────────── */
+let _vmSearchTimer = null;
+let _vmSelectedUser = null;
 
-    select.innerHTML = '<option value="">Select Member</option>';
+function ppInitMemberSearch() {
+    const input = document.getElementById('vmMemberSearch');
+    if (!input) return;
 
-    users.forEach(user => {
-        const option = document.createElement('option');
-        option.value = user.id; // or user.mobile, depending on your requirement
-        option.textContent = user.name; // adjust property name if different
-        select.appendChild(option);
+    input.addEventListener('input', () => {
+        const term = input.value.trim();
+        // Any new typing invalidates a previously selected member.
+        ppClearSelectedMember(false);
+
+        clearTimeout(_vmSearchTimer);
+        if (term.length < 3) {
+            ppHideMemberResults();
+            return;
+        }
+        _vmSearchTimer = setTimeout(() => ppSearchMembers(term), 300);
     });
+
+    // Close the results popup when clicking outside the search box.
+    document.addEventListener('click', (e) => {
+        const wrap = input.closest('.vm-search-wrap');
+        if (wrap && !wrap.contains(e.target)) ppHideMemberResults();
+    });
+
+    // Reset the whole picker every time the modal closes.
+    const modalEl = document.getElementById('addVolunteerMemberModal');
+    modalEl && modalEl.addEventListener('hidden.bs.modal', () => {
+        input.value = '';
+        ppClearSelectedMember(true);
+        ppHideMemberResults();
+    });
+}
+
+async function ppSearchMembers(term) {
+    const spinner = document.getElementById('vmSearchSpinner');
+    spinner && spinner.classList.remove('d-none');
+    try {
+        const res = await fetch(
+            `${PROFILE_API_BASE}/profile/volunteer-members/search?mobile=${encodeURIComponent(term)}`,
+            { headers: ppHeaders() }
+        );
+        const json = await res.json();
+        if (!res.ok || !json.status) throw new Error(json.message || 'Search failed.');
+        ppRenderMemberResults(json.data || []);
+    } catch (e) {
+        ppRenderMemberResults([], e.message);
+    } finally {
+        spinner && spinner.classList.add('d-none');
+    }
+}
+
+function ppRenderMemberResults(users, errorMsg) {
+    const box = document.getElementById('vmMemberResults');
+    if (!box) return;
+
+    if (errorMsg) {
+        box.innerHTML = `<div class="vm-search-empty text-danger">${ppEsc(errorMsg)}</div>`;
+        box.classList.remove('d-none');
+        return;
+    }
+
+    if (!users.length) {
+        box.innerHTML = `<div class="vm-search-empty">No users found with that mobile number.</div>`;
+        box.classList.remove('d-none');
+        return;
+    }
+
+    box.innerHTML = users.map(u => `
+        <button type="button" class="vm-result-item"
+                data-id="${ppEsc(u.id)}"
+                data-name="${ppEsc(u.name || '')}"
+                data-mobile="${ppEsc(u.mobile || '')}"
+                data-bg="${ppEsc(u.blood_group || '')}">
+            <div class="vm-result-name">${ppEsc(u.name || 'Unknown user')}</div>
+            <div class="vm-result-meta">
+                <i class="fa-solid fa-phone me-1"></i>${ppEsc(u.mobile || '—')}
+                ${u.blood_group ? `<span class="ms-2"><i class="fa-solid fa-droplet me-1"></i>${ppEsc(u.blood_group)}</span>` : ''}
+            </div>
+        </button>
+    `).join('');
+
+    box.querySelectorAll('.vm-result-item').forEach(btn => {
+        btn.addEventListener('click', () => ppSelectMember({
+            id: btn.dataset.id,
+            name: btn.dataset.name,
+            mobile: btn.dataset.mobile,
+            blood_group: btn.dataset.bg,
+        }));
+    });
+
+    box.classList.remove('d-none');
+}
+
+function ppSelectMember(user) {
+    _vmSelectedUser = user;
+    document.getElementById('vmMember').value = user.id;
+    document.getElementById('vmMemberSearch').value = user.mobile || '';
+
+    const sel = document.getElementById('vmMemberSelected');
+    sel.innerHTML = `
+        <div class="vm-selected-card">
+            <div>
+                <div class="vm-result-name">${ppEsc(user.name || 'Unknown user')}</div>
+                <div class="vm-result-meta">
+                    <i class="fa-solid fa-phone me-1"></i>${ppEsc(user.mobile || '—')}
+                    ${user.blood_group ? `<span class="ms-2"><i class="fa-solid fa-droplet me-1"></i>${ppEsc(user.blood_group)}</span>` : ''}
+                </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-link text-danger text-decoration-none p-0"
+                    onclick="ppClearSelectedMember(true)">
+                <i class="fa-solid fa-xmark me-1"></i>Change
+            </button>
+        </div>
+    `;
+    sel.classList.remove('d-none');
+    ppHideMemberResults();
+}
+
+function ppClearSelectedMember(resetInput) {
+    _vmSelectedUser = null;
+    const hidden = document.getElementById('vmMember');
+    if (hidden) hidden.value = '';
+
+    const sel = document.getElementById('vmMemberSelected');
+    if (sel) { sel.innerHTML = ''; sel.classList.add('d-none'); }
+
+    if (resetInput) {
+        const input = document.getElementById('vmMemberSearch');
+        if (input) input.value = '';
+    }
+}
+
+function ppHideMemberResults() {
+    const box = document.getElementById('vmMemberResults');
+    if (box) { box.classList.add('d-none'); box.innerHTML = ''; }
 }
 function ppRenderHeader(d) {
     const u = d.user;
@@ -558,12 +725,18 @@ function ppRenderRoleSection(d) {
             }).join('')
             : '<p class="muted mb-0">No other members have been added yet.</p>';
 
+        // Only an admin or president may add members. Hide the button for plain members.
+        const canAddMembers = ['admin', 'president'].includes((v.position || 'member').toLowerCase());
+        const addMemberBtn = canAddMembers
+            ? `<button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#addVolunteerMemberModal">
+                    <i class="fa-solid fa-user-plus me-1"></i> Add Member
+                </button>`
+            : '';
+
         let html = `
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 border-bottom pb-2 mb-3 mt-4">
                 <h5 class="mb-0">Volunteer Details</h5>
-                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#addVolunteerMemberModal">
-                    <i class="fa-solid fa-user-plus me-1"></i> Add Member
-                </button>
+                ${addMemberBtn}
             </div>
             <p><strong>Position:</strong> ${ppEsc((v.position || 'member').replace(/^./, c=>c.toUpperCase()))}</p>
         `;
@@ -817,18 +990,13 @@ async function ppMobileVerifyOtp() {
 
 /* ── DEVICES ─────────────────────────────────────────────────────── */
 async function ppAddVolunteerMember() {
-    // const mobile = document.getElementById('vmMobile').value.trim();
     const member = document.getElementById('vmMember').value;
     const position = document.getElementById('vmPosition').value.trim();
     const lastDonation = document.getElementById('vmLastDonation').value;
     const isAvailable = document.getElementById('vmIsAvailable').value === '1';
 
-    // if (!/^[0-9]{10,15}$/.test(mobile)) {
-    //     ppFire('error', 'Invalid number', 'Enter a valid member mobile number.');
-    //     return;
-    // }
-    if (!/^[0-9]$/.test(member)) {
-        ppFire('error', 'Invalid number', 'Enter a valid member mobile number.');
+    if (!member) {
+        ppFire('error', 'No member selected', 'Search by mobile number and select a user to add.');
         return;
     }
     const btn = document.getElementById('vmAddBtn');
@@ -853,6 +1021,8 @@ async function ppAddVolunteerMember() {
         modal && modal.hide();
         document.getElementById('addVolunteerMemberForm').reset();
         document.getElementById('vmIsAvailable').value = '1';
+        ppClearSelectedMember(true);
+        ppHideMemberResults();
 
         await ppLoadProfile();
         ppFire('success', 'Member added', json.message || 'Member added successfully.');
@@ -924,9 +1094,19 @@ function ppRefresh() { ppLoadProfile(); }
 
 document.addEventListener('DOMContentLoaded', () => {
     ppLoadProfile();
-    ppInitMapPicker();
+    ppInitMemberSearch();
 });
+// NOTE: The #locationModal address picker is handled globally by custom.js
+// (the same picker used across the site). The "Change" button is already
+// wired for it via .open-location-modal + data-location-input/lat/lng, so we
+// must NOT initialise a second Google Map + Places Autocomplete here — doing
+// so binds two Autocomplete instances to #mapSearchInput and breaks the
+// suggestion listing.
 
+{{-- DISABLED: this self-contained picker conflicted with the global custom.js
+     #locationModal picker (two Google Maps + two Places Autocomplete instances
+     on the same #map / #mapSearchInput), which broke the autocomplete listing.
+     The "Change" button is already wired for the custom.js picker.
 /* ── Self-contained Google Maps picker for #locationModal ─────────
    Centers on the user's saved coordinates each time the modal opens,
    drops a draggable marker, supports Places autocomplete in the
@@ -1021,6 +1201,7 @@ function _ppPlaceMarker(latLng, reverseGeocode = false) {
         });
     }
 }
+--}}
 
 /* Expose for the layout's logout link */
 window.logout = window.logout || async function () {
