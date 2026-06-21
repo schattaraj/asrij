@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\BloodRequest;
 use App\Models\BloodRequestResponse;
+use App\Models\Donor;
 use App\Models\FcmToken;
 use App\Models\User;
 use App\Services\FcmService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 
 class RespondOnRequestController extends Controller
@@ -23,7 +26,8 @@ class RespondOnRequestController extends Controller
             'contact_number' => 'required|string|max:20',
         ]);
         try {
-            $user = auth()->user();
+            $user = Auth::user();
+            $donorId = null;
             $roles = is_array($user->roles) ? $user->roles : json_decode($user->roles, true);
             if (!in_array('donor', $roles ?? [])) {
                 return response()->json([
@@ -31,8 +35,87 @@ class RespondOnRequestController extends Controller
                     'message' => 'You need to register as a donor first.'
                 ], 403);
             }
+            $donor = Donor::where('user_id',Auth::id())->first();
+            $donorId = $donor->id;
+            if($donorId == null){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'You need to register as a donor first.'
+                ], 403);
+            }
+            $bloodRequest = BloodRequest::find($validated['request_id']);
+
+            if (!$bloodRequest) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Blood request not found.'
+                ], 404);
+            }
+            if ($bloodRequest->submitted_by == Auth::id()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'You cannot respond to your own blood request.'
+                ], 409);
+            }
+            $existingResponse = BloodRequestResponse::where('donor_id', $donorId)
+                ->where('blood_request_id', $validated['request_id'])
+                ->first();
+
+            if ($existingResponse) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'You have already responded to this blood request.'
+                ], 409);
+            }
+
+            // ── Validation 2: block if the donor has a still-active (not expired)
+            //    pending response on another blood request ─────────────────────
+            $pendingResponses = BloodRequestResponse::where('donor_id', $donorId)
+                ->where('blood_request_id', '!=', $validated['request_id'])
+                ->where('status', 'pending')
+                ->with('request')
+                ->get();
+
+            foreach ($pendingResponses as $pending) {
+                $pendingRequest = $pending->request;
+                if (!$pendingRequest) {
+                    continue;
+                }
+
+                // Expiry = created_at + required_before window (days/hours).
+                $expiresAt = null;
+                if ($pendingRequest->required_before && $pendingRequest->required_before_unit) {
+                    $expiresAt = $pendingRequest->required_before_unit === 'days'
+                        ? $pendingRequest->created_at->copy()->addDays((int) $pendingRequest->required_before)
+                        : $pendingRequest->created_at->copy()->addHours((int) $pendingRequest->required_before);
+                }
+
+                // No expiry defined or still in the future => request is active.
+                if ($expiresAt === null || $expiresAt->isFuture()) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'You already have a pending blood donation request. Please complete or wait for it to expire before responding to another request.'
+                    ], 409);
+                }
+            }
+
+            // ── Validation 3: 90-day donation cooldown ───────────────────────
+            if ($donor->last_donation) {
+                $daysSince = Carbon::parse($donor->last_donation)->startOfDay()
+                    ->diffInDays(Carbon::now()->startOfDay());
+
+                if ($daysSince < 90) {
+                    $remainingDays = 90 - $daysSince;
+
+                    return response()->json([
+                        'status' => false,
+                        'message' => "You are not eligible to donate yet. You can donate again after {$remainingDays} days."
+                    ], 409);
+                }
+            }
+
             $createRespond = BloodRequestResponse::create([
-                'donor_id' => auth()->id(),
+                'donor_id' => $donorId,
                 'blood_request_id' => $validated['request_id'],
                 'contact_number' => $validated['contact_number'],
                 'status' => 'pending'
@@ -62,7 +145,8 @@ class RespondOnRequestController extends Controller
     }
     public function index()
     {
-        $reponded = BloodRequestResponse::where('donor_id', auth()->id())
+        $donor = Donor::where('user_id',Auth::id())->first();
+        $reponded = BloodRequestResponse::where('donor_id', $donor->id)
             ->get();
         return response()->json([
             'status' => true,
@@ -71,10 +155,10 @@ class RespondOnRequestController extends Controller
     }
     public function fetchResponses()
     {
-        $data = BloodRequest::where('submitted_by', auth()->id())
+        $data = BloodRequest::where('submitted_by', Auth::id())
             ->with([
                 'responses',
-                'donors',
+                'donors.user',
                 'submitter:id,name,mobile',
                 'patient:id,name,mobile'
             ])
@@ -89,13 +173,11 @@ class RespondOnRequestController extends Controller
     {
         $validated = $request->validate([
             'request_id' => 'required|exists:blood_requests,id',
-            'donor_id' => 'required|exists:users,id',
+            'donor_id' => 'required|exists:donors,id',
             'action' => 'required|in:accepted,rejected,reached_hospital,donated,patient_confirmed'
         ]);
-        $user = auth()->user();
-        $details = BloodRequest::where('id', $validated['request_id'])->with('patient')->first();
-        $patient = $details->patient;
-        
+        $user = Auth::user();
+
         DB::beginTransaction();
 
         try {
@@ -240,7 +322,9 @@ class RespondOnRequestController extends Controller
                         ->update([
                             'status' => 'awaiting_patient_confirmation'
                         ]);
-                $this->notifyPatientOfResponse($response, $patient,'reached_hospital');
+                    // Notify the patient that the donor donated so they can confirm.
+                    // $user is the donor performing this action.
+                    $this->notifyPatientOfResponse($response, $user, 'donated');
                     break;
 
                 case 'patient_confirmed':
@@ -251,7 +335,17 @@ class RespondOnRequestController extends Controller
                         ->update([
                             'status' => 'completed'
                         ]);
-                    $this->notifyPatientOfResponse($response, $patient,'completed');
+
+                    // Record the donation date on the donor's profile now that the
+                    // patient has confirmed receiving the blood. donor_id here is a
+                    // donors.id (the value stored when the response was created in
+                    // store()), so the donor row is resolved by its primary key.
+                    Donor::where('id', $validated['donor_id'])
+                        ->update([
+                            'last_donation' => now()->toDateString()
+                        ]);
+
+                    // Donor is notified after commit via notifyDonorOfDecision('patient_confirmed').
                     break;
             }
 
@@ -308,7 +402,7 @@ class RespondOnRequestController extends Controller
 
         try {
             $response = BloodRequestResponse::where('id', $id)
-                ->where('donor_id', auth()->id())
+                ->where('donor_id', Auth::id())
                 ->lockForUpdate()
                 ->first();
 
@@ -343,7 +437,7 @@ class RespondOnRequestController extends Controller
 
             Log::error('Failed to cancel blood request response', [
                 'response_id' => $id,
-                'donor_id' => auth()->id(),
+                'donor_id' => Auth::id(),
                 'error' => $e->getMessage(),
             ]);
 
@@ -361,7 +455,7 @@ class RespondOnRequestController extends Controller
      */
     private function notifyPatientOfResponse(BloodRequestResponse $response, $donor, string $action = 'respond'): void
     {
-        if (!in_array($action, ['respond', 'reached_hospital','completed'], true)) {
+        if (!in_array($action, ['respond', 'reached_hospital', 'donated', 'completed'], true)) {
             return;
         }
 
@@ -439,9 +533,10 @@ class RespondOnRequestController extends Controller
         if ($action == "donated") {
             $title = 'Donor Donated';
             $body  = trim(sprintf(
-                '%s say donated %s%s. Please Confirm that.',
+                '%s has donated %s%s. Please confirm once you receive the blood.',
                 $donorName,
                 $bgroup ? $bgroup . ' blood' : 'blood',
+                $hospital ? ' at ' . $hospital : ''
             ));
 
             $data = [
@@ -498,7 +593,7 @@ class RespondOnRequestController extends Controller
      */
     private function notifyDonorOfDecision(int $requestId, int $donorId, string $action): void
     {
-        if (!in_array($action, ['accepted', 'rejected'], true)) {
+        if (!in_array($action, ['accepted', 'rejected', 'patient_confirmed'], true)) {
             return;
         }
 
@@ -507,7 +602,14 @@ class RespondOnRequestController extends Controller
             return;
         }
 
-        $tokens = FcmToken::where('user_id', $donorId)
+        // $donorId is a donors.id; FCM tokens are keyed by users.id, so
+        // resolve the owning user before looking up tokens.
+        $userId = Donor::where('id', $donorId)->value('user_id');
+        if (!$userId) {
+            return;
+        }
+
+        $tokens = FcmToken::where('user_id', $userId)
             ->whereNotNull('fcm_token')
             ->pluck('fcm_token')
             ->filter()
@@ -526,6 +628,13 @@ class RespondOnRequestController extends Controller
             $title = 'Donation Accepted';
             $body  = trim(sprintf(
                 'You have been selected to donate %s%s. Please contact the requester to coordinate.',
+                $bgroup ? $bgroup . ' blood' : 'blood',
+                $hospital ? ' at ' . $hospital : ''
+            ));
+        } elseif ($action === 'patient_confirmed') {
+            $title = 'Donation Confirmed';
+            $body  = trim(sprintf(
+                'The patient has confirmed receiving your %s donation%s. Thank you for saving a life!',
                 $bgroup ? $bgroup . ' blood' : 'blood',
                 $hospital ? ' at ' . $hospital : ''
             ));

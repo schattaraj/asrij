@@ -30,7 +30,7 @@ class VolunteerOrganizationController extends Controller
             'organization_name' => 'required|string|max:255',
             'registration_number' => 'required|string|unique:volunteer_organizations',
             'contact_number' => 'required|string|max:20',
-            'email' => 'nullable|email',
+            'email' => 'nullable|email:rfc,dns',
             'address' => 'nullable|string',
             'president_name' => 'nullable|string|max:255',
             'president_number' => 'nullable|string|max:20',

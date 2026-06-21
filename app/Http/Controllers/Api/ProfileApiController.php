@@ -52,8 +52,9 @@ class ProfileApiController extends Controller
 
 
         // Activity snapshot
-        $donationsCount  = BloodRequestResponse::where('donor_id', $user->id)->where('status', 'accepted')->count();
-        $respondedCount  = BloodRequestResponse::where('donor_id', $user->id)->count();
+        $donor = Donor::where('user_id',$user->id)->first();
+        $donationsCount  = BloodRequestResponse::where('donor_id', $donor->id)->where('status', 'accepted')->count();
+        $respondedCount  = BloodRequestResponse::where('donor_id', $donor->id)->count();
         $requestsCount   = BloodRequest::where('submitted_by', $user->id)->count();
         $openRequests    = BloodRequest::where('submitted_by', $user->id)->where('status', 'open')->count();
 
@@ -305,6 +306,35 @@ TEXT;
         return response()->json([
             'status'  => true,
             'message' => 'Profile updated successfully.',
+            'data'    => $this->show($request)->getData(true)['data'],
+        ]);
+    }
+
+    /**
+     * PATCH /api/v1/profile/address
+     *
+     * Dedicated endpoint for updating just the user's saved address and
+     * coordinates (used by the mobile app's map-picker UI on Account
+     * Settings). Kept separate from update() the same way the mobile-change
+     * flow is, since this comes from a map-picker step rather than a plain
+     * form field and always supplies coordinates together with the address.
+     */
+    public function updateAddress(Request $request)
+    {
+        $data = $request->validate([
+            'address'   => 'required|string|max:500',
+            'pin_code'  => 'sometimes|nullable|string|max:10',
+            'latitude'  => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
+        ]);
+
+        $user = $request->user();
+        $user->fill($data);
+        $user->save();
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Address updated successfully.',
             'data'    => $this->show($request)->getData(true)['data'],
         ]);
     }
@@ -563,11 +593,26 @@ TEXT;
         return response()->json([
             'status' => true,
             'data'   => [
-                'donations_count' => BloodRequestResponse::where('donor_id', $user->id)->where('status', 'accepted')->count(),
-                'responses_count' => BloodRequestResponse::where('donor_id', $user->id)->count(),
+                'donations_count' => BloodRequestResponse::where('donor_id', $donor->id)->where('status', 'accepted')->count(),
+                'responses_count' => BloodRequestResponse::where('donor_id', $donor->id)->count(),
                 'requests_count'  => BloodRequest::where('submitted_by', $user->id)->count(),
                 'open_requests'   => BloodRequest::where('submitted_by', $user->id)->where('status', 'open')->count(),
                 'last_donation'   => optional($donor?->last_donation)->toDateString(),
+            ],
+        ]);
+    }
+    public function stats(Request $request)
+    {
+        $user = $request->user();
+        $donor = Donor::where('user_id', $user->id)->first();
+        $donation_count = BloodRequestResponse::where('donor_id', $donor->id)
+                ->where('status', 'patient_confirmed')->count();
+        return response()->json([
+            'status' => true,
+            'data'   => [
+                'donations_count' => $donation_count,
+                'lives_saved' => $donation_count,
+                'points'  => $donation_count*5
             ],
         ]);
     }

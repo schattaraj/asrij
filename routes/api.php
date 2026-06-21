@@ -8,10 +8,12 @@ use App\Http\Controllers\Api\RespondOnRequestController;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\EmergencyContactController;
 use App\Http\Controllers\Api\AccountController;
+use App\Http\Controllers\Api\ApiBloodCampController;
 use App\Http\Controllers\Api\FcmTokenController;
 use App\Http\Controllers\Api\LiveLocationController;
 use App\Http\Controllers\Api\ProfileApiController;
 use App\Http\Controllers\Api\VolunteerOrganizationController;
+use App\Http\Controllers\BloodCampController;
 
 Route::get('/register', function(){
     return "Hello";
@@ -50,7 +52,8 @@ Route::prefix('v1')->group(function () {
         Route::put('/update-response',[RespondOnRequestController::class,'update'])->name('updateResponse');
         Route::get('/my-blood-donations', [RequestController::class, 'myBloodDonation'])->name('myBloodDonations');
         Route::post('/volunteer-registration', [RegistrationController::class, 'storeVolunteer'])->name('volunteer.registration');
-
+        Route::get('/stats',[ProfileApiController::class,'stats'])->name('stats');
+        Route::get('/blood-camps/upcoming',[ApiBloodCampController::class,'upcoming'])->name('blood-camps.upcoming');
         // ── Settings ─────────────────────────────────────────────────────────
         Route::prefix('settings')->group(function () {
             Route::get('/', [SettingsController::class, 'index'])->name('settings.index');
@@ -76,6 +79,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('profile')->group(function () {
             Route::get('/',                     [ProfileApiController::class, 'show'])->name('api.profile.show');
             Route::patch('/',                   [ProfileApiController::class, 'update'])->name('api.profile.update');
+            Route::patch('/address',            [ProfileApiController::class, 'updateAddress'])->name('api.profile.address.update');
             Route::post('/avatar',              [ProfileApiController::class, 'uploadAvatar'])->name('api.profile.avatar.upload');
             Route::delete('/avatar',            [ProfileApiController::class, 'deleteAvatar'])->name('api.profile.avatar.delete');
             Route::post('/change-password',     [ProfileApiController::class, 'changePassword'])->name('api.profile.password');

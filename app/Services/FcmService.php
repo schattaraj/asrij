@@ -120,7 +120,7 @@ class FcmService
                         // and AndroidManifest's default_notification_channel_id.
                         // Android channels are immutable, so the id was bumped to
                         // _v2 to apply sound + heads-up on already-installed devices.
-                        'channel_id' => 'asrij_default_v2',
+                        'channel_id' => 'asrij_default_v3',
                         'sound'      => 'default',
                     ],
                 ],

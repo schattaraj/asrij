@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Banner;
 use App\Models\BloodCamp;
+use App\Models\BloodRequest;
+use App\Models\Donor;
 use App\Models\Testimonial;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,11 +23,24 @@ class PageController extends Controller
         $testimonials = Testimonial::where('status', 1)
         ->orderBy('sort_order')
         ->get();
-        return view('home',compact('banners','blood_camps','testimonials'));
+        $units_donated = BloodRequest::where('status','completed')->count();
+        $donors = Donor::get()->count();
+        $receivers =  BloodRequest::where('status', 'completed')
+            ->distinct('user_id')
+            ->count('user_id');
+        $volunteers = User::whereJsonContains('roles', 'volunteer')->count();
+        return view('home',compact('banners','blood_camps','testimonials',
+        'units_donated','donors','receivers','volunteers'));
     }
 
     public function about() {
-        return view('about');
+        $units_donated = BloodRequest::where('status','completed')->count();
+        $donors = Donor::get()->count();
+        $lives_helped =  BloodRequest::where('status', 'completed')
+            ->distinct('user_id')
+            ->count('user_id');
+        $volunteers = User::whereJsonContains('roles', 'volunteer')->count();
+        return view('about',compact('units_donated','donors','lives_helped','volunteers'));
     }
 
     public function contact() {

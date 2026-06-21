@@ -62,7 +62,7 @@ class BloodRequest extends Model
 
 public function donors()
 {
-    return $this->belongsToMany(User::class, 'blood_request_responses', 'blood_request_id', 'donor_id')
+    return $this->belongsToMany(Donor::class, 'blood_request_responses', 'blood_request_id', 'donor_id')
                 ->withPivot('status')
                 ->withTimestamps();
 }

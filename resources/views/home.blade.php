@@ -88,19 +88,19 @@
     <!-- ===== STATS SECTION ===== -->
     <section class="stats">
         <div class="stat-box">
-            <h2 class="count" data-target="345">0</h2>
+            <h2 class="count" data-target="{{$units_donated}}">0</h2>
             <p>Total Units Donated</p>
         </div>
         <div class="stat-box">
-            <h2 class="count" data-target="98">0</h2>
+            <h2 class="count" data-target="{{$donors}}">0</h2>
             <p>Total Donors</p>
         </div>
         <div class="stat-box">
-            <h2 class="count" data-target="80">0</h2>
+            <h2 class="count" data-target="{{$receivers}}">0</h2>
             <p>Total Receivers</p>
         </div>
         <div class="stat-box">
-            <h2 class="count" data-target="45">0</h2>
+            <h2 class="count" data-target="{{$volunteers}}">0</h2>
             <p>Total Volunteers</p>
         </div>
     </section>
@@ -347,9 +347,11 @@
                         <div class="form-floating mb-3">
                             <select class="form-select" name="patient_type" id="patient_type" required>
                                 <option value="">Select Medicine Condition</option>
-                                <option>Thalassemia Patient</option>
-                                <option>Emergency - Accident Case</option>
-                                <option>Admitted Patient</option>
+                                <option>General</option>
+                                <option>Thalassemia</option>
+                                <option>Emergency</option>
+                                <option>Surgery</option>
+                                <option>Cancer</option>
                                 <option>Other</option>
                             </select>
                             <label for="patient_type">Medical Condition</label>
@@ -414,9 +416,9 @@
                             <label for="hospital">Hospital Name</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="number" class="form-control" name="unit" id="unit"
-                                placeholder="Unit Needed" required>
-                            <label for="unit">Unit Needed</label>
+                            <input type="number" class="form-control" value="1" name="unit" id="unit"
+                                placeholder="Unit Needed" required readonly onclick="alert('Only 1 unit can be requested per request. Please submit another request if more units are needed.')">
+                            <label for="unit">Unit</label>
                         </div>
                         <div class="input-group mb-3">
                             <div class="form-floating flex-grow-1">
@@ -1516,21 +1518,21 @@
                             <div class="item"><i class="fa-solid fa-location-dot"></i><span>Sai Plaza Ground Floor,
                                     Police Chowki, Bishnupur, Bankura, West Bengal, India 722122</span></div>
                         </a>
-                        <a href="mailto:info@asrij.com">
-                            <div class="item"><i class="fa-solid fa-envelope"></i><span>info@asrij.com</span></div>
+                        <a href="mailto:support@asrij.org">
+                            <div class="item"><i class="fa-solid fa-envelope"></i><span>support@asrij.org</span></div>
                         </a>
-                        <a href="tel:+917048115559" target="_blank">
+                        {{-- <a href="tel:+917048115559" target="_blank">
                             <div class="item"><i class="fa-solid fa-phone"></i><span>+91 7048115559</span></div>
-                        </a>
+                        </a> --}}
                     </div>
                     <div class="social-links">
                         <h3>Follow Us</h3>
-                        <a href="https://www.instagram.com/fullstop.pvt.ltd?igsh=MWRiNXJ4OXkydmRmcw==" target="_blank"><i
-                                class="fa-brands fa-instagram"></i></a>
-                        <a href="https://www.facebook.com/profile.php?id=61572378570370&mibextid=ZbWKwL"
+                        <a href="https://www.instagram.com/asrij_foundation/" target="_blank">
+                        <i class="fa-brands fa-instagram"></i></a>
+                        <a href="https://www.facebook.com/profile.php?id=61586204187656&mibextid=rS40aB7S9Ucbxw6v"
                             target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
-                        <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
-                        <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+                        <a href="https://x.com/AsrijFoundation" target="_blank"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="https://www.linkedin.com/company/asrijfoundation" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
                     </div>
                 </div>
             </div>
@@ -1624,17 +1626,19 @@
                         "N/A";
                         const required_within = `${req.required_before} ${req.required_before_unit}`;
                         const isExpired = !!req.is_expired;
+                        const completed = req.status == 'completed';
 
                         // Expired takes priority over the urgent styling/badge.
                         const cardClass = isExpired ? 'expired-card' : (req.urgency === 'urgent' ? 'urgent-card' : '');
-                        const statusBadge = isExpired
+                        const statusBadge = completed ? '<span class="badge bg-secondary urgent-tag"><i class="fa-regular fa-clock"></i> Donated</span>'
+                         : isExpired
                             ? '<span class="badge bg-secondary urgent-tag"><i class="fa-regular fa-clock"></i> EXPIRED</span>'
                             : (req.urgency === 'urgent'
                                 ? '<span class="badge bg-danger urgent-tag"><i class="fa-solid fa-exclamation"></i> URGENT</span>'
                                 : '');
                     container.innerHTML += `
       <div class="col-md-6 col-lg-4 col-xl-3">
-        <div class="request-card ${cardClass}" ${isExpired ? 'style="opacity:.7"' : ''}>
+        <div class="request-card ${cardClass}" ${completed || isExpired ? 'style="opacity:.7"' : ''}>
           <div class="d-flex justify-content-between">
             <div class="blood-group">${req.blood_group}</div>
           ${statusBadge}
@@ -1650,7 +1654,7 @@
         </div>
         <div class="meta mb-2">
             <strong>Required within ${required_within}</strong>
-            ${isExpired ? '<span class="text-danger fw-bold ms-1">(Expired)</span>' : ''}
+            ${completed ? '<span class="text-danger fw-bold ms-1">(Expired)</span>' : isExpired ? '<span class="text-danger fw-bold ms-1">(Expired)</span>' : ''}
         </div>
           ${req?.distance   ? `<div class="meta mb-3"><strong>Distance</strong> : ${req.distance_text} from your registered address</div>` : ''}
             <button
@@ -1659,7 +1663,7 @@
               data-blood_group="${req?.blood_group}"
               ${isExpired || req.has_responded ? 'disabled' : ''}
             >
-              ${isExpired ? 'Expired' : (req.has_responded ? 'Already Responded' : 'Donate')}
+              ${completed ? 'Donated' : isExpired ? 'Expired' : (req.has_responded ? 'Already Responded' : 'Donate')}
             </button>
         </div>
       </div>
@@ -1731,6 +1735,7 @@
 
                         if (result.status) {
                             showAlert("success", "Thank you! Your response has been sent to the requester.");
+                            fetchRequests();
                             bootstrap.Modal.getInstance(document.getElementById('confirmDonationModal')).hide();
                         } else {
                             showAlert("error", result.message || "Something went wrong.");

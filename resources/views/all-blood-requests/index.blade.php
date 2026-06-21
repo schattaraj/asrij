@@ -151,21 +151,29 @@
                     }) :
                     "N/A";
                 const required_within = `${req.required_before} ${req.required_before_unit}`;
+                const isExpired = !!req.is_expired;
+                const cardClass = isExpired ? 'expired-card' : (req.urgency === 'urgent' ? 'urgent-card' : '');
+                        const statusBadge = isExpired
+                            ? '<span class="badge bg-secondary urgent-tag"><i class="fa-regular fa-clock"></i> EXPIRED</span>'
+                            : (req.urgency === 'urgent'
+                                ? '<span class="badge bg-danger urgent-tag"><i class="fa-solid fa-exclamation"></i> URGENT</span>'
+                                : '');
                 container.innerHTML += `
                     <div class="col-md-6 col-lg-4 col-xl-3">
-                        <div class="request-card ${req.urgency === 'urgent' ? 'urgent-card' : ''}">
+                        <div class="request-card ${cardClass}" ${isExpired ? 'style="opacity:.7"' : ''}>
                             <div class="d-flex justify-content-between">
                                 <div class="blood-group">${req.blood_group}</div>
-                                ${req.urgency === 'urgent'
-                                    ? '<span class="badge bg-danger urgent-tag"><i class="fa-solid fa-exclamation"></i> URGENT</span>'
-                                    : ''}
+                                ${statusBadge}
                             </div>
                             <div class="meta"><strong>Hospital Name</strong> : ${req.hospital_name}</div>
                             <div class="meta mb-1"><strong>Address</strong> : ${req.address}</div>
                             <div class="meta mb-2"><strong>Units</strong> : ${req.unit}</div>
                             <div class="meta mb-1"><strong>Token</strong> : ${req.token || 'N/A'}</div>
                             <div class="meta mb-1"><strong>Requested On</strong> : ${createdDate}</div>
-                            <div class="meta mb-2"><strong>Required within ${required_within}</strong></div>
+                            <div class="meta mb-2">
+                                <strong>Required within ${required_within}</strong>
+                                ${isExpired ? '<span class="text-danger fw-bold ms-1">(Expired)</span>' : ''}
+                            </div>
                             ${req?.distance ? `<div class="meta mb-3"><strong>Distance</strong> : ${req.distance_text} from your registered address</div>` : ''}
                             <button
                                 class="btn btn-sm ${req.has_responded ? 'btn-secondary' : 'btn-danger'} w-100 donate-btn"

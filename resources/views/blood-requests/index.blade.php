@@ -158,7 +158,6 @@
 
                         <div class="col-md-6">
                             <p><strong>Address:</strong> <span id="d_address"></span></p>
-                            <p><strong>Pincode:</strong> <span id="d_pin"></span></p>
                             <p><strong>Status:</strong> <span id="d_status"></span></p>
                             <p><strong>Distance:</strong> <span id="d_distance"></span></p>
                         </div>
@@ -265,7 +264,7 @@
                     donors.forEach(donor => {
                         const distance = calculateDistance(
                             patientLat, patientLng,
-                            parseFloat(donor.latitude), parseFloat(donor.longitude)
+                            parseFloat(donor.user.latitude), parseFloat(donor.user.longitude)
                         );
                         const status = normalizeStatus(donor.pivot?.status);
                         const isPending = status === 'pending';
@@ -274,15 +273,15 @@
                             <div class="donor-item">
                                 <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
                                     <div class="d-flex gap-2">
-                                        <div class="donor-avatar">${esc((donor.name || '?').charAt(0).toUpperCase())}</div>
+                                        <div class="donor-avatar">${esc((donor.user.name || '?').charAt(0).toUpperCase())}</div>
                                         <div>
-                                            <div class="fw-bold">${esc(donor.name || '-')}</div>
+                                            <div class="fw-bold">${esc(donor.user.name || '-')}</div>
                                             <div class="text-muted small">
                                                 <i class="fa-solid fa-droplet text-danger"></i> ${esc(donor.blood_group || '-')}
                                                 &middot; <i class="fa-solid fa-location-arrow"></i> ${esc(distance)}
                                             </div>
-                                            <a href="tel:${esc(donor.mobile)}" class="small text-primary text-decoration-none">
-                                                <i class="fa-solid fa-phone"></i> ${esc(donor.mobile || '-')}
+                                            <a href="tel:${esc(donor.user.mobile)}" class="small text-primary text-decoration-none">
+                                                <i class="fa-solid fa-phone"></i> ${esc(donor.user.mobile || '-')}
                                             </a>
                                         </div>
                                     </div>
@@ -301,7 +300,7 @@
                                         <button class="btn btn-success btn-sm" onclick="acceptDonor(${request.id}, ${donor.id})">
                                             <i class="fa-solid fa-check"></i> Accept
                                         </button>` : ''}
-                                    <a href="https://www.google.com/maps?q=${donor.latitude},${donor.longitude}"
+                                    <a href="https://www.google.com/maps?q=${donor.user.latitude},${donor.user.longitude}"
                                         target="_blank" class="btn btn-primary btn-sm">
                                         <i class="fa-solid fa-map-location-dot"></i> Open Map
                                     </a>
@@ -426,12 +425,12 @@
         }
 
         function viewDetails(donor, request, distance) {
-            document.getElementById("d_name").innerText = donor.name || '-';
+            document.getElementById("d_name").innerText = donor.user.name || '-';
             document.getElementById("d_blood").innerText = donor.blood_group || '-';
-            document.getElementById("d_mobile").innerText = donor.mobile || '-';
-            document.getElementById("d_whatsapp").innerText = donor.whatsapp_number || '-';
+            document.getElementById("d_mobile").innerText = donor.user.mobile || '-';
+            document.getElementById("d_whatsapp").innerText = donor.user.whatsapp_number || '-';
             document.getElementById("d_address").innerText = donor.address || '-';
-            document.getElementById("d_pin").innerText = donor.pin_code || '-';
+            // document.getElementById("d_pin").innerText = donor.pin_code || '-';
             document.getElementById("d_status").innerHTML = statusBadge(donor.pivot?.status);
             document.getElementById("d_distance").innerText = distance;
 

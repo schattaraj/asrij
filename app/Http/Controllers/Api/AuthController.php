@@ -40,7 +40,7 @@ class AuthController extends Controller
                 'gender'       => 'required|in:Male,Female,Other',
                 'address'   => 'nullable|string',
                 // 'pin_code'  => 'required|string|max:10',
-                'blood_group' => 'required|string|max:3',
+                'blood_group' => 'nullable|string|max:3',
                 'latitude'  => 'nullable|numeric',
                 'longitude' => 'nullable|numeric',
                 // 'password'  => 'nullable|min:6'

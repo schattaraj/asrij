@@ -52,11 +52,11 @@
                             <img src="{{ asset('assets/img/banner1.jpg') }}" alt="ASRIJ in action">
                         </div>
                         <div class="ax-hero-badge ax-hero-badge-tl">
-                            <h4>2,300<span>+</span></h4>
+                            <h4>{{$units_donated}}<span>+</span></h4>
                             <p>Units Donated</p>
                         </div>
                         <div class="ax-hero-badge ax-hero-badge-br">
-                            <h4>1,100<span>+</span></h4>
+                            <h4>{{$lives_helped+80}}<span>+</span></h4>
                             <p>Lives Touched</p>
                         </div>
                         <div class="ax-hero-decor"></div>
@@ -184,10 +184,10 @@
             <div class="row text-center g-4">
                 @php
                     $stats = [
-                        ['icon' => 'fa-droplet',              'num' => 2345, 'label' => 'Units Donated'],
-                        ['icon' => 'fa-user-plus',            'num' => 1120, 'label' => 'Active Donors'],
-                        ['icon' => 'fa-hand-holding-medical', 'num' => 980,  'label' => 'Lives Helped'],
-                        ['icon' => 'fa-hands-helping',        'num' => 45,   'label' => 'Volunteers'],
+                        ['icon' => 'fa-droplet',              'num' => $units_donated, 'label' => 'Units Donated'],
+                        ['icon' => 'fa-user-plus',            'num' => $donors, 'label' => 'Active Donors'],
+                        ['icon' => 'fa-hand-holding-medical', 'num' => $lives_helped,  'label' => 'Lives Helped'],
+                        ['icon' => 'fa-hands-helping',        'num' => $volunteers,   'label' => 'Volunteers'],
                     ];
                 @endphp
                 @foreach ($stats as $s)
@@ -206,7 +206,7 @@
     {{-- ===================================================
          TEAM
     =================================================== --}}
-    <section class="ax-team">
+    <section class="ax-team d-none">
         <div class="container">
             <div class="ax-section-head">
                 <span class="ax-chip"><i class="fa-solid fa-users"></i> Our Team</span>
@@ -215,10 +215,10 @@
             <div class="row g-4 justify-content-center">
                 @php
                     $team = [
-                        ['name' => 'Dr. Anil Mehta', 'role' => 'Founder &amp; Director',  'img' => 'https://i.pravatar.cc/400?img=12'],
-                        ['name' => 'Priya Sharma',   'role' => 'Operations Head',         'img' => 'https://i.pravatar.cc/400?img=47'],
-                        ['name' => 'Rahul Verma',    'role' => 'Volunteer Coordinator',   'img' => 'https://i.pravatar.cc/400?img=15'],
-                        ['name' => 'Ananya Roy',     'role' => 'Community Outreach',      'img' => 'https://i.pravatar.cc/400?img=32'],
+                        ['name' => 'Kalyan Chatterjee', 'role' => 'Founder &amp; Director',  'img' => url("/").'/assets/img/KalyanChatterjee.png'],
+                        ['name' => 'Sanket Bannerjee',   'role' => 'Operations Head',         'img' => url("/").'/assets/img/SanketBanerjee.jpeg'],
+                        ['name' => 'Surajit Sen',    'role' => 'Volunteer Coordinator',   'img' => url("/").'/assets/img/SurajitSen.jpeg'],
+                        ['name' => 'Subrata Chattaraj',     'role' => 'Tech Lead',      'img' => url("/").'/assets/img/SubrataChattaraj.jpeg'],
                     ];
                 @endphp
                 @foreach ($team as $m)
@@ -226,11 +226,11 @@
                         <div class="ax-team-card">
                             <div class="ax-team-img">
                                 <img src="{{ $m['img'] }}" alt="{{ $m['name'] }}">
-                                <div class="ax-team-social">
+                                {{-- <div class="ax-team-social">
                                     <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
                                     <a href="#"><i class="fa-brands fa-instagram"></i></a>
                                     <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="ax-team-body">
                                 <h5>{{ $m['name'] }}</h5>

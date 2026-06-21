@@ -9,6 +9,7 @@ use App\Models\User;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Support\Facades\DB;
 use App\Models\BloodRequestResponse;
+use App\Models\Donor;
 use App\Models\FcmToken;
 use App\Services\SmsService;
 use App\Services\FcmService;
@@ -193,7 +194,8 @@ public function index(Request $request)
     $responses = collect();
 
     if ($user) {
-        $responses = BloodRequestResponse::where('donor_id', $user->id)
+        $donor = Donor::where('user_id',$user->id)->first();
+        $responses = BloodRequestResponse::where('donor_id', $donor->id)
             ->get()
             ->keyBy('blood_request_id');
     }
@@ -389,6 +391,7 @@ public function index(Request $request)
                     'email' => $authUser->email ?: ($validated['email'] ?? null),
                     'blood_group' => $authUser->blood_group ?: $validated['blood_group'],
                     'dob' => $authUser->dob ?: $validated['dob'],
+                    'gender' => $authUser->gender ?: $validated['gender'],
                     'whatsapp_number' => $authUser->whatsapp_number ?: ($validated['whatsapp_number'] ?? null),
                     'address' => $authUser->address ?: $validated['address'],
                     'latitude' => $authUser->latitude ?: ($validated['donor_latitude'] ?? null),
@@ -599,10 +602,39 @@ public function index(Request $request)
     }
 
     public function myBloodDonation(){
-        $data = BloodRequestResponse::where('donor_id', Auth::id())
+        $donor = Donor::where('user_id',Auth::id())->first();
+        $data = BloodRequestResponse::where('donor_id', $donor->id)
         ->with('request')
         ->latest()
         ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Expiry detection on the related request (same logic as index())
+        |--------------------------------------------------------------------------
+        | A request expires once "created_at + required_before" has passed.
+        | required_before_unit is either "hours" or "days".
+        */
+        $data->each(function ($item) {
+            $req = $item->request;
+            if (!$req) {
+                return;
+            }
+
+            $expiresAt = null;
+            $isExpired = false;
+
+            if ($req->created_at && $req->required_before) {
+                $expiresAt = $req->required_before_unit === 'hours'
+                    ? $req->created_at->copy()->addHours((int) $req->required_before)
+                    : $req->created_at->copy()->addDays((int) $req->required_before);
+
+                $isExpired = now()->greaterThan($expiresAt);
+            }
+
+            $req->setAttribute('expires_at', $expiresAt);
+            $req->setAttribute('is_expired', $isExpired);
+        });
 
     return response()->json([
         'status' => true,

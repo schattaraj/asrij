@@ -46,7 +46,7 @@
                 <div class="container">
                     <div class="flex">
                         <div class="left">
-                            <a href="mailto:info@asrij.in">
+                            <a href="mailto:support@asrij.org">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail">
@@ -55,7 +55,7 @@
                                     </path>
                                     <polyline points="22,6 12,13 2,6"></polyline>
                                 </svg>
-                                info@asrij.in</a>
+                                support@asrij.org</a>
                             {{-- <a href="tel:7048115559">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -73,7 +73,12 @@
                             <a href="https://www.instagram.com/asrij_foundation/" target="_blank">
                                 <i class="fa-brands fa-instagram"></i>
                             </a>
-                            <a href="#">
+                            <a href="https://www.linkedin.com/company/asrijfoundation" target="_blank">
+                                <i class="fa-brands fa-linkedin"></i>
+                            </a>
+                            <a href="https://x.com/AsrijFoundation" target="_blank">
+                                <i class="fa-brands fa-x-twitter"></i>
+                            <a href="https://wa.me/917048115559" target="_blank">
                                 <i class="fa-brands fa-whatsapp"></i>
                             </a>
                         </div>
@@ -233,16 +238,21 @@
                         <ul>
                             <li>
                                 <i class="fa-solid fa-envelope"></i> <a
-                                    href="mailto:contact@asrij.com">contact@asrij.com</a>
+                                    href="mailto:support@asrij.org">support@asrij.org</a>
                             </li>
-                            <li>
+                            {{-- <li>
                                 <i class="fa-solid fa-phone"></i> <a href="tel:917048115559">+917048115559</a>
-                            </li>
+                            </li> --}}
                             <li>
                                 <a href="https://www.facebook.com/profile.php?id=61586204187656&mibextid=rS40aB7S9Ucbxw6v"
                                     class="text-white fs-4 social-link" target="_blank"><i class="fab fa-facebook-f"></i></a>
                                 <a href="https://www.instagram.com/asrij_foundation/" class="text-white fs-4 social-link" target="_blank"><i
                                         class="fab fa-instagram"></i></a>
+                                <a href="https://www.linkedin.com/company/asrijfoundation" class="text-white fs-4 social-link" target="_blank"><i
+                                        class="fab fa-linkedin"></i></a>
+                                <a href="https://x.com/AsrijFoundation" target="_blank"><i class="fa-brands fa-x-twitter"></i></a>        
+                                <a href="https://wa.me/917048115559" class="text-white fs-4 social-link" target="_blank"><i
+                                        class="fab fa-whatsapp"></i></a>                                        
                             </li>
                             <li>
                                 <a href="#" class="btn btn-primary" data-bs-toggle="modal"
@@ -342,7 +352,7 @@
                         </div>
                         <div class="mb-3">
                             <div class="form-floating">
-                                <select class="form-control" name="blood_group" id="blood_group" required>
+                                <select class="form-control" name="blood_group" id="blood_group">
                                     <option value="" disabled selected>Select Your Blood Group</option>
                                     <option value="A+">A+</option>
                                     <option value="A-">A-</option>
@@ -352,6 +362,7 @@
                                     <option value="AB-">AB-</option>
                                     <option value="O+">O+</option>
                                     <option value="O-">O-</option>
+                                    <option value="">Unknown</option>
                                 </select>
                                 <label for="blood_group">Blood Group</label>
                             </div>

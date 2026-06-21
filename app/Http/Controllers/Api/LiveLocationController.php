@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\BloodRequest;
 use App\Models\BloodRequestResponse;
+use App\Models\Donor;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -93,7 +94,7 @@ class LiveLocationController extends Controller
         }
 
         $acceptedResponse = BloodRequestResponse::where('blood_request_id', $id)
-            ->where('status', 'accepted')
+            // ->where('status', 'accepted')
             ->first();
 
         if (!$acceptedResponse) {
@@ -102,9 +103,11 @@ class LiveLocationController extends Controller
                 'message' => 'No accepted donor for this request yet',
             ], 404);
         }
+        $donor_user = Donor::where('id',$acceptedResponse->donor_id)->first();
 
         $isPatient = (int) $bloodRequest->submitted_by === (int) $user->id;
-        $isAcceptedDonor = (int) $acceptedResponse->donor_id === (int) $user->id;
+        // $isAcceptedDonor = (int) $acceptedResponse->donor_id === (int) $user->id;
+        $isAcceptedDonor = (int) $donor_user->user_id === (int) $user->id;
 
         if (!$isPatient && !$isAcceptedDonor) {
             return response()->json([
@@ -115,7 +118,7 @@ class LiveLocationController extends Controller
 
         // Pick the "other side" of the match
         $peerId = $isPatient
-            ? (int) $acceptedResponse->donor_id
+            ? (int) $donor_user->user_id
             : (int) $bloodRequest->submitted_by;
 
         $peer = User::find($peerId);
