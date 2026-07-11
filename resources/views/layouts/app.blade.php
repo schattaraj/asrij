@@ -22,6 +22,7 @@
         href="https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    @yield('styles')
 </head>
 
 <body class="">
@@ -257,6 +258,9 @@
                             <li>
                                 <a href="#" class="btn btn-primary" data-bs-toggle="modal"
                                     data-bs-target="#donateModal">Donate Now</a>
+                            </li>
+                            <li class="mt-2">
+                                <a href="{{ route('privacy-policy') }}" class="text-white">Privacy Policy</a>
                             </li>
                         </ul>
                     </div>
@@ -560,61 +564,84 @@
 
                 <!-- Body -->
                 <div class="modal-body py-2 px-4">
-                    <form action="{{ route('donate.store') }}" method="POST">
+                    <form action="{{ route('donation-payment.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
-                        <div class="row g-4">
-
-                            <!-- Donation Amount (Highlighted) -->
-                            <div class="col-12">
-                                <label class="form-label fw-semibold fs-5">
-                                    Donation Amount
-                                </label>
-                                <div class="input-group input-group-lg">
-                                    <span class="input-group-text">$</span>
-                                    <input type="number" name="amount" class="form-control" min="1"
-                                        required>
-                                </div>
-                            </div>
+                        <div class="row g-3">
 
                             <!-- Name -->
                             <div class="col-md-6">
                                 <label class="form-label">Full Name</label>
-                                <input type="text" name="name" class="form-control form-control-lg" required>
+                                <input type="text" name="name" class="form-control" required value="{{ old('name') }}">
+                            </div>
+
+                            <!-- Mobile No. -->
+                            <div class="col-md-6">
+                                <label class="form-label">Mobile No.</label>
+                                <input type="text" name="mobile" class="form-control" maxlength="15"
+                                    inputmode="numeric" required value="{{ old('mobile') }}">
                             </div>
 
                             <!-- Email -->
                             <div class="col-md-6">
-                                <label class="form-label">Email Address</label>
-                                <input type="email" name="email" class="form-control form-control-lg" required>
+                                <label class="form-label">Email</label>
+                                <input type="email" name="email" class="form-control" required value="{{ old('email') }}">
                             </div>
 
-                            <!-- Donation Type -->
-                            <div class="col-md-12">
-                                <label class="form-label">Donation Type</label>
-                                <select name="donation_type" class="form-select form-select-lg" required>
-                                    <option value="">Select donation type</option>
-                                    <option value="one-time">One-time</option>
-                                    <option value="monthly">Monthly</option>
-                                </select>
+                            <!-- PAN No. -->
+                            <div class="col-md-6">
+                                <label class="form-label">PAN No.</label>
+                                <input type="text" name="pan_no" class="form-control text-uppercase" maxlength="10"
+                                    placeholder="ABCDE1234F" required value="{{ old('pan_no') }}">
                             </div>
 
-                            <!-- Message -->
-                            <div class="col-md-12">
-                                <label class="form-label">Message (Optional)</label>
-                                <textarea name="message" rows="3" class="form-control form-control-lg"></textarea>
+                            <!-- Address -->
+                            <div class="col-12">
+                                <label class="form-label">Address</label>
+                                <textarea name="address" rows="2" class="form-control" required>{{ old('address') }}</textarea>
+                            </div>
+
+                            <!-- Static QR Code -->
+                            <div class="col-12">
+                                <div class="text-center p-3 rounded-3 border bg-light">
+                                    <p class="fw-semibold mb-2">Scan &amp; Pay</p>
+                                    @php($donationQr = \App\Models\Setting::get('donation_qr'))
+                                    <img src="{{ $donationQr ? asset('/storage/app/public/' . $donationQr) : asset('assets/img/donation-qr.png') }}"
+                                        alt="Donation QR Code" class="img-fluid" style="max-width: 220px;">
+                                    <p class="text-muted small mt-2 mb-0">
+                                        Scan the QR code with any UPI / payment app, then enter the amount paid and
+                                        upload your transaction screenshot below.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Amount to be paid -->
+                            <div class="col-md-6">
+                                <label class="form-label">Amount to be paid</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input type="number" name="amount" class="form-control" min="1" step="0.01"
+                                        required value="{{ old('amount') }}">
+                                </div>
+                            </div>
+
+                            <!-- Transaction Screenshot -->
+                            <div class="col-md-6">
+                                <label class="form-label">Transaction Screenshot</label>
+                                <input type="file" name="screenshot" class="form-control" accept="image/*" required>
+                                <div class="form-text">Upload a screenshot of your successful payment.</div>
                             </div>
 
                         </div>
 
                         <!-- Footer CTA -->
-                        <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
+                        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
                             <span class="text-muted fs-6">
                                 🔒 100% Secure Donation
                             </span>
 
                             <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill text-white">
-                                Donate Now
+                                Submit Donation
                             </button>
                         </div>
 

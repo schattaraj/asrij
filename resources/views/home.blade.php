@@ -485,7 +485,7 @@
                             <label for="prescription">Upload Prescriotion</label>
                         </div> --}}
                         <div class="form-group">
-                            <label for="" class="form-label">Upload Prescriotion <span
+                            <label for="" class="form-label">Requisition Form/Thalassemia Card<span
                                     style="color:red;">*</span></label>
                             <input type="file" id="prescription" class="form-control" name="prescription"
                                 placeholder="Prescription" required>

@@ -103,6 +103,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/delete-request', [AccountController::class, 'scheduleDeletion']);
             Route::delete('/delete-request', [AccountController::class, 'cancelDeletion']);
             Route::post('/data-export', [AccountController::class, 'requestDataExport']);
+            Route::post('/clear-data', [AccountController::class, 'clearData']);
         });
 
         //New Volunteer Routes

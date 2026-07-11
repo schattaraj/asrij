@@ -47,6 +47,29 @@ class PageController extends Controller
         return view('contact');
     }
 
+    /**
+     * Display the static Privacy Policy page.
+     */
+    public function privacyPolicy() {
+        return view('privacy-policy');
+    }
+
+    /**
+     * Display the public Account Deletion page (required by Google Play).
+     * Must be publicly accessible without login.
+     */
+    public function deleteAccount() {
+        return view('delete-account');
+    }
+
+    /**
+     * Display the public Data Deletion page (required by Google Play Data Safety).
+     * Must be publicly accessible without login.
+     */
+    public function deleteData() {
+        return view('delete-data');
+    }
+
     public function contactStore(Request $request) {
         $data = $request->validate([
             'name'    => 'required|string|max:120',

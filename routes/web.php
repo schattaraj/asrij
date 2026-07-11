@@ -26,6 +26,9 @@ use Illuminate\Support\Facades\File;
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::get('/privacy-policy', [PageController::class, 'privacyPolicy'])->name('privacy-policy');
+Route::get('/delete-account', [PageController::class, 'deleteAccount'])->name('delete-account');
+Route::get('/delete-data', [PageController::class, 'deleteData'])->name('delete-data');
 Route::post('/contact', [PageController::class, 'contactStore'])->name('contact.store');
 Route::get('/registration', [PageController::class, 'registration'])->name('registration');
 Route::get('/login', [PageController::class, 'login'])->name('login');
@@ -72,6 +75,8 @@ Route::middleware(['auth','role:admin'])->prefix('admin')->name('admin.')->group
     Route::resource('banners', BannerController::class);
     Route::resource('camps', BloodCampController::class);
     Route::resource('testimonials', TestimonialController::class);
+    Route::get('donation-settings', [\App\Http\Controllers\Admin\DonationSettingController::class, 'edit'])->name('donation-settings.edit');
+    Route::put('donation-settings', [\App\Http\Controllers\Admin\DonationSettingController::class, 'update'])->name('donation-settings.update');
     Route::get('our-organization', [OrganizationController::class,'ourOrganization'])->name('our-organization');
     Route::put('our-organization/{organization}', [OrganizationController::class,'ourOrganizationUpdate'])->name('organization.update');
     Route::delete('our-organization/member/{member}', [OrganizationController::class,'destroyMember'])->name('organization.member.destroy');
@@ -124,6 +129,7 @@ Route::get('/test-whatsapp', function (App\Services\WhatsAppService $whatsapp) {
 
 
 Route::post('/donate', [DonationController::class, 'store'])->name('donate.store');
+Route::post('/donation-payment', [\App\Http\Controllers\DonationPaymentController::class, 'store'])->name('donation-payment.store');
 
 Route::get('/users/update/{id}', [RegistrationController::class, 'index'])
     ->name('users.update');

@@ -237,6 +237,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{{route('admin.donation-settings.edit')}}">
+                            <span class="menu-title">Donation QR</span>
+                            <i class="mdi mdi-qrcode menu-icon"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{route('admin.our-organization')}}">
                             <span class="menu-title">Our Organization</span>
                             <i class="mdi mdi-handshake menu-icon"></i>

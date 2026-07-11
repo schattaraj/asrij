@@ -4,8 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\AccountDeletionRequest;
+use App\Models\BloodRequestResponse;
+use App\Models\Donor;
+use App\Models\EmergencyContact;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AccountController extends Controller
 {
@@ -88,6 +92,64 @@ class AccountController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Account deletion cancelled.',
+        ]);
+    }
+
+    /**
+     * POST /account/clear-data
+     *
+     * Selectively erase specific data categories without deleting the account.
+     * Satisfies the Google Play optional "partial data deletion" requirement.
+     *
+     * Body: { types: ['location', 'avatar', 'emergency_contacts', 'donation_history'] }
+     */
+    public function clearData(Request $request)
+    {
+        $data = $request->validate([
+            'types'   => 'required|array|min:1',
+            'types.*' => 'in:location,avatar,emergency_contacts,donation_history',
+        ]);
+
+        $user    = $request->user();
+        $types   = $data['types'];
+        $cleared = [];
+
+        if (in_array('location', $types)) {
+            $user->update([
+                'address'   => null,
+                'pin_code'  => null,
+                'latitude'  => null,
+                'longitude' => null,
+            ]);
+            $cleared[] = 'location';
+        }
+
+        if (in_array('avatar', $types)) {
+            if ($user->avatar && !preg_match('#^https?://#i', $user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+            $user->avatar = null;
+            $user->save();
+            $cleared[] = 'avatar';
+        }
+
+        if (in_array('emergency_contacts', $types)) {
+            EmergencyContact::where('user_id', $user->id)->delete();
+            $cleared[] = 'emergency_contacts';
+        }
+
+        if (in_array('donation_history', $types)) {
+            $donor = Donor::where('user_id', $user->id)->first();
+            if ($donor) {
+                BloodRequestResponse::where('donor_id', $donor->id)->delete();
+            }
+            $cleared[] = 'donation_history';
+        }
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Selected data has been cleared.',
+            'cleared' => $cleared,
         ]);
     }
 
